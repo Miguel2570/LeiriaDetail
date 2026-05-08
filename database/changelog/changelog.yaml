@@ -1,0 +1,9 @@
+databaseChangeLog:
+
+  - include:
+      file: tables/users.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: seed/users_seed.yaml
+      relativeToChangelogFile: true

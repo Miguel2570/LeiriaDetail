@@ -1,0 +1,99 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: leiriadetail-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: leiriadetail
+      POSTGRES_PASSWORD: leiriapassword
+      POSTGRES_DB: leiriadetail_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - leiriadetail_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U leiriadetail"]
+      interval: 5s
+      retries: 5
+
+  liquibase:
+    image: liquibase/liquibase:latest
+    container_name: leiriadetail-liquibase
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./database/changelog:/liquibase/changelog
+      - ./database/drivers:/liquibase/drivers
+      - ./database/liquibase.properties:/liquibase/liquibase.properties
+    command:
+      - --defaultsFile=/liquibase/liquibase.properties
+      - update
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: leiriadetail-pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@leiriadetail.pt
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5051:80"
+    depends_on:
+      - postgres
+
+  api:
+    build: ./api
+    container_name: leiriadetail-api
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./api/.env
+
+  graphql:
+    build: ./graphQL
+    container_name: leiriadetail-graphql
+    ports:
+      - "4001:4001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./graphQL/.env
+
+  frontend:
+    build: ./frontend
+    container_name: leiriadetail-frontend
+    ports:
+      - "5174:5174"
+    depends_on:
+      - graphql
+  
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    container_name: leiriadetail-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.12.0
+    container_name: leiriadetail-kibana
+    depends_on:
+      - elasticsearch
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+
+volumes:
+  leiriadetail_postgres_data:
+  elasticsearch_data:
