@@ -1,14 +1,8 @@
 import 'dotenv/config';
-
-import express, { Request, Response } from 'express';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
-import bodyParser from 'body-parser';
-
 import { ApolloServer } from '@apollo/server';
-import { expressMiddleware } from '@apollo/server/express4';
+import { startStandaloneServer } from '@apollo/server/standalone';
 
-const PORT = process.env.PORT || 4001;
+const PORT = parseInt(process.env.PORT || '4001', 10);
 
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5174')
   .split(',')
@@ -30,48 +24,21 @@ const resolvers = {
 };
 
 async function startServer() {
-  const app = express();
-
-  app.use(
-    cors({
-      origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-          callback(null, true);
-        } else {
-          callback(null, false);
-        }
-      },
-      credentials: true,
-    })
-  );
-
-  app.use(cookieParser());
-  app.use(bodyParser.json({ limit: '10mb' }));
-  app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
-
+  // Inicializamos apenas o Apollo
   const server = new ApolloServer({
     typeDefs,
     resolvers,
   });
 
-  await server.start();
-
-  app.use(
-    '/graphql',
-    expressMiddleware(server, {
-      context: async ({ req, res }: { req: Request; res: Response }) => {
-        return { req, res };
+  // O Standalone substitui o Express, o BodyParser e o expressMiddleware
+  const { url } = await startStandaloneServer(server, {
+    listen: { port: PORT },
+    context: async ({ req, res }) => {
+      return { req, res };
     },
-    })
-  );
-
-  app.get('/health', (_, res) => {
-    res.json({ status: 'ok', service: 'graphql' });
   });
 
-  app.listen(PORT, () => {
-    console.log(`🚀 GraphQL running at http://localhost:${PORT}/graphql`);
-  });
+  console.log(`🚀 GraphQL running at ${url}`);
 }
 
 startServer();

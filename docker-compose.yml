@@ -56,6 +56,22 @@ services:
       elasticsearch:
         condition: service_healthy
 
+  liquibase:
+    image: liquibase/liquibase:latest
+    container_name: leiriadetail-liquibase
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./database/changelog:/liquibase/changelog
+    working_dir: /liquibase/changelog
+    command: 
+      - --url=jdbc:postgresql://postgres:5432/leiriadetail
+      - --username=postgres
+      - --password=admin123
+      - --changeLogFile=db.changelog.xml
+      - update
+
   graphql:
     build: ./graphql
     container_name: leiriadetail-graphql
@@ -65,10 +81,10 @@ services:
       DATABASE_URL: postgres://postgres:admin123@postgres:5432/leiriadetail
       ELASTIC_URL: http://elasticsearch:9200
     depends_on:
-      postgres:
-        condition: service_healthy
+      liquibase:
+        condition: service_completed_successfully
       elasticsearch:
-        condition: service_started
+        condition: service_healthy
 
   api:
     build: ./api
@@ -78,8 +94,8 @@ services:
     environment:
       DATABASE_URL: postgres://postgres:admin123@postgres:5432/leiriadetail
     depends_on:
-      postgres:
-        condition: service_healthy
+      liquibase:
+        condition: service_completed_successfully
 
   frontend:
     build: ./frontend
@@ -87,8 +103,10 @@ services:
     ports:
       - "5174:5174"
     depends_on:
-      - api
-      - graphql
+      api:
+        condition: service_started
+      graphql:
+        condition: service_started
 
 volumes:
   pgdata:
