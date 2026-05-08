@@ -1,0 +1,9 @@
+backoffice-frontend/.DS_Store
+/API/node_modules
+/GraphQL/node_modules
+Database/.DS_Store
+/API/dist
+/GraphQL/dist
+/node_modules
+API/tsconfig.tsbuildinfo
+API/tsconfig.tsbuildinfo

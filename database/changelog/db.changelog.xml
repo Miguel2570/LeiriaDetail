@@ -1,0 +1,13 @@
+<databaseChangeLog>
+
+    <changeSet id="1" author="leiria">
+        <createTable tableName="users">
+            <column name="id" type="serial">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="email" type="varchar(255)"/>
+            <column name="password" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
