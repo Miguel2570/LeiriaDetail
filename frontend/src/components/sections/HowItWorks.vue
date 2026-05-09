@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Package, Calendar, Car, Camera, CheckCircle } from 'lucide-react'
+import { Package, Calendar, Car, Camera, CheckCircle } from 'lucide-vue-next'
 const steps = [
   { icon: Package, title: 'Escolhe serviço/pacote', desc: 'Seleciona o pacote que melhor se adequa' },
   { icon: Calendar, title: 'Marca dia e hora', desc: 'Agenda online de forma rápida e simples' },

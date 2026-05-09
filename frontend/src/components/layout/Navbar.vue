@@ -46,8 +46,8 @@ const navLinks = [
           <router-link to="/login" class="hidden md:block text-sm font-medium hover:text-[#3B82F6]">
             Entrar
           </router-link>
-          <router-link to="/booking">
-            <Button class="bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white border-none font-bold hover:opacity-90 transition-opacity">
+          <router-link to="/agenda">
+            <Button class="bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white border-none font-bold">
               Agendar
             </Button>
           </router-link>

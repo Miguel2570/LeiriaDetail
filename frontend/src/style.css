@@ -1,42 +1,40 @@
 @import "tailwindcss";
 
 :root {
-  --primary: #3B82F6;
-  --secondary: #06B6D4;
+  /* Cores para o resto do site (Light Mode) */
   --background: #ffffff;
   --foreground: #030213;
+  --primary: #3B82F6;
+  --secondary: #06B6D4;
   --radius: 1rem;
 }
 
 body {
-  background: linear-gradient(180deg, rgba(59, 130, 246, 0.2) 0%, rgba(6, 182, 212, 0.2) 100%), #FFFFFF;
+  /* O gradiente suave que pediste para a Home */
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.12) 0%, rgba(6, 182, 212, 0.12) 100%), #FFFFFF;
   background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: cover;
   color: var(--foreground);
   font-family: 'Inter', sans-serif;
-  min-height: 100vh;
+}
+
+/* ESTA É A CLASSE QUE VAI TRANSFORMAR SÓ O BOOKING EM PRETO */
+body.booking-dark-mode {
+  background: #0A0A0F !important;
+  color: white !important;
+}
+
+/* Garante que o gradiente de fundo da Home desaparece no Booking */
+body.booking-dark-mode::before {
+  display: none;
 }
 
 @layer components {
-  .bg-leiria-gradient {
-    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
-  }
-
   .text-leiria-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-[#3B82F6] to-[#06B6D4];
   }
   
-  /* Classe auxiliar para o modo escuro do Booking */
-  .booking-dark-mode {
-    --background: #0A0A0F;
-    --foreground: #FFFFFF;
-    --muted-foreground: #94A3B8;
-    background: #0A0A0F !important; /* Força o fundo preto nesta página */
-    color: white!important;
-  }
-
-  .booking-dark-mode body {
-    background: #0A0A0F !important;
+  .btn-primary-gradient {
+    @apply bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white font-bold py-3 px-8 rounded-2xl 
+           transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(59,130,246,0.4)];
   }
 }

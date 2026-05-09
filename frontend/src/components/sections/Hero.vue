@@ -19,7 +19,7 @@ import { Calendar, ArrowRight } from 'lucide-vue-next'
       </p>
 
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <router-link to="/marcacao">
+        <router-link to="/agenda">
           <Button class="bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white h-12 px-8 font-bold">
             <Calendar class="mr-2 h-5 w-5" /> Agendar Agora
           </Button>
