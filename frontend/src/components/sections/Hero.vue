@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Button from '../ui/Button.vue'
+import Button from '@/components/ui/forms/Button.vue'
 import { Calendar, ArrowRight } from 'lucide-vue-next'
 </script>
 

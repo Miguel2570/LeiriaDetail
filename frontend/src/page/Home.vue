@@ -1,7 +1,6 @@
 <template>
   <div>
     <Hero />
-    
     <Benefits />
     <HowItWorks />
     <Testimonials />

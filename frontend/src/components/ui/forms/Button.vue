@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cn } from '../../utils/cn'; // Ajustado de utils para cn
+import { cn } from '@/utils/cn'; // Ajustado de utils para cn
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const buttonVariants = cva(

@@ -1,87 +1,148 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { Check, ChevronLeft, ChevronRight } from 'lucide-vue-next';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 
+// Importação dos teus novos componentes
+import ProgressBar from '@/components/booking/ProgressBar.vue';
+import ServiceSelection from '@/components/booking/ServiceSelection.vue';
+import DateTimeSelection from '@/components/booking/DateTimeSelection.vue';
+import VehicleDetails from '@/components/booking/VehicleDetails.vue';
+import Confirmation from '@/components/booking/Confirmation.vue';
+
+// --- LÓGICA DE TROCA DE TEMA ---
+onMounted(() => {
+  // Quando entras nesta página, forçamos o corpo do site a ficar preto
+  document.body.classList.add('booking-dark-mode');
+});
+
+onUnmounted(() => {
+  // Quando sais da página, removemos o preto para o site voltar ao branco original
+  document.body.classList.remove('booking-dark-mode');
+});
+
+// --- ESTADO PRINCIPAL ---
 const step = ref(1);
+const steps = [
+  { number: 1, label: 'Serviço' },
+  { number: 2, label: 'Agenda' },
+  { number: 3, label: 'Detalhes' },
+  { number: 4, label: 'Resumo' }
+];
+
 const bookingData = ref({
-  package: '',
-  vehicleType: '',
-  extras: [] as string[],
-  date: '',
-  timeSlot: ''
+  service: null as any,
+  date: null as any,
+  time: '',
+  personal: {
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    vehicle: '',
+    licensePlate: ''
+  }
 });
 
-const packages = [
-  { id: 'basic', name: 'Basic', price: 25 },
-  { id: 'standard', name: 'Standard', price: 45 },
-  { id: 'premium', name: 'Premium', price: 90 }
-];
-
-const vehicleTypes = [
-  { id: 'city', name: 'Citadino', multiplier: 1 },
-  { id: 'sedan', name: 'Sedan', multiplier: 1 },
-  { id: 'suv', name: 'SUV', multiplier: 1.2 }
-];
-
-const calculatePrice = computed(() => {
-  const pkg = packages.find(p => p.id === bookingData.value.package);
-  const vehicle = vehicleTypes.find(v => v.id === bookingData.value.vehicleType);
-  if (!pkg || !vehicle) return 0;
-  return Math.round(pkg.price * vehicle.multiplier);
+const canGoNext = computed(() => {
+  if (step.value === 1) return bookingData.value.service !== null;
+  if (step.value === 2) return bookingData.value.date !== null && bookingData.value.time !== '';
+  if (step.value === 3) {
+    const p = bookingData.value.personal;
+    return p.firstName && p.lastName && p.email && p.phone && p.vehicle && p.licensePlate;
+  }
+  return true;
 });
+
+const submitBooking = () => {
+  console.log("A enviar reserva:", bookingData.value);
+  alert("Agendamento concluído com sucesso! Obrigado por escolheres a LeiriaDetail.");
+};
 </script>
 
 <template>
-    <div class="py-16 container mx-auto px-4 max-w-2xl">
-    <h1 class="text-3xl font-bold text-center mb-8">Agendar <span class="text-[#3B82F6]">Serviço</span></h1>
+  <div class="min-h-screen pt-24 pb-20 px-4">
+    <div class="max-w-5xl mx-auto">
+      
+      <div class="text-center mb-16 animate-in slide-in-from-top-4 duration-700">
+        <h2 class="text-[#94A3B8] font-medium tracking-[0.3em] uppercase text-xs md:text-sm mb-3">
+          Agendamento Online
+        </h2>
+        <h1 class="text-5xl md:text-7xl font-black italic tracking-tighter text-white drop-shadow-2xl">
+          LEIRIA<span class="text-leiria-gradient">DETAIL</span>
+        </h1>
+      </div>
 
-    <div class="bg-white border rounded-xl p-8 shadow-sm">
-        <div v-if="step === 1" class="space-y-6">
-        <h2 class="font-bold text-xl">Escolhe o Pacote</h2>
-        <div v-for="pkg in packages" :key="pkg.id" 
-                @click="bookingData.package = pkg.id"
-                :class="['p-4 border rounded-lg cursor-pointer transition-all', bookingData.package === pkg.id ? 'border-[#3B82F6] bg-blue-50' : '']">
-            {{ pkg.name }} - {{ pkg.price }}€
-        </div>
+      <ProgressBar :steps="steps" :currentStep="step" />
 
-        <h2 class="font-bold text-xl mt-8">Tipo de Veículo</h2>
-        <div class="flex gap-4">
-            <button v-for="v in vehicleTypes" :key="v.id" 
-                    @click="bookingData.vehicleType = v.id"
-                    :class="['flex-1 p-3 border rounded-lg', bookingData.vehicleType === v.id ? 'bg-[#3B82F6] text-white' : '']">
-            {{ v.name }}
-            </button>
-        </div>
-        </div>
+      <div class="mt-12 min-h-[400px]">
+        <ServiceSelection 
+          v-if="step === 1" 
+          :selectedServiceId="bookingData.service?.id || null"
+          @update:service="val => bookingData.service = val"
+        />
 
-      <div class="mt-12 flex justify-between">
-    <button 
-        @click="step--" 
-        :disabled="step === 1" 
-        class="flex items-center px-6 py-2 border rounded-lg disabled:opacity-30"
-    >
-        <ChevronLeft class="mr-2 h-4 w-4" /> 
-        Voltar
-    </button>
+        <DateTimeSelection 
+          v-if="step === 2"
+          :selectedDate="bookingData.date"
+          :selectedTime="bookingData.time"
+          @update:date="val => bookingData.date = val"
+          @update:time="val => bookingData.time = val"
+        />
 
-    <button 
-        v-if="step < 4" 
-        @click="step++" 
-        :disabled="!bookingData.package" 
-        class="flex items-center px-6 py-2 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white rounded-lg hover:opacity-90"
-    >
-        Continuar
-        <ChevronRight class="ml-2 h-4 w-4" />
-    </button>
+        <VehicleDetails 
+          v-if="step === 3"
+          v-model="bookingData.personal"
+        />
 
-    <button 
-        v-else 
-        class="flex items-center px-6 py-2 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white rounded-lg hover:opacity-90"
-    >
-        <Check class="mr-2 h-4 w-4" />
-        Confirmar Marcação 
-    </button>
-</div>
+        <Confirmation 
+          v-if="step === 4"
+          :bookingData="bookingData"
+        />
+      </div>
+
+      <div class="mt-16 flex justify-between items-center max-w-5xl mx-auto border-t border-white/10 pt-8">
+        <button 
+          v-if="step > 1" 
+          @click="step--"
+          class="px-6 py-3 rounded-xl border border-white/10 text-[#94A3B8] hover:bg-white/5 hover:text-white font-bold flex items-center gap-2 transition-all"
+        >
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Voltar
+        </button>
+        <div v-else></div> 
+
+        <button 
+          v-if="step < 4"
+          @click="step++"
+          :disabled="!canGoNext"
+          class="btn-primary-gradient disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2"
+        >
+          Próximo Passo
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </button>
+
+        <button 
+          v-if="step === 4"
+          @click="submitBooking"
+          class="btn-primary-gradient flex items-center gap-2"
+        >
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          Confirmar e Pagar
+        </button>
+      </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+:deep(.glass-card) {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+}
+</style>

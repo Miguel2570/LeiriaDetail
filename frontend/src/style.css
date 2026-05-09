@@ -1,36 +1,42 @@
 @import "tailwindcss";
 
 :root {
-  /* Cores extraídas do teu Figma */
   --primary: #3B82F6;
   --secondary: #06B6D4;
-  
-  /* Variáveis de estrutura do teu ficheiro original [cite: 425, 429] */
   --background: #ffffff;
   --foreground: #030213;
-  --card: #ffffff;
-  --border: rgba(0, 0, 0, 0.1);
-  --radius: 0.625rem;
-  
-  /* Shadow configurada no teu Figma (Blur 12, Opacidade 70%) */
-  --shadow-figma: 0 0 12px rgba(0, 0, 0, 0.1);
+  --radius: 1rem;
 }
 
-/* Aplicar reset básico */
 body {
-  background-color: var(--background);
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.2) 0%, rgba(6, 182, 212, 0.2) 100%), #FFFFFF;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
   color: var(--foreground);
-  font-family: 'Inter', sans-serif; /* Ou a fonte que escolheste no Figma */
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
 }
 
-/* Classe utilitária para o teu gradiente principal */
-.bg-leiria-gradient {
-  background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
-}
+@layer components {
+  .bg-leiria-gradient {
+    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+  }
 
-/* Classe para o efeito de texto em gradiente [cite: 324, 330] */
-.text-leiria-gradient {
-  background: linear-gradient(90deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  .text-leiria-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#3B82F6] to-[#06B6D4];
+  }
+  
+  /* Classe auxiliar para o modo escuro do Booking */
+  .booking-dark-mode {
+    --background: #0A0A0F;
+    --foreground: #FFFFFF;
+    --muted-foreground: #94A3B8;
+    background: #0A0A0F !important; /* Força o fundo preto nesta página */
+    color: white!important;
+  }
+
+  .booking-dark-mode body {
+    background: #0A0A0F !important;
+  }
 }

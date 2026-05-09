@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { User, Menu, X, LogOut } from 'lucide-vue-next'; // Mudado de lucide-react
-import Button from '../ui/Button.vue';
+import Button from '@/components/ui/forms/Button.vue'
 
 const isMenuOpen = ref(false);
 const isLoggedIn = ref(false);
@@ -46,8 +46,8 @@ const navLinks = [
           <router-link to="/login" class="hidden md:block text-sm font-medium hover:text-[#3B82F6]">
             Entrar
           </router-link>
-          <router-link to="/marcacao">
-            <Button class="bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white border-none">
+          <router-link to="/booking">
+            <Button class="bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white border-none font-bold hover:opacity-90 transition-opacity">
               Agendar
             </Button>
           </router-link>
