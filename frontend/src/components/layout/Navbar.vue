@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { User, Menu, X, LogOut } from 'lucide-vue-next'; // Mudado de lucide-react
+import { User, Menu, X, LogOut } from 'lucide-vue-next';
 import Button from '@/components/ui/forms/Button.vue'
 
 const isMenuOpen = ref(false);
@@ -17,11 +17,15 @@ const navLinks = [
 </script>
 
 <template>
-  <nav class="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/80 backdrop-blur-md">
+  <nav class="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/70 backdrop-blur-md transform-gpu">
     <div class="container mx-auto px-4 h-16 flex items-center justify-between">
       <router-link to="/" class="flex items-center gap-2">
-        <div class="h-10 w-10 rounded-lg bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] flex items-center justify-center text-white font-bold text-xl">
-          LD
+        <div class="flex items-center justify-center">
+          <img 
+            src="../../assets/img/Logo.png" 
+            alt="Nome da Sua Empresa" 
+            class="h-16 w-auto object-contain"
+          />
         </div>
         <span class="font-bold text-xl bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] bg-clip-text text-transparent">
           LeiriaDetail
