@@ -38,6 +38,7 @@ import { MapPin, Phone, Mail, Instagram, Facebook } from 'lucide-vue-next'
             <li><router-link to="/termos" class="hover:text-white transition-colors">Termos e Condições</router-link></li>
             <li><router-link to="/privacidade" class="hover:text-white transition-colors">Política de Privacidade</router-link></li>
             <li><router-link to="/cookies" class="hover:text-white transition-colors">Política de Cookies</router-link></li>
+            <li><a href="https://www.livroreclamacoes.pt" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">Livro de Reclamações</a></li>          
           </ul>
         </div>
 
