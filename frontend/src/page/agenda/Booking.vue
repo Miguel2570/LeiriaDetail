@@ -64,7 +64,7 @@ const submitBooking = () => {
         <h2 class="text-[#94A3B8] font-medium tracking-[0.3em] uppercase text-xs md:text-sm mb-3">
           Agendamento Online
         </h2>
-        <h1 class="text-6xl md:text-8xl font-black italic tracking-tighter text-white drop-shadow-2xl uppercase">
+        <h1 class="text-5xl md:text-7xl font-black italic tracking-tighter text-white drop-shadow-2xl uppercase">
           LEIRIA<span class="text-leiria-gradient">DETAIL</span>
         </h1>
       </div>

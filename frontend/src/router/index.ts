@@ -3,7 +3,10 @@ import Home from '@/page/Home.vue'
 
 const routes = [
   { path: '/', name: 'home', component: Home },
-  // Unificamos tudo para /agenda e adicionamos ALIASES para os outros nomes funcionarem
+  
+  { path: '/login', name: 'login', component: () => import('@/page/auth/Login.vue') },
+  { path: '/registar', name: 'register', component: () => import('@/page/auth/Register.vue') },
+  
   { 
     path: '/agenda', 
     alias: ['/booking', '/marcacao'], 
@@ -15,7 +18,6 @@ const routes = [
   { path: '/servicos', component: () => import('@/page/services/Services.vue') },
   { path: '/precos', component: () => import('@/page/Pricing.vue') },
   { path: '/portfolio', component: () => import('@/page/Portfolio.vue') },
-  // Páginas Legais
   { path: '/privacidade', component: () => import('@/page/legal/Privacy.vue') },
   { path: '/termos', component: () => import('@/page/legal/Terms.vue') },
   { path: '/cookies', component: () => import('@/page/legal/Cookies.vue') },
