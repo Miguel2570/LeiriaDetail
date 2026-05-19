@@ -1,64 +1,61 @@
 <script setup lang="ts">
-const props = defineProps<{
-  modelValue: any;
-}>();
+import { User, Car, Mail, Phone, Hash } from 'lucide-vue-next';
+const props = defineProps<{ modelValue: any; }>();
 const emit = defineEmits(['update:modelValue']);
-
-// Atualiza o objeto no pai quando o input muda
-const updateField = (field: string, value: any) => {
-  emit('update:modelValue', { ...props.modelValue, [field]: value });
-};
+const updateField = (field: string, value: any) => emit('update:modelValue', { ...props.modelValue, [field]: value });
 </script>
 
 <template>
-  <div class="glass-card max-w-3xl mx-auto p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-    <h3 class="text-2xl font-bold mb-6 text-white flex items-center gap-3">
-      <span class="w-2 h-8 bg-[#3B82F6] rounded-full"></span>
-      Os Teus Dados
-    </h3>
-
+  <div class="bg-white/[0.01] border border-white/5 rounded-[2rem] p-8 md:p-10 shadow-lg">
+    
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       <div class="space-y-2">
-        <label class="text-sm font-medium text-[#94A3B8]">Primeiro Nome</label>
-        <input :value="modelValue.firstName" @input="e => updateField('firstName', (e.target as HTMLInputElement).value)" type="text" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] outline-none transition-all" placeholder="Ex: João" />
+        <label class="text-[10px] font-black text-white/40 uppercase tracking-widest block pl-1">Nome Próprio</label>
+        <div class="relative group">
+          <User class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-[#2563EB]" />
+          <input :value="modelValue.firstName" @input="e => updateField('firstName', (e.target as HTMLInputElement).value)" type="text" class="w-full pl-11 pr-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white text-sm font-bold outline-none focus:border-[#2563EB] transition-colors" placeholder="João" />
+        </div>
       </div>
       <div class="space-y-2">
-        <label class="text-sm font-medium text-[#94A3B8]">Apelido</label>
-        <input :value="modelValue.lastName" @input="e => updateField('lastName', (e.target as HTMLInputElement).value)" type="text" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] outline-none transition-all" placeholder="Ex: Silva" />
+        <label class="text-[10px] font-black text-white/40 uppercase tracking-widest block pl-1">Apelido</label>
+        <div class="relative group">
+          <User class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-[#2563EB]" />
+          <input :value="modelValue.lastName" @input="e => updateField('lastName', (e.target as HTMLInputElement).value)" type="text" class="w-full pl-11 pr-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white text-sm font-bold outline-none focus:border-[#2563EB] transition-colors" placeholder="Silva" />
+        </div>
       </div>
       <div class="space-y-2">
-        <label class="text-sm font-medium text-[#94A3B8]">Email</label>
-        <input :value="modelValue.email" @input="e => updateField('email', (e.target as HTMLInputElement).value)" type="email" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] outline-none transition-all" placeholder="joao@email.com" />
+        <label class="text-[10px] font-black text-white/40 uppercase tracking-widest block pl-1">E-mail</label>
+        <div class="relative group">
+          <Mail class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-[#2563EB]" />
+          <input :value="modelValue.email" @input="e => updateField('email', (e.target as HTMLInputElement).value)" type="email" class="w-full pl-11 pr-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white text-sm font-bold outline-none focus:border-[#2563EB] transition-colors" placeholder="joao@email.com" />
+        </div>
       </div>
       <div class="space-y-2">
-        <label class="text-sm font-medium text-[#94A3B8]">Telemóvel</label>
-        <input :value="modelValue.phone" @input="e => updateField('phone', (e.target as HTMLInputElement).value)" type="tel" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] outline-none transition-all" placeholder="912 345 678" />
+        <label class="text-[10px] font-black text-white/40 uppercase tracking-widest block pl-1">Telemóvel</label>
+        <div class="relative group">
+          <Phone class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-[#2563EB]" />
+          <input :value="modelValue.phone" @input="e => updateField('phone', (e.target as HTMLInputElement).value)" type="tel" class="w-full pl-11 pr-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white text-sm font-bold outline-none focus:border-[#2563EB] transition-colors" placeholder="912 345 678" />
+        </div>
       </div>
     </div>
 
-    <h3 class="text-2xl font-bold mb-6 text-white flex items-center gap-3 border-t border-white/5 pt-8">
-      <span class="w-2 h-8 bg-[#06B6D4] rounded-full"></span>
-      Dados da Viatura
-    </h3>
+    <div class="h-px w-full bg-white/5 mb-8"></div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="space-y-2">
-        <label class="text-sm font-medium text-[#94A3B8]">Marca e Modelo</label>
-        <input :value="modelValue.vehicle" @input="e => updateField('vehicle', (e.target as HTMLInputElement).value)" type="text" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] outline-none transition-all" placeholder="Ex: BMW Série 1" />
+        <label class="text-[10px] font-black text-white/40 uppercase tracking-widest block pl-1">Veículo (Marca e Modelo)</label>
+        <div class="relative group">
+          <Car class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-[#00D8FF]" />
+          <input :value="modelValue.vehicle" @input="e => updateField('vehicle', (e.target as HTMLInputElement).value)" type="text" class="w-full pl-11 pr-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white text-sm font-bold outline-none focus:border-[#00D8FF] transition-colors" placeholder="BMW M4" />
+        </div>
       </div>
       <div class="space-y-2">
-        <label class="text-sm font-medium text-[#94A3B8]">Matrícula</label>
-        <input :value="modelValue.licensePlate" @input="e => updateField('licensePlate', (e.target as HTMLInputElement).value)" type="text" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] outline-none transition-all uppercase" placeholder="AA-00-BB" />
+        <label class="text-[10px] font-black text-white/40 uppercase tracking-widest block pl-1">Matrícula</label>
+        <div class="relative group">
+          <Hash class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-[#00D8FF]" />
+          <input :value="modelValue.licensePlate" @input="e => updateField('licensePlate', (e.target as HTMLInputElement).value)" type="text" class="w-full pl-11 pr-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white text-sm font-bold outline-none focus:border-[#00D8FF] uppercase transition-colors" placeholder="AA-00-BB" />
+        </div>
       </div>
-    </div>
-
-    <div class="mt-8 p-4 rounded-xl border border-[#06B6D4]/30 bg-gradient-to-r from-[#06B6D4]/10 to-[#3B82F6]/10 flex gap-4">
-      <svg class="h-6 w-6 shrink-0 text-[#06B6D4]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <p class="text-sm text-[#94A3B8]">
-        Todas as informações são confidenciais e utilizadas apenas para os nossos registos de serviço e emissão de fatura.
-      </p>
     </div>
   </div>
 </template>

@@ -1,146 +1,117 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 
-// Importação dos teus novos componentes
+// Componentes
 import ProgressBar from '@/components/booking/ProgressBar.vue';
+import VehicleSelection from '@/components/booking/VehicleSelection.vue'; // Novo componente
 import ServiceSelection from '@/components/booking/ServiceSelection.vue';
 import DateTimeSelection from '@/components/booking/DateTimeSelection.vue';
-import VehicleDetails from '@/components/booking/VehicleDetails.vue';
 import Confirmation from '@/components/booking/Confirmation.vue';
+import { ArrowLeft, ArrowRight, Check } from 'lucide-vue-next';
 
-// --- LÓGICA DE TROCA DE TEMA ---
-onMounted(() => {
-  document.body.classList.add('booking-dark-mode');
-});
+onMounted(() => document.body.classList.add('booking-dark-mode'));
+onUnmounted(() => document.body.classList.remove('booking-dark-mode'));
 
-onUnmounted(() => {
-  document.body.classList.remove('booking-dark-mode');
-});
-
-// --- ESTADO PRINCIPAL ---
 const step = ref(1);
 const steps = [
-  { number: 1, label: 'Serviço' },
-  { number: 2, label: 'Agenda' },
-  { number: 3, label: 'Detalhes' },
-  { number: 4, label: 'Resumo' }
+  { number: 1, label: 'Viatura' },
+  { number: 2, label: 'Serviço' },
+  { number: 3, label: 'Agenda' },
+  { number: 4, label: 'Confirmação' }
 ];
 
 const bookingData = ref({
+  vehicle: null as any,
   service: null as any,
   date: null as any,
-  time: '',
-  personal: {
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    vehicle: '',
-    licensePlate: ''
-  }
+  time: ''
 });
 
 const canGoNext = computed(() => {
-  if (step.value === 1) return bookingData.value.service !== null;
-  if (step.value === 2) return bookingData.value.date !== null && bookingData.value.time !== '';
-  if (step.value === 3) {
-    const p = bookingData.value.personal;
-    return p.firstName && p.lastName && p.email && p.phone && p.vehicle && p.licensePlate;
-  }
+  if (step.value === 1) return bookingData.value.vehicle !== null;
+  if (step.value === 2) return bookingData.value.service !== null;
+  if (step.value === 3) return bookingData.value.date !== null && bookingData.value.time !== '';
   return true;
 });
 
 const submitBooking = () => {
-  console.log("A enviar reserva:", bookingData.value);
-  alert("Agendamento concluído com sucesso! Obrigado por escolheres a LeiriaDetail.");
+  alert("Agendamento concluído com sucesso!");
 };
 </script>
 
 <template>
-  <div class="min-h-screen pt-24 pb-20 px-4">
-    <div class="max-w-5xl mx-auto">
+  <div class="min-h-screen py-24 px-4 bg-[#050505] relative overflow-hidden">
+    
+    <div class="absolute top-0 right-0 w-[800px] h-[600px] bg-[#2563EB]/10 blur-[150px] rounded-full pointer-events-none z-0"></div>
+
+    <div class="container mx-auto max-w-7xl relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
       
-      <div class="text-center mb-16 animate-in slide-in-from-top-4 duration-700">
-        <h2 class="text-[#94A3B8] font-medium tracking-[0.3em] uppercase text-xs md:text-sm mb-3">
-          Agendamento Online
-        </h2>
-        <h1 class="text-5xl md:text-7xl font-black italic tracking-tighter text-white drop-shadow-2xl uppercase">
-          LEIRIA<span class="text-leiria-gradient">DETAIL</span>
+      <div class="lg:col-span-4 lg:sticky lg:top-32 text-center lg:text-left">
+        <h2 class="text-[#00D8FF] font-black tracking-[0.4em] uppercase text-[10px] mb-4 italic">Portal de Clientes</h2>
+        <h1 class="text-5xl md:text-6xl font-black italic tracking-tighter text-white uppercase leading-none mb-6">
+          FAZER <br><span class="text-leiria-gradient">MARCAÇÃO</span>
         </h1>
+        <p class="text-gray-400 text-sm leading-relaxed mb-10 max-w-sm mx-auto lg:mx-0">
+          {{ step === 1 ? 'Selecione a viatura para ver os serviços disponíveis.' : 
+             step === 2 ? 'Escolha o tratamento ideal para o seu veículo.' : 
+             step === 3 ? 'Selecione a melhor data e hora para nos visitar.' : 
+             'Confirme os detalhes e finalize o agendamento.' }}
+        </p>
       </div>
 
-      <ProgressBar :steps="steps" :currentStep="step" />
+      <div class="lg:col-span-8 w-full max-w-3xl mx-auto">
+        
+        <ProgressBar :steps="steps" :currentStep="step" />
 
-      <div class="mt-12 min-h-[400px]">
-        <ServiceSelection 
-          v-if="step === 1" 
-          :selectedServiceId="bookingData.service?.id || null"
-          @update:service="val => bookingData.service = val"
-        />
+        <div class="mt-12 min-h-[400px]">
+          <transition name="fade" mode="out-in">
+            <VehicleSelection 
+              v-if="step === 1" 
+              key="step1"
+              :selectedVehiclePlate="bookingData.vehicle?.plate || null" 
+              @update:vehicle="val => bookingData.vehicle = val" 
+            />
+            
+            <ServiceSelection 
+              v-else-if="step === 2" 
+              key="step2"
+              :selectedServiceId="bookingData.service?.id || null" 
+              :selectedVehicle="bookingData.vehicle"
+              @update:service="val => bookingData.service = val" 
+            />
+            
+            <DateTimeSelection 
+              v-else-if="step === 3" 
+              key="step3"
+              :selectedDate="bookingData.date" 
+              :selectedTime="bookingData.time" 
+              @update:date="val => bookingData.date = val" 
+              @update:time="val => bookingData.time = val" 
+            />
+            
+            <Confirmation 
+              v-else-if="step === 4" 
+              key="step4"
+              :bookingData="bookingData" 
+            />
+          </transition>
+        </div>
 
-        <DateTimeSelection 
-          v-if="step === 2"
-          :selectedDate="bookingData.date"
-          :selectedTime="bookingData.time"
-          @update:date="val => bookingData.date = val"
-          @update:time="val => bookingData.time = val"
-        />
+        <div class="mt-12 flex justify-between items-center border-t border-white/5 pt-8">
+          <button v-if="step > 1" @click="step--" class="px-6 py-3 rounded-xl border border-white/10 text-gray-400 hover:bg-white/5 hover:text-white text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all">
+            <ArrowLeft class="w-4 h-4" /> Voltar
+          </button>
+          <div v-else></div> 
 
-        <VehicleDetails 
-          v-if="step === 3"
-          v-model="bookingData.personal"
-        />
+          <button v-if="step < 4" @click="step++" :disabled="!canGoNext" class="h-14 px-8 rounded-xl bg-gradient-to-r from-[#2563EB] to-[#00D8FF] text-white text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all duration-300 hover:scale-[1.02] disabled:opacity-30 disabled:cursor-not-allowed shadow-lg">
+            Próximo Passo <ArrowRight class="w-4 h-4" />
+          </button>
 
-        <Confirmation 
-          v-if="step === 4"
-          :bookingData="bookingData"
-        />
-      </div>
-
-      <div class="mt-16 flex justify-between items-center max-w-5xl mx-auto border-t border-white/10 pt-8">
-        <button 
-          v-if="step > 1" 
-          @click="step--"
-          class="px-6 py-3 rounded-xl border border-white/10 text-[#94A3B8] hover:bg-white/5 hover:text-white font-bold flex items-center gap-2 transition-all"
-        >
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          Voltar
-        </button>
-        <div v-else></div> 
-
-        <button 
-          v-if="step < 4"
-          @click="step++"
-          :disabled="!canGoNext"
-          class="btn-primary-gradient disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2"
-        >
-          Próximo Passo
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
-        </button>
-
-        <button 
-          v-if="step === 4"
-          @click="submitBooking"
-          class="btn-primary-gradient flex items-center gap-2"
-        >
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
-          Confirmar e Pagar
-        </button>
+          <button v-if="step === 4" @click="submitBooking" class="h-14 px-8 rounded-xl bg-gradient-to-r from-[#2563EB] to-[#00D8FF] text-white text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all duration-300 hover:scale-[1.02] shadow-[0_10px_25px_rgba(37,99,235,0.4)]">
+            <Check class="w-4 h-4" /> Finalizar Reserva
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-:deep(.glass-card) {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-}
-</style>

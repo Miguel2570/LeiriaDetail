@@ -1,54 +1,38 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-
-const props = defineProps<{
-  bookingData: any;
-}>();
-
-const formattedDate = computed(() => {
-  if (!props.bookingData.date) return '';
-  return new Date(props.bookingData.date).toLocaleDateString('pt-PT', {
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-  });
-});
+import { ShieldCheck, Calendar, Car } from 'lucide-vue-next';
+const props = defineProps<{ bookingData: any; }>();
 </script>
 
 <template>
-  <div class="max-w-2xl mx-auto animate-in zoom-in-95 duration-500">
-    <div class="text-center mb-8">
-      <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-r from-[#3B82F6]/20 to-[#06B6D4]/20 border border-[#3B82F6]/30 mb-6">
-        <svg class="w-10 h-10 text-[#06B6D4]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      </div>
-      <h2 class="text-3xl font-bold text-white mb-2">Quase lá, {{ bookingData.personal.firstName }}!</h2>
-      <p class="text-[#94A3B8]">Revê os detalhes do teu agendamento antes de confirmar.</p>
-    </div>
+  <div class="bg-gradient-to-br from-[#2563EB]/10 to-[#050505] border border-[#2563EB]/20 rounded-[2rem] p-8 md:p-10 shadow-[0_0_30px_rgba(37,99,235,0.1)] relative overflow-hidden">
+    
+    <ShieldCheck class="absolute -right-6 -top-6 w-40 h-40 text-[#2563EB]/5 pointer-events-none" />
 
-    <div class="glass-card p-0 overflow-hidden border-white/10">
-      <div class="bg-gradient-to-r from-[#3B82F6]/10 to-[#06B6D4]/10 p-6 border-b border-white/5 flex justify-between items-center">
+    <h2 class="text-2xl font-black text-white uppercase italic tracking-tight mb-8">Resumo da Reserva</h2>
+
+    <div class="space-y-6 relative z-10">
+      
+      <div class="flex justify-between items-end border-b border-white/5 pb-6">
         <div>
-          <p class="text-sm text-[#94A3B8] font-medium uppercase tracking-wider mb-1">Serviço Selecionado</p>
-          <h4 class="text-xl font-bold text-white">{{ bookingData.service?.name }}</h4>
+          <span class="text-[10px] font-black text-white/40 uppercase tracking-widest block mb-2">Tratamento Selecionado</span>
+          <h3 class="text-xl font-bold text-white">{{ bookingData.service?.name }}</h3>
         </div>
-        <div class="text-right">
-          <p class="text-sm text-[#94A3B8] font-medium uppercase tracking-wider mb-1">Total Estimado</p>
-          <span class="text-2xl font-bold text-leiria-gradient">{{ bookingData.service?.price }}</span>
-        </div>
+        <div class="text-2xl font-black text-[#00D8FF] italic">{{ bookingData.service?.price }}</div>
       </div>
 
-      <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="grid grid-cols-2 gap-6 pt-2">
         <div>
-          <p class="text-sm text-[#94A3B8] mb-1">Data e Hora</p>
-          <p class="text-white font-medium capitalize">{{ formattedDate }}</p>
-          <p class="text-[#06B6D4] font-bold mt-1">{{ bookingData.time }}</p>
+          <span class="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-1.5 mb-2"><Calendar class="w-3 h-3" /> Agenda</span>
+          <p class="text-sm font-bold text-white">{{ bookingData.date ? new Date(bookingData.date).toLocaleDateString() : '' }}</p>
+          <p class="text-xs text-[#00D8FF] font-black mt-1">{{ bookingData.time }}</p>
         </div>
         <div>
-          <p class="text-sm text-[#94A3B8] mb-1">Viatura</p>
-          <p class="text-white font-medium">{{ bookingData.personal.vehicle }}</p>
-          <p class="text-white/60 text-sm mt-1 uppercase">{{ bookingData.personal.licensePlate }}</p>
+          <span class="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-1.5 mb-2"><Car class="w-3 h-3" /> Viatura</span>
+          <p class="text-sm font-bold text-white">{{ bookingData.personal.vehicle }}</p>
+          <p class="text-xs text-gray-500 uppercase mt-1">{{ bookingData.personal.licensePlate }}</p>
         </div>
       </div>
+
     </div>
   </div>
 </template>

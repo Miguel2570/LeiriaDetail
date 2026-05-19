@@ -1,125 +1,146 @@
 <script setup lang="ts">
-import { Check, Star, ArrowRight, HelpCircle } from 'lucide-vue-next';
+import { Check, Minus, Star, ArrowRight } from 'lucide-vue-next'
 
-// Dados dos pacotes principais
-const packages = [
+const checkmarks = ['Orçamentos Exatos', 'Sem Surpresas', 'Garantia', 'Transparência']
+
+const pricingPackages = [
   {
-    name: 'Basic',
-    price: '25€',
-    suv: '30€',
-    description: 'Manutenção regular rápida.',
-    features: ['Lavagem exterior + secagem', 'Limpeza rápida interior', 'Vidros e acabamento', 'Duração: ~1h'],
-    popular: false
+    name: 'Manutenção',
+    price: '60€',
+    prefix: 'Desde',
+    desc: 'O cuidado mensal ideal para viaturas já detalhadas ou com proteção.',
+    highlight: false,
+    features: [
+      { text: 'Lavagem exterior pH Neutro', included: true },
+      { text: 'Limpeza de jantes face e interior', included: true },
+      { text: 'Aspiração e limpeza interior', included: true },
+      { text: 'Condicionamento de plásticos', included: true },
+      { text: 'Descontaminação química', included: false },
+      { text: 'Correção de pintura (Polimento)', included: false }
+    ]
   },
   {
-    name: 'Standard',
-    price: '45€',
-    suv: '55€',
-    description: 'O cuidado mais procurado.',
-    features: ['Exterior completo + jantes', 'Interior completo + aspiração profunda', 'Plásticos + perfume', 'Tratamento de pneus', 'Duração: ~2h'],
-    popular: true
+    name: 'Proteção Cerâmica',
+    price: '450€',
+    prefix: 'Desde',
+    desc: 'A proteção definitiva. Brilho extremo e hidrofobia até 3 anos.',
+    highlight: true, // Este cartão vai ter destaque visual
+    features: [
+      { text: 'Lavagem exterior ao detalhe', included: true },
+      { text: 'Descontaminação total', included: true },
+      { text: 'Correção de pintura (1 a 2 etapas)', included: true },
+      { text: 'Revestimento Cerâmico (Pintura)', included: true },
+      { text: 'Revestimento Cerâmico (Jantes)', included: true },
+      { text: 'Selagem de vidros', included: true }
+    ]
   },
   {
-    name: 'Premium',
-    price: '90€',
-    suv: '110€',
-    description: 'Detalhe minucioso total.',
-    features: ['Detalhe interior profundo + estofos', 'Polimento (1 etapa) ou proteção', 'Limpeza profunda de jantes', 'Tratamento completo de plásticos', 'Duração: ~4h'],
-    popular: false
+    name: 'Detalhe Interior',
+    price: '120€',
+    prefix: 'Desde',
+    desc: 'Higienização profunda para um habitáculo com aspeto e cheiro a novo.',
+    highlight: false,
+    features: [
+      { text: 'Aspiração profunda', included: true },
+      { text: 'Lavagem de estofos (Tecido/Pele)', included: true },
+      { text: 'Hidratação de peles', included: true },
+      { text: 'Limpeza de teto e alcatifas', included: true },
+      { text: 'Higienização com Ozono', included: true },
+      { text: 'Lavagem exterior base', included: false }
+    ]
   }
-];
-
-// Tabela detalhada de serviços individuais
-const detailedPrices = [
-  { service: 'Lavagem Premium', light: '25€', suv: '30€' },
-  { service: 'Polimento (1 etapa)', light: '80€', suv: '100€' },
-  { service: 'Polimento (2 etapas)', light: '150€', suv: '180€' },
-  { service: 'Coating Cerâmico', light: '120€', suv: '150€' },
-  { service: 'Limpeza Interior Completa', light: '40€', suv: '50€' },
-  { service: 'Limpeza de Estofos', light: '40€', suv: '55€' },
-  { service: 'Tratamento de Ozono', light: '35€', suv: '35€' }
-];
+]
 </script>
 
 <template>
-  <div class="py-20 container mx-auto px-4 min-h-screen">
+  <section class="min-h-screen py-24 bg-[#050505] relative overflow-hidden">
     
-    <div class="max-w-3xl mx-auto text-center space-y-4 mb-16">
-      <h1 class="text-4xl md:text-7xl font-black text-gray-900 uppercase italic tracking-tighter drop-shadow-sm">
-        Preços <span class="text-leiria-gradient">Transparentes</span>
-      </h1>
-      <p class="text-lg text-gray-500 font-medium">Sem custos escondidos. Escolha o nível de detalhe que o seu carro merece.</p>
-    </div>
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-[#2563EB]/15 blur-[120px] rounded-full pointer-events-none z-0"></div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-24">
-      <div v-for="pkg in packages" :key="pkg.name" 
-           :class="['bg-[#0A0A0F]/95 backdrop-blur-xl border p-10 rounded-3xl relative transition-all duration-500 flex flex-col', 
-                   pkg.popular ? 'border-[#3B82F6] shadow-[0_0_50px_rgba(59,130,246,0.25)] scale-105 z-10' : 'border-white/10 shadow-xl']">
-        
-        <div v-if="pkg.popular" class="absolute -top-4 left-1/2 -translate-x-1/2 px-5 py-1.5 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-lg">
-          Mais Vendido
-        </div>
-
-        <div class="mb-8">
-          <h3 class="text-2xl font-bold text-white mb-2 uppercase italic">{{ pkg.name }}</h3>
-          <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-6">{{ pkg.description }}</p>
-          <div class="flex items-baseline gap-2">
-            <span class="text-5xl font-black text-leiria-gradient">{{ pkg.price }}</span>
-            <span class="text-gray-500 text-sm font-medium">/ Ligeiro</span>
-          </div>
-          <div class="text-gray-400 text-xs mt-2 font-bold uppercase">SUV/Carrinha: {{ pkg.suv }}</div>
-        </div>
-
-        <ul class="space-y-4 mb-10 border-t border-white/5 pt-8 flex-grow">
-          <li v-for="feature in pkg.features" :key="feature" class="flex items-start gap-3 text-sm text-gray-300">
-            <Check class="h-5 w-5 text-[#06B6D4] flex-shrink-0" />
-            <span>{{ feature }}</span>
-          </li>
-        </ul>
-
-        <router-link to="/agenda" class="block">
-          <button :class="['w-full py-4 rounded-xl font-black uppercase tracking-widest text-xs transition-all', 
-                          pkg.popular ? 'bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white shadow-lg' : 'bg-white text-black hover:bg-[#3B82F6] hover:text-white']">
-            Reservar {{ pkg.name }}
-          </button>
-        </router-link>
-      </div>
-    </div>
-
-    <div class="max-w-4xl mx-auto">
-      <div class="flex items-center justify-center gap-3 mb-10">
-        <div class="h-px w-12 bg-[#3B82F6]/30"></div>
-        <h3 class="text-2xl font-black text-gray-900 uppercase italic tracking-tight">Tabela Detalhada</h3>
-        <div class="h-px w-12 bg-[#3B82F6]/30"></div>
-      </div>
-
-      <div class="overflow-hidden bg-[#0A0A0F]/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="bg-white/5 text-[10px] font-black text-[#06B6D4] uppercase tracking-[0.2em]">
-              <th class="p-6 border-b border-white/5">Serviço</th>
-              <th class="p-6 border-b border-white/5">Ligeiro</th>
-              <th class="p-6 border-b border-white/5 text-right">SUV/Carrinha</th>
-            </tr>
-          </thead>
-          <tbody class="text-sm">
-            <tr v-for="item in detailedPrices" :key="item.service" class="hover:bg-white/5 transition-colors group">
-              <td class="p-6 border-b border-white/5 font-bold text-white group-hover:text-[#06B6D4] transition-colors">{{ item.service }}</td>
-              <td class="p-6 border-b border-white/5 text-gray-400">{{ item.light }}</td>
-              <td class="p-6 border-b border-white/5 text-gray-400 text-right">{{ item.suv }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="container mx-auto px-4 max-w-7xl relative z-10">
       
-      <div class="mt-8 flex flex-col md:flex-row items-center justify-between gap-4 px-4 text-[11px] font-medium text-gray-400 uppercase tracking-wider">
-        <div class="flex items-center gap-2">
-          <HelpCircle class="h-4 w-4 text-[#3B82F6]" />
-          <span>Preços sujeitos a avaliação do estado da viatura</span>
+      <div class="text-center mb-20 border-b border-white/5 pb-12">
+        <span class="text-[#00D8FF] font-black uppercase tracking-[0.4em] text-[10px] mb-4 block italic">Transparência Total</span>
+        <h1 class="text-5xl md:text-7xl font-black text-white uppercase italic tracking-tighter leading-none mb-8">
+          TABELA DE <span class="text-leiria-gradient">PREÇOS</span>
+        </h1>
+        
+        <p class="text-gray-400 text-sm leading-relaxed max-w-2xl mx-auto mb-8">
+          Os nossos valores refletem a qualidade dos produtos utilizados e as dezenas de horas dedicadas a cada viatura. Cada carro é único, e o detalhe é feito à medida.
+        </p>
+
+        <div class="flex flex-wrap justify-center gap-6">
+          <div v-for="t in checkmarks" :key="t" class="flex items-center gap-2">
+            <div class="h-1.5 w-1.5 bg-[#00D8FF] rounded-full"></div>
+            <span class="text-[10px] font-black text-white/50 uppercase tracking-widest">{{ t }}</span>
+          </div>
         </div>
-        <span>* IVA incluído à taxa legal em vigor</span>
       </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+        
+        <div v-for="(pkg, index) in pricingPackages" :key="pkg.name" 
+             :class="[
+               'relative rounded-[2.5rem] p-8 md:p-10 transition-all duration-500 flex flex-col h-full',
+               pkg.highlight 
+                 ? 'bg-gradient-to-b from-[#2563EB]/10 to-[#050505] border-2 border-[#2563EB]/50 shadow-[0_0_40px_rgba(37,99,235,0.15)] md:-translate-y-4' 
+                 : 'bg-white/[0.01] border border-white/5 hover:bg-white/[0.02] hover:border-white/10'
+             ]">
+          
+          <div v-if="pkg.highlight" class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#2563EB] to-[#00D8FF] text-white px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg">
+            <Star class="h-3 w-3 fill-white" /> Recomendado
+          </div>
+
+          <div class="mb-8 flex-grow-0">
+            <h3 class="text-2xl font-black text-white uppercase italic tracking-tight mb-2">{{ pkg.name }}</h3>
+            <p class="text-xs text-gray-500 uppercase tracking-widest leading-relaxed min-h-[40px]">{{ pkg.desc }}</p>
+          </div>
+
+          <div class="mb-8 pb-8 border-b border-white/5 flex-grow-0">
+            <span class="text-[10px] font-black text-white/40 uppercase tracking-widest block mb-1">{{ pkg.prefix }}</span>
+            <div class="flex items-baseline gap-1">
+              <span class="text-5xl font-black text-white italic tracking-tighter">{{ pkg.price }}</span>
+              <span v-if="pkg.highlight" class="text-sm font-bold text-[#00D8FF] italic">*</span>
+            </div>
+          </div>
+
+          <ul class="space-y-4 mb-10 flex-grow">
+            <li v-for="feat in pkg.features" :key="feat.text" class="flex items-start gap-3">
+              <div :class="['mt-0.5 rounded-full p-0.5 flex-shrink-0', feat.included ? 'bg-[#2563EB]/20 text-[#00D8FF]' : 'bg-transparent text-white/10']">
+                <Check v-if="feat.included" class="h-3 w-3 font-black" />
+                <Minus v-else class="h-3 w-3" />
+              </div>
+              <span :class="['text-xs uppercase tracking-wider font-bold', feat.included ? 'text-gray-300' : 'text-gray-600 line-through decoration-white/10']">
+                {{ feat.text }}
+              </span>
+            </li>
+          </ul>
+
+          <button :class="[
+            'w-full py-4 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-2 transition-all mt-auto',
+            pkg.highlight 
+              ? 'bg-gradient-to-r from-[#2563EB] to-[#00D8FF] text-white hover:shadow-[0_10px_25px_rgba(37,99,235,0.4)] hover:scale-[1.02]' 
+              : 'bg-white/5 text-white hover:bg-white/10'
+          ]">
+            Agendar Pacote <ArrowRight class="h-4 w-4" />
+          </button>
+
+        </div>
+
+      </div>
+
     </div>
 
-  </div>
+    <div class="absolute bottom-4 right-4 text-[4rem] font-black text-white/[0.03] italic pointer-events-none select-none uppercase tracking-tighter">
+      Pricelist
+    </div>
+  </section>
 </template>
+
+<style scoped>
+.text-leiria-gradient {
+  background: linear-gradient(to right, #2563EB, #00D8FF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+</style>

@@ -1,74 +1,63 @@
 <script setup lang="ts">
-const props = defineProps<{
-  selectedServiceId: string | null;
-}>();
+import { Sparkles, Shield, Clock, CheckCircle2 } from 'lucide-vue-next'
 
-const emit = defineEmits(['update:service']);
+const props = defineProps<{ 
+  selectedServiceId: string | null,
+  selectedVehicle: any // Recebe o veículo para calcular preço
+}>()
+
+const emit = defineEmits(['update:service'])
 
 const services = [
-  {
-    id: 'basic',
-    name: 'Lavagem Básica',
-    price: '€25',
-    duration: '1 hora',
-    features: ['Lavagem Exterior Manual', 'Limpeza de Jantes', 'Limpeza de Vidros', 'Aspiração Interior']
-  },
-  {
-    id: 'premium',
-    name: 'Detalhe Premium',
-    price: '€120',
-    duration: '3 horas',
-    features: ['Tudo na Básica', 'Descontaminação', 'Polimento Leve', 'Limpeza Profunda Interior']
-  },
-  {
-    id: 'ceramic',
-    name: 'Cerâmica VIP',
-    price: '€450',
-    duration: '1 dia',
-    features: ['Tudo no Premium', 'Correção de Pintura', 'Proteção Cerâmica 5 Anos', 'Detalhe do Motor']
-  }
-];
+  { id: '1', icon: Sparkles, name: 'Lavagem Detalhe', basePrice: 40, duration: '2h', features: ['Limpeza de jantes', 'Banho de espuma', 'Aspiração interior'] },
+  { id: '2', icon: Shield, name: 'Proteção Cerâmica', basePrice: 350, duration: '2 dias', features: ['Correção de pintura', 'Selagem 9H', 'Durabilidade 3 anos'] }
+]
+
+// Exemplo simples de cálculo de preço: se o carro for SUV, é mais caro
+const getCalculatedPrice = (basePrice: number) => {
+  if (props.selectedVehicle?.type === 'SUV') return basePrice + 50
+  return basePrice
+}
 </script>
 
 <template>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in">
+    
     <div 
       v-for="service in services" 
       :key="service.id"
-      @click="emit('update:service', service)"
+      @click="emit('update:service', { ...service, finalPrice: getCalculatedPrice(service.basePrice) })"
       :class="[
-        'glass-card cursor-pointer transition-all duration-300 border-2 hover:-translate-y-1',
+        'flex flex-col h-[420px] p-8 rounded-[2rem] cursor-pointer transition-all duration-300 border-2 relative',
         selectedServiceId === service.id 
-          ? 'border-[#3B82F6] bg-gradient-to-br from-[#3B82F6]/10 to-[#06B6D4]/10 shadow-[0_0_20px_rgba(59,130,246,0.3)]' 
-          : 'border-white/5 hover:border-white/20'
+          ? 'border-[#2563EB] bg-[#2563EB]/10 shadow-[0_0_30px_rgba(37,99,235,0.2)] scale-[1.02]' 
+          : 'border-white/5 bg-white/[0.01] hover:border-white/20 hover:bg-white/[0.03]'
       ]"
     >
-      <div class="flex justify-between items-start mb-6">
-        <div>
-          <h3 class="text-xl font-bold text-white">{{ service.name }}</h3>
-          <p class="text-[#94A3B8] text-sm mt-1 flex items-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            {{ service.duration }}
-          </p>
-        </div>
-        <span class="text-2xl font-bold text-leiria-gradient">{{ service.price }}</span>
+      <div class="h-14 w-14 rounded-2xl bg-white/5 flex items-center justify-center mb-6 border border-white/10 shrink-0">
+        <component :is="service.icon" :class="['h-6 w-6 transition-colors', selectedServiceId === service.id ? 'text-[#00D8FF]' : 'text-white/40']" />
       </div>
 
-      <ul class="space-y-3 mb-8">
-        <li v-for="feat in service.features" :key="feat" class="flex items-start gap-3 text-sm text-[#94A3B8]">
-          <svg class="h-5 w-5 shrink-0 text-[#06B6D4]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
-          {{ feat }}
+      <h3 class="text-xl font-bold text-white uppercase italic tracking-tight">{{ service.name }}</h3>
+      <div class="text-[10px] text-gray-500 font-bold uppercase tracking-widest flex items-center gap-1 mt-2 mb-6">
+        <Clock class="w-3 h-3" /> {{ service.duration }}
+      </div>
+
+      <ul class="space-y-3 mb-auto">
+        <li v-for="feat in service.features" :key="feat" class="flex items-start gap-2 text-xs text-gray-400">
+          <CheckCircle2 class="h-4 w-4 text-[#2563EB] shrink-0" /> {{ feat }}
         </li>
       </ul>
 
-      <div 
-        v-if="selectedServiceId === service.id" 
-        class="text-center py-2 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] rounded-xl text-xs font-bold text-white uppercase tracking-wider"
-      >
-        Selecionado
+      <div class="pt-6 border-t border-white/5 mt-6 flex justify-between items-end">
+        <span class="text-[10px] font-black text-white/40 uppercase tracking-widest">Valor Exato</span>
+        <span class="text-3xl font-black text-[#00D8FF] italic">{{ getCalculatedPrice(service.basePrice) }}€</span>
+      </div>
+      
+      <div v-if="selectedServiceId === service.id" class="absolute top-4 right-4 h-6 w-6 rounded-full bg-[#00D8FF] flex items-center justify-center shadow-lg">
+        <CheckCircle2 class="h-4 w-4 text-[#050505]" />
       </div>
     </div>
+
   </div>
 </template>

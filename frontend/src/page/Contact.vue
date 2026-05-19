@@ -1,126 +1,139 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { MapPin, Phone, Clock, Send, Navigation, ExternalLink } from 'lucide-vue-next'
+import { Mail, Phone, MapPin, Clock, Send, MessageSquare } from 'lucide-vue-next'
 
-const form = ref({ name: '', email: '', message: '' })
-const submit = () => alert('Pedido submetido! Entraremos em contacto brevemente.')
+const form = ref({ name: '', email: '', phone: '', message: '' })
 
 const contactInfo = [
-  { icon: MapPin, t: 'Localização', d: 'Leiria, Portugal' },
-  { icon: Phone, t: 'Telefone', d: '+351 912 345 678' },
-  { icon: Clock, t: 'Horário', d: 'Seg-Sáb: 09:00 - 19:00' }
+  { icon: MapPin, title: 'Sede Técnica', detail: 'Zona Industrial, Leiria, Portugal' },
+  { icon: Phone, title: 'Contacto Direto', detail: '+351 912 345 678' },
+  { icon: Mail, title: 'E-mail Geral', detail: 'geral@leiriadetail.pt' },
+  { icon: Clock, title: 'Horário do Estúdio', detail: 'Seg - Sex: 09:00 - 18:00' }
 ]
+
+const handleSubmit = () => {
+  console.log('Dados do contacto:', form.value)
+  // Aqui ligarias à tua API do backend no futuro
+}
 </script>
 
 <template>
-  <section class="py-24 bg-[#050505] relative overflow-hidden">
+  <section class="py-24 bg-[#050505] relative overflow-hidden min-h-screen">
     
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-[#3B82F6]/5 blur-[120px] rounded-full pointer-events-none"></div>
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-[#00D8FF]/5 blur-[120px] rounded-full pointer-events-none"></div>
 
     <div class="container mx-auto px-4 max-w-6xl relative z-10">
       
-      <div class="mb-20 border-b border-white/5 pb-12">
-        <span class="text-[#3B82F6] font-black uppercase tracking-[0.5em] text-[10px] mb-4 block italic">Direct Line</span>
-        <h1 class="text-5xl md:text-7xl font-black text-white uppercase italic tracking-tighter leading-none">
-          CONTACTA O <span class="text-leiria-gradient">ESTÚDIO</span>
+      <div class="text-center mb-16 border-b border-white/5 pb-12">
+        <div class="inline-flex items-center gap-3 mb-6">
+          <MessageSquare class="h-4 w-4 text-[#2563EB]" />
+          <span class="text-[10px] font-black text-[#2563EB] uppercase tracking-[0.5em] italic">Canais Oficiais</span>
+        </div>
+        
+        <h1 class="text-5xl md:text-8xl font-black text-white uppercase italic tracking-tighter leading-none">
+          FALE <span class="text-leiria-gradient">CONNOSCO</span>
         </h1>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
         
-        <div class="lg:col-span-4 space-y-12">
-          
-          <div class="space-y-8">
-            <div v-for="info in contactInfo" :key="info.t" class="flex items-center gap-5 group">
-              <div class="h-11 w-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 group-hover:bg-[#3B82F6] group-hover:text-white group-hover:border-[#3B82F6] transition-all duration-500 shrink-0">
+        <div class="lg:col-span-5 flex flex-col justify-between gap-6">
+          <div class="space-y-4">
+            <h2 class="text-2xl font-black text-white uppercase italic mb-6">Informações de <span class="text-[#2563EB]">Apoio</span></h2>
+            
+            <div v-for="info in contactInfo" :key="info.title" 
+                 class="p-5 border border-white/5 bg-white/[0.01] rounded-2xl flex items-center gap-4">
+              <div class="h-10 w-10 rounded-xl bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] shrink-0">
                 <component :is="info.icon" class="h-5 w-5" />
               </div>
               <div>
-                <h4 class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">{{ info.t }}</h4>
-                <p class="text-white font-black italic uppercase tracking-tight text-sm md:text-base">{{ info.d }}</p>
+                <h4 class="text-[10px] font-black text-white/30 uppercase tracking-widest">{{ info.title }}</h4>
+                <p class="text-sm font-bold text-white uppercase italic tracking-tight mt-0.5">{{ info.detail }}</p>
               </div>
             </div>
           </div>
 
-          <div class="relative group">
-            <div class="absolute -inset-1 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] rounded-[2rem] blur-xl opacity-10 group-hover:opacity-30 transition-opacity duration-700"></div>
-            
-            <div class="relative h-64 w-full rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl bg-[#0A0A0F]">
-              <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d49156.4678225575!2d-8.850404!3d39.743621!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd22731389304947%3A0x400ebbde4ec13c0!2sLeiria!5e0!3m2!1spt-PT!2spt!4v1715310000000!5m2!1spt-PT!2spt" 
-                width="100%" 
-                height="100%" 
-                style="border:0;" 
-                allowfullscreen="true" 
-                loading="lazy" 
-                referrerpolicy="no-referrer-when-downgrade">
-              </iframe>
-
-              <a href="https://maps.google.com" target="_blank" class="absolute bottom-4 right-4 bg-[#3B82F6] text-white p-2.5 rounded-xl shadow-lg hover:scale-110 active:scale-95 transition-all">
-                <Navigation class="h-5 w-5" />
-              </a>
-            </div>
+          <div class="p-6 rounded-3xl bg-gradient-to-br from-[#2563EB]/10 to-transparent border border-[#2563EB]/20">
+            <h3 class="text-sm font-black text-white uppercase tracking-wider mb-2">Pretende um orçamento personalizado?</h3>
+            <p class="text-[11px] text-gray-400 uppercase tracking-wide leading-relaxed">
+              Aconselhamos sempre uma visita ao estúdio para medição da espessura da pintura e avaliação técnica dos defeitos antes de fixar um valor final.
+            </p>
           </div>
         </div>
 
-        <div class="lg:col-span-8">
-          <form @submit.prevent="submit" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8">
+        <div class="lg:col-span-7 bg-white/[0.01] border border-white/5 rounded-[2.5rem] p-8 md:p-10 flex flex-col justify-between">
+          <form @submit.prevent="handleSubmit" class="space-y-6">
             
-            <div class="space-y-2">
-              <label class="text-[9px] font-black text-white/30 uppercase ml-1 tracking-[0.3em]">Nome</label>
-              <input v-model="form.name" type="text" placeholder="EX: JOÃO SILVA" 
-                     class="w-full p-5 bg-white/[0.02] border border-white/5 rounded-2xl text-white text-xs font-black uppercase italic outline-none focus:border-[#3B82F6] focus:bg-white/[0.04] transition-all" required />
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label class="text-[10px] font-black text-white/40 uppercase tracking-widest block pl-2">Nome Completo</label>
+                <input 
+                  v-model="form.name" 
+                  type="text" 
+                  placeholder="EX: MIGUEL SILVA" 
+                  class="w-full pl-6 pr-6 py-4 bg-white/[0.02] border border-white/5 rounded-2xl text-white text-xs font-black uppercase italic outline-none focus:border-[#2563EB] focus:bg-white/[0.05] transition-all tracking-widest"
+                  required
+                />
+              </div>
+              
+              <div class="space-y-2">
+                <label class="text-[10px] font-black text-white/40 uppercase tracking-widest block pl-2">E-mail</label>
+                <input 
+                  v-model="form.email" 
+                  type="email" 
+                  placeholder="EX: GERAL@EMAIL.COM" 
+                  class="w-full pl-6 pr-6 py-4 bg-white/[0.02] border border-white/5 rounded-2xl text-white text-xs font-black uppercase italic outline-none focus:border-[#2563EB] focus:bg-white/[0.05] transition-all tracking-widest"
+                  required
+                />
+              </div>
             </div>
 
             <div class="space-y-2">
-              <label class="text-[9px] font-black text-white/30 uppercase ml-1 tracking-[0.3em]">Email</label>
-              <input v-model="form.email" type="email" placeholder="EX: CONTACTO@EMAIL.COM" 
-                     class="w-full p-5 bg-white/[0.02] border border-white/5 rounded-2xl text-white text-xs font-black uppercase italic outline-none focus:border-[#3B82F6] focus:bg-white/[0.04] transition-all" required />
+              <label class="text-[10px] font-black text-white/40 uppercase tracking-widest block pl-2">Contacto Telefónico (Opcional)</label>
+              <input 
+                v-model="form.phone" 
+                type="text" 
+                placeholder="EX: 912 345 678" 
+                class="w-full pl-6 pr-6 py-4 bg-white/[0.02] border border-white/5 rounded-2xl text-white text-xs font-black uppercase italic outline-none focus:border-[#2563EB] focus:bg-white/[0.05] transition-all tracking-widest"
+              />
             </div>
 
-            <div class="md:col-span-2 space-y-2">
-              <label class="text-[9px] font-black text-white/30 uppercase ml-1 tracking-[0.3em]">O que precisas de saber?</label>
-              <textarea v-model="form.message" rows="6" placeholder="DESCREVE O TEU PEDIDO..." 
-                        class="w-full p-5 bg-white/[0.02] border border-white/5 rounded-2xl text-white text-xs font-black uppercase italic outline-none focus:border-[#3B82F6] focus:bg-white/[0.04] transition-all resize-none" required></textarea>
+            <div class="space-y-2">
+              <label class="text-[10px] font-black text-white/40 uppercase tracking-widest block pl-2">A Sua Mensagem / Viatura</label>
+              <textarea 
+                v-model="form.message" 
+                rows="4" 
+                placeholder="DESCREVA O ESTADO DA VIATURA OU O SERVIÇO PRETENDIDO..." 
+                class="w-full pl-6 pr-6 py-4 bg-white/[0.02] border border-white/5 rounded-2xl text-white text-xs font-black uppercase italic outline-none focus:border-[#2563EB] focus:bg-white/[0.05] transition-all tracking-widest resize-none"
+                required
+              ></textarea>
             </div>
 
-            <div class="md:col-span-2 pt-4">
-              <button type="submit" class="group w-full py-6 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white font-black uppercase italic tracking-[0.3em] rounded-2xl shadow-[0_15px_35px_rgba(59,130,246,0.2)] hover:shadow-[#3B82F6]/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-4 text-sm">
-                <Send class="h-5 w-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-                Submeter Pedido
-              </button>
-            </div>
+            <button 
+              type="submit" 
+              class="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-[#2563EB] to-[#00D8FF] text-white font-black h-14 rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-[0_10px_20px_rgba(37,99,235,0.2)] text-xs uppercase tracking-widest italic"
+            >
+              <Send class="h-4 w-4" /> Enviar Mensagem Técnica
+            </button>
+
           </form>
         </div>
 
       </div>
-    </div>
 
-    <div class="absolute bottom-6 left-6 text-[3rem] font-black text-white/[0.02] italic pointer-events-none select-none uppercase tracking-tighter">
-      LeiriaDetail
     </div>
   </section>
 </template>
 
 <style scoped>
 .text-leiria-gradient {
-  background: linear-gradient(to right, #3B82F6, #06B6D4);
+  background: linear-gradient(to right, #2563EB, #00D8FF);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* Estilização do placeholder para ser ultra-discreto */
 input::placeholder, textarea::placeholder {
-  color: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.15);
   font-weight: 900;
-}
-
-/* Ajuste para o scrollbar da textarea caso seja necessário */
-textarea::-webkit-scrollbar {
-  width: 4px;
-}
-textarea::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.2);
-  border-radius: 10px;
 }
 </style>

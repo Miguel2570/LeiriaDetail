@@ -12,7 +12,7 @@ const steps = [
 
 <template>
   <section class="py-24 relative overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#0A0A0F]/80 to-transparent -z-10"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-transparent -z-10"></div>
 
     <div class="container mx-auto px-4 text-center relative z-10">
       <h2 class="text-4xl md:text-6xl font-black text-white uppercase italic tracking-tighter mb-20 drop-shadow-xl">

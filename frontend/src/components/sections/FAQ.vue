@@ -18,7 +18,7 @@ const toggleFaq = (index: number) => {
 
 <template>
   <section class="py-24 relative overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#0A0A0F]/80 to-transparent -z-10"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-transparen to-transparent -z-10"></div>
 
     <div class="container mx-auto max-w-4xl px-4 relative z-10">
       

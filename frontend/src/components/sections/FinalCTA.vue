@@ -5,7 +5,7 @@ import { MessageSquare, FileText } from 'lucide-vue-next'
 <template>
   <section class="py-32 relative overflow-hidden">
     
-    <div class="absolute inset-0 bg-gradient-to-t from-transparent via-[#0A0A0F]/90 to-transparent -z-10"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-transparent to-transparent -z-10"></div>
 
     <div class="container mx-auto px-4 text-center max-w-5xl relative z-10">
       

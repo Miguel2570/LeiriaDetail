@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Check } from 'lucide-vue-next';
-
 defineProps<{
   steps: { number: number; label: string }[];
   currentStep: number;
@@ -8,35 +6,33 @@ defineProps<{
 </script>
 
 <template>
-  <div class="relative mb-12">
-    <div class="absolute left-0 right-0 top-5 h-0.5 bg-white/10 -z-0">
+  <div class="w-full mb-10 px-2">
+    <div class="relative flex items-center justify-between">
+      
+      <div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-white/10 rounded-full z-0"></div>
+      
       <div 
-        class="h-full bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] transition-all duration-500 shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+        class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-gradient-to-r from-[#2563EB] to-[#00D8FF] rounded-full z-0 transition-all duration-700 ease-in-out shadow-[0_0_10px_rgba(37,99,235,0.5)]"
         :style="{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }"
       ></div>
+
+      <div v-for="step in steps" :key="step.number" class="relative z-10 flex flex-col items-center">
+        <div :class="[
+            'w-4 h-4 rounded-full border-[3px] transition-all duration-500 bg-[#050505]',
+            step.number < currentStep ? 'border-[#00D8FF] bg-[#00D8FF] shadow-[0_0_10px_rgba(0,216,255,0.4)]' : 
+            step.number === currentStep ? 'border-[#2563EB] shadow-[0_0_10px_rgba(37,99,235,0.4)] scale-125' : 
+            'border-white/20'
+          ]">
+        </div>
+      </div>
     </div>
 
-    <div class="relative flex justify-between z-10">
-      <div v-for="step in steps" :key="step.number" class="flex flex-col items-center">
-        <div 
-          :class="[
-            'flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all duration-300',
-            step.number <= currentStep 
-              ? 'border-[#3B82F6] bg-[#0A0A0F] text-white shadow-[0_0_20px_rgba(59,130,246,0.4)]' 
-              : 'border-white/20 bg-[#0A0A0F] text-[#94A3B8]'
-          ]"
-        >
-          <Check v-if="step.number < currentStep" class="h-5 w-5 text-[#06B6D4]" />
-          <span v-else :class="['font-bold', step.number === currentStep ? 'text-[#3B82F6]' : '']">
-            {{ step.number }}
-          </span>
-        </div>
-        <span 
-          :class="[
-            'mt-2 text-xs font-medium uppercase tracking-wider',
-            step.number <= currentStep ? 'text-[#06B6D4]' : 'text-[#94A3B8]'
-          ]"
-        >
+    <div class="relative flex items-center justify-between mt-4">
+      <div v-for="step in steps" :key="`label-${step.number}`" class="text-center w-20 -ml-8 first:ml-0 last:-mr-8">
+         <span :class="[
+            'text-[9px] font-black uppercase tracking-widest transition-colors duration-500',
+            step.number <= currentStep ? 'text-white' : 'text-white/30'
+          ]">
           {{ step.label }}
         </span>
       </div>
