@@ -37,7 +37,7 @@ const services = [
       <div class="text-center mb-16">
         <h2 class="text-sm font-bold text-[#06B6D4] tracking-[0.3em] uppercase mb-3">O Nosso Catálogo</h2>
         <h3 class="text-4xl md:text-6xl font-black text-white uppercase italic tracking-tighter drop-shadow-xl">
-          Os Nossos <span class="text-leiria-gradient">Serviços_</span>
+          Os Nossos <span class="text-leiria-gradient">Serviços</span>
         </h3>
       </div>
 

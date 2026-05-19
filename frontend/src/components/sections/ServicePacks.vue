@@ -45,7 +45,7 @@ const packs = [
 </script>
 
 <template>
-  <section class="py-24 px-4 relative z-10">
+  <section class="py-24 px-4 relative z-10 bg-white/50">
     <div class="container mx-auto max-w-7xl relative">
       
       <div class="text-center mb-16">

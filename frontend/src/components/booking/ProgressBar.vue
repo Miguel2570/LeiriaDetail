@@ -18,11 +18,12 @@ defineProps<{
 
       <div v-for="step in steps" :key="step.number" class="relative z-10 flex flex-col items-center">
         <div :class="[
-            'w-4 h-4 rounded-full border-[3px] transition-all duration-500 bg-[#050505]',
-            step.number < currentStep ? 'border-[#00D8FF] bg-[#00D8FF] shadow-[0_0_10px_rgba(0,216,255,0.4)]' : 
-            step.number === currentStep ? 'border-[#2563EB] shadow-[0_0_10px_rgba(37,99,235,0.4)] scale-125' : 
-            'border-white/20'
+            'w-8 h-8 rounded-full border-[3px] transition-all duration-500 flex items-center justify-center font-black text-[12px]',
+            step.number < currentStep ? 'border-[#00D8FF] bg-[#00D8FF] text-[#050505] shadow-[0_0_10px_rgba(0,216,255,0.4)]' : 
+            step.number === currentStep ? 'border-[#2563EB] bg-[#050505] text-white shadow-[0_0_10px_rgba(37,99,235,0.4)] scale-110' : 
+            'border-white/20 bg-[#050505] text-white/30'
           ]">
+          {{ step.number }}
         </div>
       </div>
     </div>
@@ -30,11 +31,11 @@ defineProps<{
     <div class="relative flex items-center justify-between mt-4">
       <div v-for="step in steps" :key="`label-${step.number}`" class="text-center w-20 -ml-8 first:ml-0 last:-mr-8">
          <span :class="[
-            'text-[9px] font-black uppercase tracking-widest transition-colors duration-500',
-            step.number <= currentStep ? 'text-white' : 'text-white/30'
-          ]">
+           'text-[9px] font-black uppercase tracking-widest transition-colors duration-500',
+           step.number <= currentStep ? 'text-white' : 'text-white/30'
+         ]">
           {{ step.label }}
-        </span>
+         </span>
       </div>
     </div>
   </div>

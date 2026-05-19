@@ -23,7 +23,7 @@ const toggleFaq = (index: number) => {
     <div class="container mx-auto max-w-4xl px-4 relative z-10">
       
       <div class="text-center mb-20">
-        <span class="text-[10px] font-bold text-[#3B82F6] tracking-[0.5em] uppercase mb-4 block italic">F A Q</span>
+        <span class="text-[12px] font-bold text-[#3B82F6] tracking-[0.5em] uppercase mb-4 block italic">F A Q</span>
         <h3 class="text-5xl md:text-6xl font-black text-white uppercase italic tracking-tighter leading-none drop-shadow-2xl">
           QUESTÕES <span class="text-leiria-gradient">FREQUENTES</span>
         </h3>
@@ -77,11 +77,3 @@ const toggleFaq = (index: number) => {
     </div>
   </section>
 </template>
-
-<style scoped>
-.text-leiria-gradient {
-  background: linear-gradient(to right, #3B82F6, #06B6D4);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-</style>

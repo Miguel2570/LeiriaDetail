@@ -33,7 +33,7 @@ const reviews = [
 </script>
 
 <template>
-  <section class="py-24 px-4 relative z-10">
+  <section class="py-24 px-4 relative z-10 bg-white/50">
     <div class="container mx-auto max-w-7xl relative">
       
       <div class="text-center mb-16">
@@ -98,11 +98,6 @@ const reviews = [
 </template>
 
 <style scoped>
-.text-leiria-gradient {
-  background: linear-gradient(to right, #3B82F6, #06B6D4);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
 
 .swiper-slide {
   height: auto !important;
