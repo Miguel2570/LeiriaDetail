@@ -1,38 +1,138 @@
 <script setup lang="ts">
-import { ShieldCheck, Calendar, Car } from 'lucide-vue-next';
-const props = defineProps<{ bookingData: any; }>();
+import { computed } from 'vue';
+import { Car, Sparkles, Calendar, CreditCard, ShieldCheck } from 'lucide-vue-next';
+
+// Recebemos os dados preenchidos nos passos anteriores vindos do pai (Booking.vue)
+const props = defineProps<{
+  bookingData: {
+    vehicle: { brand?: string; model?: string; plate: string } | null;
+    service: { id: string; name: string; price?: number; description?: string } | null;
+    date: any;
+    time: string;
+  }
+}>();
+
+// Formatação reativa da data do calendário Radix UI (@internationalized/date)
+const formattedDate = computed(() => {
+  if (!props.bookingData.date) return 'Não selecionada';
+  const d = props.bookingData.date;
+  // Extrai o dia/mês/ano de forma segura
+  if (d.day && d.month && d.year) {
+    return `${String(d.day).padStart(2, '0')}/${String(d.month).padStart(2, '0')}/${d.year}`;
+  }
+  return d.toString();
+});
+
+// Cálculos automáticos de preços (Simulação baseada no preço do serviço)
+const basePrice = computed(() => {
+  return props.bookingData.service?.price || 120.00; // Valor exemplo caso o teu mock não tenha preço fixo ainda
+});
+
+const iva = computed(() => {
+  return Number((basePrice.value * 0.23).toFixed(2));
+});
+
+const total = computed(() => {
+  return Number((basePrice.value + iva.value).toFixed(2));
+});
 </script>
 
 <template>
-  <div class="bg-gradient-to-br from-[#2563EB]/10 to-[#050505] border border-[#2563EB]/20 rounded-[2rem] p-8 md:p-10 shadow-[0_0_30px_rgba(37,99,235,0.1)] relative overflow-hidden">
+  <div class="space-y-8 animate-fade-in">
     
-    <ShieldCheck class="absolute -right-6 -top-6 w-40 h-40 text-[#2563EB]/5 pointer-events-none" />
+    <div class="border-b border-white/5 pb-4">
+      <h2 class="text-xl font-black text-white uppercase tracking-widest italic flex items-center gap-3">
+        <ShieldCheck class="w-6 h-6 text-[#00D8FF]" />
+        Resumo do Agendamento
+      </h2>
+      <p class="text-gray-400 text-xs mt-1">Por favor, confirme todos os detalhes antes de finalizar a sua reserva.</p>
+    </div>
 
-    <h2 class="text-2xl font-black text-white uppercase italic tracking-tight mb-8">Resumo da Reserva</h2>
-
-    <div class="space-y-6 relative z-10">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       
-      <div class="flex justify-between items-end border-b border-white/5 pb-6">
+      <div class="bg-white/[0.01] border border-white/5 rounded-2xl p-5 flex flex-col justify-between hover:border-white/10 transition-all">
         <div>
-          <span class="text-[10px] font-black text-white/40 uppercase tracking-widest block mb-2">Tratamento Selecionado</span>
-          <h3 class="text-xl font-bold text-white">{{ bookingData.service?.name }}</h3>
+          <div class="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider font-bold mb-3">
+            <Car class="w-4 h-4 text-[#2563EB]" /> Viatura
+          </div>
+          <p class="text-white font-bold text-lg">
+            {{ bookingData.vehicle?.brand || 'Porsche' }} {{ bookingData.vehicle?.model || '911 Carrera' }}
+          </p>
+          <p class="text-xs text-gray-400 mt-1">
+            Matrícula: <span class="text-[#00D8FF] font-mono font-bold">{{ bookingData.vehicle?.plate || 'AA-00-BB' }}</span>
+          </p>
         </div>
-        <div class="text-2xl font-black text-[#00D8FF] italic">{{ bookingData.service?.price }}</div>
       </div>
 
-      <div class="grid grid-cols-2 gap-6 pt-2">
+      <div class="bg-white/[0.01] border border-white/5 rounded-2xl p-5 flex flex-col justify-between hover:border-white/10 transition-all">
         <div>
-          <span class="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-1.5 mb-2"><Calendar class="w-3 h-3" /> Agenda</span>
-          <p class="text-sm font-bold text-white">{{ bookingData.date ? new Date(bookingData.date).toLocaleDateString() : '' }}</p>
-          <p class="text-xs text-[#00D8FF] font-black mt-1">{{ bookingData.time }}</p>
+          <div class="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider font-bold mb-3">
+            <Sparkles class="w-4 h-4 text-[#00D8FF]" /> Tratamento
+          </div>
+          <p class="text-white font-bold text-lg">
+            {{ bookingData.service?.name || 'Detalhamento Premium' }}
+          </p>
+          <p class="text-xs text-gray-400 mt-1 line-clamp-2">
+            Correção de pintura e proteção cerâmica duradoura.
+          </p>
         </div>
+      </div>
+
+      <div class="bg-white/[0.01] border border-white/5 rounded-2xl p-5 flex flex-col justify-between hover:border-white/10 transition-all">
         <div>
-          <span class="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-1.5 mb-2"><Car class="w-3 h-3" /> Viatura</span>
-          <p class="text-sm font-bold text-white">{{ bookingData.personal.vehicle }}</p>
-          <p class="text-xs text-gray-500 uppercase mt-1">{{ bookingData.personal.licensePlate }}</p>
+          <div class="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider font-bold mb-3">
+            <Calendar class="w-4 h-4 text-[#2563EB]" /> Data e Hora
+          </div>
+          <p class="text-white font-bold text-lg">
+            {{ formattedDate }}
+          </p>
+          <p class="text-xs text-gray-400 mt-1">
+            Horário: <span class="text-white font-bold">{{ bookingData.time || '09:30' }}</span>
+          </p>
         </div>
       </div>
 
     </div>
+
+    <div class="bg-white/[0.01] border border-white/5 rounded-3xl p-6 max-w-md ml-auto">
+      <div class="flex items-center gap-2 text-white text-sm font-black uppercase tracking-wider italic border-b border-white/5 pb-3 mb-4">
+        <CreditCard class="w-4 h-4 text-[#00D8FF]" /> Detalhes do Pagamento
+      </div>
+      
+      <div class="space-y-3 text-sm">
+        <div class="flex justify-between text-gray-400">
+          <span>Preço Base</span>
+          <span class="text-white font-medium">{{ basePrice.toFixed(2) }}€</span>
+        </div>
+        <div class="flex justify-between text-gray-400">
+          <span>IVA (23%)</span>
+          <span class="text-white font-medium">{{ iva.toFixed(2) }}€</span>
+        </div>
+        
+        <div class="border-t border-white/5 pt-3 mt-2 flex justify-between items-center">
+          <span class="text-white font-bold uppercase text-xs tracking-wider">Total Final</span>
+          <span class="text-2xl font-black text-leiria-gradient">
+            {{ total.toFixed(2) }}€
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-start gap-3 bg-white/[0.01] border border-white/5 rounded-2xl p-4 mt-6">
+      <input 
+        type="checkbox" 
+        id="terms" 
+        class="mt-1 h-4 w-4 rounded border-white/10 bg-white/5 text-[#2563EB] focus:ring-[#2563EB] focus:ring-offset-0 accent-[#2563EB]"
+        required
+      />
+      <label for="terms" class="text-xs text-gray-400 leading-relaxed cursor-pointer select-none">
+        Declaro que li e aceito os 
+        <router-link to="/termos" class="text-[#00D8FF] hover:underline font-bold">Termos e Condições</router-link> 
+        e a 
+        <router-link to="/privacidade" class="text-[#00D8FF] hover:underline font-bold">Política de Privacidade</router-link> 
+        do LeiriaDetail.
+      </label>
+    </div>
+
   </div>
 </template>

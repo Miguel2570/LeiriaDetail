@@ -1,27 +1,30 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 
-// Componentes
+// 1. Importa o componente dos teus Dados Pessoais (vamos assumir que o nome é CustomerDetails.vue)
+import CustomerDetails from '@/components/booking/CustomerDetails.vue'; 
 import ProgressBar from '@/components/booking/ProgressBar.vue';
-import VehicleSelection from '@/components/booking/VehicleSelection.vue'; // Novo componente
+import VehicleSelection from '@/components/booking/VehicleSelection.vue';
 import ServiceSelection from '@/components/booking/ServiceSelection.vue';
 import DateTimeSelection from '@/components/booking/DateTimeSelection.vue';
 import Confirmation from '@/components/booking/Confirmation.vue';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-vue-next';
 
-onMounted(() => document.body.classList.add('booking-dark-mode'));
-onUnmounted(() => document.body.classList.remove('booking-dark-mode'));
+
+// ... (onMounted/onUnmounted mantêm-se iguais)
 
 const step = ref(1);
 const steps = [
   { number: 1, label: 'Viatura' },
-  { number: 2, label: 'Serviço' },
-  { number: 3, label: 'Agenda' },
-  { number: 4, label: 'Confirmação' }
+  { number: 2, label: 'Dados' },     // NOVO PASSO
+  { number: 3, label: 'Serviço' },
+  { number: 4, label: 'Agenda' },
+  { number: 5, label: 'Confirmação' }
 ];
 
 const bookingData = ref({
   vehicle: null as any,
+  customer: null as any, // Novo campo para dados
   service: null as any,
   date: null as any,
   time: ''
@@ -29,8 +32,9 @@ const bookingData = ref({
 
 const canGoNext = computed(() => {
   if (step.value === 1) return bookingData.value.vehicle !== null;
-  if (step.value === 2) return bookingData.value.service !== null;
-  if (step.value === 3) return bookingData.value.date !== null && bookingData.value.time !== '';
+  if (step.value === 2) return bookingData.value.customer !== null; // Validação do novo passo
+  if (step.value === 3) return bookingData.value.service !== null;
+  if (step.value === 4) return bookingData.value.date !== null && bookingData.value.time !== '';
   return true;
 });
 
@@ -64,36 +68,41 @@ const submitBooking = () => {
         <ProgressBar :steps="steps" :currentStep="step" />
 
         <div class="mt-12 min-h-[400px]">
-          <transition name="fade" mode="out-in">
-            <VehicleSelection 
-              v-if="step === 1" 
-              key="step1"
-              :selectedVehiclePlate="bookingData.vehicle?.plate || null" 
-              @update:vehicle="val => bookingData.vehicle = val" 
-            />
-            
-            <ServiceSelection 
-              v-else-if="step === 2" 
-              key="step2"
-              :selectedServiceId="bookingData.service?.id || null" 
-              :selectedVehicle="bookingData.vehicle"
-              @update:service="val => bookingData.service = val" 
-            />
-            
-            <DateTimeSelection 
-              v-else-if="step === 3" 
-              key="step3"
-              :selectedDate="bookingData.date" 
-              :selectedTime="bookingData.time" 
-              @update:date="val => bookingData.date = val" 
-              @update:time="val => bookingData.time = val" 
-            />
-            
-            <Confirmation 
-              v-else-if="step === 4" 
-              key="step4"
-              :bookingData="bookingData" 
-            />
+          <transition name="page" mode="out-in">
+            <div :key="step" class="w-full">
+              
+              <VehicleSelection 
+                v-if="step === 1" 
+                :selectedVehicle="bookingData.vehicle" 
+                @update:vehicle="(val: any) => bookingData.vehicle = val" 
+              />
+              
+              <CustomerDetails 
+                v-else-if="step === 2"
+                :modelValue="bookingData.customer"
+                @update:modelValue="(val: any) => bookingData.customer = val"
+              />
+
+              <ServiceSelection 
+                v-else-if="step === 3" 
+                :selectedServiceId="bookingData.service?.id || null" 
+                :selectedVehicle="bookingData.vehicle"
+                @update:service="(val: any) => bookingData.service = val" 
+              />
+              
+              <DateTimeSelection 
+                v-else-if="step === 4" 
+                :selectedDate="bookingData.date" 
+                :selectedTime="bookingData.time" 
+                @update:date="(val: any) => bookingData.date = val" 
+                @update:time="(val: string) => bookingData.time = val" 
+              />
+              
+              <Confirmation 
+                v-else-if="step === 5" 
+                :bookingData="bookingData" 
+              />
+            </div>
           </transition>
         </div>
 

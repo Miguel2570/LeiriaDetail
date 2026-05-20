@@ -11,7 +11,7 @@ const benefits = [
 </script>
 
 <template>
-  <section class="py-24 px-4  border-y relative z-10 bg-white/50">
+  <section class="py-24 px-4 relative z-10 bg-white/50">
     <div class="container mx-auto max-w-6xl">
       
       <div class="text-center mb-16">

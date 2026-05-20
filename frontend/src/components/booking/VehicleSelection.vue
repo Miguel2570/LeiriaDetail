@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Car, Plus } from 'lucide-vue-next'
 
-defineProps<{ selectedVehiclePlate: string | null }>()
+// 1. Alterado para receber o objeto completo do carro em vez de apenas a matrícula
+defineProps<{ selectedVehicle: any }>()
 const emit = defineEmits(['update:vehicle'])
 
 // Isto viria da API/Pinia, carros que ele já registou na Garagem
@@ -20,12 +21,13 @@ const myVehicles = [
       @click="emit('update:vehicle', car)"
       :class="[
         'p-6 rounded-[2rem] cursor-pointer transition-all duration-300 border-2 relative overflow-hidden',
-        selectedVehiclePlate === car.plate 
+        // 2. Agora verificamos se o plate do carro selecionado é igual ao do loop
+        selectedVehicle?.plate === car.plate 
           ? 'border-[#00D8FF] bg-[#00D8FF]/5 shadow-[0_0_20px_rgba(0,216,255,0.15)]' 
           : 'border-white/5 bg-white/[0.01] hover:border-white/20'
       ]"
     >
-      <Car :class="['h-8 w-8 mb-4 transition-colors', selectedVehiclePlate === car.plate ? 'text-[#00D8FF]' : 'text-white/20']" />
+      <Car :class="['h-8 w-8 mb-4 transition-colors', selectedVehicle?.plate === car.plate ? 'text-[#00D8FF]' : 'text-white/20']" />
       <h3 class="text-xl font-bold text-white uppercase italic tracking-tight mb-1">{{ car.brand }} {{ car.model }}</h3>
       <span class="inline-block px-3 py-1 mt-2 bg-white/5 rounded-md text-[10px] text-white/60 font-black tracking-widest border border-white/5 uppercase">{{ car.plate }}</span>
     </div>

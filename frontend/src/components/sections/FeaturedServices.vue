@@ -69,11 +69,11 @@ const services = [
       </div>
 
       <div class="mt-16 text-center">
-         <router-link to="/precos">
-            <button class="bg-transparent border-2 border-[#3B82F6] text-[#3B82F6] hover:bg-[#3B82F6] hover:text-white font-bold py-3.5 px-8 rounded-2xl transition-all shadow-[0_0_15px_rgba(59,130,246,0.2)] hover:shadow-[0_0_25px_rgba(59,130,246,0.5)] hover:-translate-y-1">
-              Ver Preçário Completo
-            </button>
-         </router-link>
+        <router-link to="/precos">
+          <button class="btn-primary-gradient py-3.5 px-8">
+            Ver Preçário Completo
+          </button>
+        </router-link>
       </div>
 
     </div>

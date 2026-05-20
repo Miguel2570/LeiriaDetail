@@ -17,11 +17,15 @@ import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import { cn } from '@/utils/cn'
 
 const props = defineProps<CalendarRootProps & { class?: string }>()
+
+// 1. LINHA NOVA: Criamos o canal de comunicação para enviar a data para fora
+const emit = defineEmits(['update:modelValue']) 
 </script>
 
 <template>
   <CalendarRoot
     v-bind="props"
+    @update:model-value="emit('update:modelValue', $event)"
     v-slot="{ grid, weekDays }"
     :class="cn(
       'p-3 border rounded-2xl shadow-sm transition-colors',

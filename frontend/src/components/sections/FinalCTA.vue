@@ -27,7 +27,7 @@ import { MessageSquare, FileText } from 'lucide-vue-next'
         </a>
         
         <router-link to="/precos" class="w-full sm:w-auto">
-          <button class="w-full sm:w-auto bg-transparent border-2 border-white/10 text-white font-black px-12 py-5 rounded-2xl uppercase text-xs tracking-[0.2em] hover:bg-white hover:text-[#0A0A0F] hover:border-white transition-all duration-300 flex items-center justify-center gap-3">
+          <button class="w-full sm:w-auto bg-black border-2 border-white/10 text-white font-black px-12 py-5 rounded-2xl uppercase text-xs tracking-[0.2em] hover:bg-white hover:text-[#0A0A0F] hover:border-white transition-all duration-300 flex items-center justify-center gap-3">
             <FileText class="h-5 w-5" /> 
             Pedir Orçamento
           </button>

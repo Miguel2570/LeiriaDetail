@@ -19,7 +19,7 @@ import { Calendar, ArrowRight } from 'lucide-vue-next'
         Leiria<span class="text-leiria-gradient">Detail</span>
       </h1>
 
-      <p class="text-xl md:text-2xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed font-light">
+      <p class="text-xl md:text-2xl text-black mb-12 max-w-2xl mx-auto leading-relaxed font-light">
         Todo o Detalhe faz a Diferença
       </p>
 
