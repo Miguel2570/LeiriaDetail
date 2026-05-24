@@ -1,12 +1,75 @@
-import { pool } from "../../db";
+import { API } from '../../proxy/serviceproxy/api';
 
 export const vehicleMutations = {
-  createVehicle: async (_: any, { input }: { input: any }) => {
-    const { user_id, brand, model, license_plate } = input;
-    const res = await pool.query(
-      "INSERT INTO vehicles (user_id, brand, model, license_plate) VALUES ($1, $2, $3, $4) RETURNING *",
-      [user_id, brand, model, license_plate]
-    );
-    return res.rows[0];
-  }
+    addVehicle: async (_: any, { input }: any, context: any) => {
+        try {
+            const data: any = await API.POST<any>(context, "/Vehicles/Add", input);
+            
+            return {
+                vehicle: data.Vehicle || null,
+                hasError: data.HasError || false,
+                error: data.Error || null
+            };
+        } catch (error: any) {
+            return {
+                vehicle: null,
+                hasError: true,
+                error: { field: "server", message: error.message }
+            };
+        }
+    },
+
+    setPrimaryVehicle: async (_: any, { vehicleId }: any, context: any) => {
+        try {
+            const data: any = await API.POST<any>(context, "/Vehicles/SetPrimary", {
+                vehicle_id: parseInt(vehicleId)
+            });
+            
+            return {
+                vehicle: data.Vehicle || null,
+                hasError: data.HasError || false,
+                error: data.Error || null
+            };
+        } catch (error: any) {
+            return {
+                vehicle: null,
+                hasError: true,
+                error: { field: "server", message: error.message }
+            };
+        }
+    },
+
+    updateVehicle: async (_: any, { input }: any, context: any) => {
+        try {
+            const data: any = await API.PATCH<any>(context, `/Vehicles/${input.vehicleId}`, input);
+            
+            return {
+                vehicle: data.Vehicle || null,
+                hasError: data.HasError || false,
+                error: data.Error || null
+            };
+        } catch (error: any) {
+            return {
+                vehicle: null,
+                hasError: true,
+                error: { field: "server", message: error.message }
+            };
+        }
+    },
+
+    deleteVehicle: async (_: any, { vehicleId }: any, context: any) => {
+        try {
+            const data: any = await API.DELETE<any>(context, `/Vehicles/${vehicleId}`);
+            
+            return {
+                success: data.success || false,
+                error: data.error || null
+            };
+        } catch (error: any) {
+            return {
+                success: false,
+                error: error.message
+            };
+        }
+    }
 };

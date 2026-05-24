@@ -1,4 +1,6 @@
 extend type Mutation {
-  # Para quando o cliente quiser adicionar um carro novo
-  createVehicle(input: CreateVehicleInput!): Vehicle!
+  addVehicle(input: AddVehicleInput!): VehicleOutput!
+  setPrimaryVehicle(vehicleId: ID!): VehicleOutput!
+  updateVehicle(input: UpdateVehicleInput!): VehicleOutput!
+  deleteVehicle(vehicleId: ID!): DeleteVehicleOutput!
 }

@@ -1,0 +1,27 @@
+# src/schema/auth/auth.inputs.graphql
+
+input RegisterInput {
+  email: String!
+  password: String!
+  firstName: String!
+  lastName: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input ChangePasswordInput {
+  token: String!
+  password: String!
+}
+
+input ChangeAccountPasswordInput {
+  currentPassword: String!
+  newPassword: String!
+}
+
+input VerifyPasswordInput {
+  password: String!
+}

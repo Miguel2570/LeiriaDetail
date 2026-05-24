@@ -96,7 +96,7 @@ const handleLogin = async () => {
     errorMessage.value = '';
 
     try {
-        const response = await fetch('http://localhost:3001/Authentication/login', {
+        const response = await fetch('http://localhost:3001/Authentication/Login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -107,19 +107,19 @@ const handleLogin = async () => {
 
         const data = await response.json();
 
-        if (!response.ok) {
-            throw new Error(data.error || 'Credenciais inválidas.');
+        console.log('Login response:', data);
+
+        if (data.HasError) {
+            throw new Error(data.Error?.Message || 'Credenciais inválidas.');
         }
 
-        // Login com sucesso! Guardar dados na Cache
         Cache.setAuth(
-            data.user.id.toString(), // Token de sessão fictício (usando o ID)
-            data.user.id.toString(),
-            data.user.name || data.user.email
+            data.SessionKey,
+            data.CredencialKey?.toString(),
+            email.value
         );
 
-        // Redireciona o utilizador para a Marcação
-        router.push('/agenda');
+        router.push('/');
         
     } catch (error: any) {
         errorMessage.value = error.message;

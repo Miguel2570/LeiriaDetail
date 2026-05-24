@@ -1,0 +1,10 @@
+input UpdateProfileInput {
+  firstName: String
+  lastName: String
+  phone: String
+}
+
+input ChangePasswordInput {
+  currentPassword: String!
+  newPassword: String!
+}

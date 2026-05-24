@@ -7,6 +7,6 @@ CREATE TABLE vehicles (
     brand VARCHAR(50) NOT NULL,
     model VARCHAR(50) NOT NULL,
     license_plate VARCHAR(20) UNIQUE NOT NULL,
-    size_category VARCHAR(10) NOT NULL, -- NOVO: 'A/B', 'C' ou 'D/E'
+    size_category VARCHAR(10) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

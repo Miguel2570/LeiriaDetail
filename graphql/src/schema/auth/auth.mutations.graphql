@@ -1,0 +1,51 @@
+# src/schema/auth/auth.mutation.graphql
+
+extend type Mutation {
+  """
+  Regista um novo utilizador
+  Envia email de verificação
+  """
+  register(input: RegisterInput!): AuthPayload!
+
+  """
+  Autentica um utilizador
+  Retorna sessionKey como accessToken
+  """
+  login(input: LoginInput!): AuthPayload!
+
+  """
+  Ativa a conta do utilizador após verificação de email
+  """
+  verifyAccount(token: String!): VerifyAccountPayload!
+
+  """
+  Reenvia o email de verificação
+  """
+  resendVerificationEmail(email: String!): SimpleResponse!
+
+  """
+  Inicia processo de recuperação de password
+  Envia email com link para redefinição
+  """
+  recoverPassword(email: String!): SimpleResponse!
+
+  """
+  Altera a password usando token de recuperação
+  """
+  changePassword(token: String!, password: String!): SimpleResponse!
+
+  """
+  Altera a password da conta autenticada
+  Requer session-key no header
+  """
+  changeAccountPassword(
+    currentPassword: String!
+    newPassword: String!
+  ): SimpleResponse!
+
+  """
+  Verifica se a password atual está correta
+  Requer session-key no header
+  """
+  verifyPassword(password: String!): VerifyPasswordPayload!
+}

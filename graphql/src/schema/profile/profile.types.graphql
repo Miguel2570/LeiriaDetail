@@ -1,0 +1,32 @@
+type Profile {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  email: String!
+  phone: String
+  isVerified: Boolean!
+  createdAt: String!
+  updatedAt: String
+}
+
+type ProfileOutput {
+  profile: Profile
+  message: String
+  hasError: Boolean!
+  error: ErrorField
+}
+
+type UpdateProfileOutput {
+  firstName: String
+  lastName: String
+  phone: String
+  message: String
+  hasError: Boolean!
+  error: ErrorField
+}
+
+type UpdatePasswordOutput {
+  message: String
+  hasError: Boolean!
+  error: ErrorField
+}

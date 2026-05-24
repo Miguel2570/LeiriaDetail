@@ -22,10 +22,15 @@ const routes = [
   { path: '/termos', component: () => import('@/page/legal/Terms.vue') },
   { path: '/cookies', component: () => import('@/page/legal/Cookies.vue') },
   { 
-  path: '/client-area', 
-  name: 'client-area', 
-  component: () => import('@/page/ClientArea.vue') 
-},
+    path: '/client-area', 
+    name: 'client-area', 
+    component: () => import('@/page/ClientArea.vue') 
+  },
+  { 
+    path: '/clientarea',
+    name: 'clientarea', 
+    component: () => import('@/page/ClientArea.vue') 
+  },
   // Rota obrigatória para o nosso sistema global de tratamento de exceções
   //&{ path: '/error', name: 'error', component: () => import('@/page/Error.vue') }
 ]

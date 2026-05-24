@@ -1,18 +1,15 @@
+# basedados/changelog/changelog.yaml
 databaseChangeLog:
-  # 1. Estrutura (Tabelas) - SEMPRE primeiro
-  - include:
-      file: tables/001-Users.sql
-  - include:
-      file: tables/002-Services.sql
-  - include:
-      file: tables/003-Vehicles.sql
-  - include:
-      file: tables/004-Bookings.sql
+  # 1. Estrutura (Tabelas) - Executa primeiro
+  - includeAll:
+      path: tables
+      runOnChange: true
+      relativeToChangelogFile: true
+      errorIfMissingOrEmpty: true
       
-  # 2. Dados (Seed) - SEMPRE depois
-  - include:
-      file: seed/000-users-seed.sql
-  - include:
-      file: seed/001-services_insert.sql
-  - include:
-      file: seed/002-vehicles-seed.sql
+  # 2. Dados (Seed) - Executa depois das tabelas
+  - includeAll:
+      path: seed
+      runOnChange: true
+      relativeToChangelogFile: true
+      errorIfMissingOrEmpty: true

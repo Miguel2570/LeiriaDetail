@@ -1,6 +1,19 @@
-input CreateVehicleInput {
-  user_id: Int!
+input AddVehicleInput {
+  licensePlate: String!
   brand: String!
   model: String!
-  license_plate: String!
+  year: Int
+  fuelType: String
+  sizeCategory: String
+  vin: String
+}
+
+input UpdateVehicleInput {
+  vehicleId: ID!
+  brand: String
+  model: String
+  year: Int
+  fuelType: String
+  sizeCategory: String
+  vin: String
 }

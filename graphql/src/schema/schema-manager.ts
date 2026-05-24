@@ -12,6 +12,11 @@ const loadGraphQL = (relativePath: string): string => {
 // 1. Carrega o Schema Base (Contém a declaração inicial de Query, Mutation e o schema {})
 const baseSchema = loadGraphQL("./index.graphql");
 
+const authTypes = loadGraphQL("./auth/auth.types.graphql");
+const authInputs = loadGraphQL("./auth/auth.inputs.graphql");
+const authQueries = loadGraphQL("./auth/auth.queries.graphql");
+const authMutations = loadGraphQL("./auth/auth.mutations.graphql");
+
 // 2. Domínio: Services (Tratamentos de Detalhe Automóvel)
 const serviceTypes = loadGraphQL("./service/service.types.graphql");
 const serviceQueries = loadGraphQL("./service/service.queries.graphql");
@@ -28,6 +33,11 @@ const vehicleTypes = loadGraphQL("./vehicle/vehicle.types.graphql");
 const vehicleInputs = loadGraphQL("./vehicle/vehicle.inputs.graphql");
 const vehicleQueries = loadGraphQL("./vehicle/vehicle.queries.graphql");
 const vehicleMutations = loadGraphQL("./vehicle/vehicle.mutations.graphql");
+
+const profileTypes = loadGraphQL("./profile/profile.types.graphql");
+const profileInputs = loadGraphQL("./profile/profile.inputs.graphql");
+const profileQueries = loadGraphQL("./profile/profile.queries.graphql");
+const profileMutations = loadGraphQL("./profile/profile.mutations.graphql");
 /**
  * Interpolação e combinação de todos os módulos de schemas.
  * O Apollo Server irá compilar esta string final e validar todas as relações.
@@ -35,6 +45,11 @@ const vehicleMutations = loadGraphQL("./vehicle/vehicle.mutations.graphql");
 const typeDefs = `
   ${baseSchema}
 
+  ${authTypes}
+  ${authInputs}
+  ${authQueries}
+  ${authMutations}
+  
   ${serviceTypes}
   ${serviceQueries}
   ${serviceInputs}
@@ -49,6 +64,11 @@ const typeDefs = `
   ${vehicleInputs}
   ${vehicleQueries}
   ${vehicleMutations}
+
+  ${profileTypes}
+  ${profileInputs}
+  ${profileQueries}
+  ${profileMutations}
 `;
 
 export default typeDefs;

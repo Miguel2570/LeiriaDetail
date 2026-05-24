@@ -18,8 +18,14 @@ export const bookingQueries = {
         v.brand as vehicle_brand,
         v.model as vehicle_model,
         v.license_plate as vehicle_plate,
+        v.size_category,
         s.name as service_name,
-        s.price as service_price
+        CASE 
+          WHEN v.size_category = 'A' OR v.size_category = 'B' THEN s.price_ab
+          WHEN v.size_category = 'C' THEN s.price_c
+          WHEN v.size_category = 'D' OR v.size_category = 'E' THEN s.price_de
+          ELSE s.price_c
+        END as service_price
       FROM bookings b
       JOIN vehicles v ON b.vehicle_id = v.id
       JOIN services s ON b.service_id = s.id
@@ -28,7 +34,6 @@ export const bookingQueries = {
     `;
     const res = await pool.query(query, [user_id]);
     
-    // Mapeia o resultado plano do SQL para bater certo com os tipos que o GraphQL espera
     return res.rows.map(row => ({
       id: row.id,
       user_id: row.user_id,
@@ -36,7 +41,6 @@ export const bookingQueries = {
       booking_time: row.booking_time,
       status: row.status,
       created_at: row.created_at,
-      // Passamos estes dados extra para lermos no Frontend
       vehicle_name: `${row.vehicle_brand} ${row.vehicle_model}`,
       vehicle_plate: row.vehicle_plate,
       service_name: row.service_name,

@@ -1,0 +1,20 @@
+# src/schema/auth/auth.query.graphql
+
+extend type Query {
+  """
+  Retorna dados do utilizador atualmente autenticado
+  Requer session-key no header
+  """
+  me: User!
+
+  """
+  Verifica se um token de sessão é válido
+  """
+  checkToken(token: String!): CheckTokenPayload!
+
+  """
+  Verifica se um email já está registado
+  Usado no registo para validação em tempo real
+  """
+  checkEmailExists(email: String!): CheckEmailPayload!
+}

@@ -1,25 +1,3 @@
-<script setup lang="ts">
-import { ref } from 'vue';
-import { User, Menu, X } from 'lucide-vue-next';
-import Button from '@/components/ui/forms/Button.vue'
-
-const isMenuOpen = ref(false);
-const isLoggedIn = ref(false);
-
-const navLinks = [
-  { name: 'Home', path: '/' },
-  { name: 'Serviços', path: '/servicos' },
-  { name: 'Preços', path: '/precos' },
-  { name: 'Portfólio', path: '/portfolio' },
-  { name: 'Sobre', path: '/sobre' },
-  { name: 'Contactos', path: '/contacto' },
-];
-
-const closeMenu = () => {
-  isMenuOpen.value = false;
-};
-</script>
-
 <template>
   <nav class="sticky top-0 z-50 w-full bg-white/70 backdrop-blur-xl border-b border-white/30 shadow-lg transition-all duration-300">
     <div class="container mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
@@ -53,20 +31,33 @@ const closeMenu = () => {
       <!-- Right Side Buttons -->
       <div class="flex items-center gap-2 sm:gap-4">
         <template v-if="isLoggedIn">
-          <router-link to="/clientarea">
-            <Button variant="ghost" size="sm" class="hidden sm:flex gap-2 text-[11px] font-bold uppercase tracking-widest">
-              <User class="h-3 w-3 sm:h-4 sm:w-4" /> 
-              <span class="hidden lg:inline">Área Cliente</span>
-              <span class="lg:hidden">Cliente</span>
-            </Button>
+          <!-- Perfil - mesmo estilo hover dos outros links -->
+          <router-link 
+            to="/client-area" 
+            class="relative text-[11px] font-bold uppercase tracking-widest text-slate-700 hover:text-[#3B82F6] transition-all duration-300 group flex items-center gap-1.5"
+            active-class="text-[#3B82F6]"
+          >
+            <User class="h-4 w-4" /> 
+            Perfil
+            <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] transition-all duration-300 group-hover:w-full"></span>
           </router-link>
+          
+          <!-- Sair -->
+          <button 
+            @click="handleLogout"
+            class="relative text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:text-red-500 transition-all duration-300 group"
+          >
+            Sair
+            <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-red-400 transition-all duration-300 group-hover:w-full"></span>
+          </button>
         </template>
         <template v-else>
           <router-link 
             to="/login" 
-            class="hidden md:block text-[11px] font-bold uppercase tracking-widest text-slate-600 hover:text-[#3B82F6] transition-colors duration-300"
+            class="relative text-[11px] font-bold uppercase tracking-widest text-slate-600 hover:text-[#3B82F6] transition-all duration-300 group"
           >
             Entrar
+            <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] transition-all duration-300 group-hover:w-full"></span>
           </router-link>
           <router-link to="/agenda">
             <Button class="bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white border-none font-bold text-[11px] uppercase tracking-widest px-4 sm:px-6 py-2 sm:py-5 shadow-md hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300 hover:scale-105">
@@ -108,7 +99,22 @@ const closeMenu = () => {
             {{ link.name }}
           </router-link>
           
-          <!-- Mobile Login Link -->
+          <template v-if="isLoggedIn">
+            <router-link 
+              to="/client-area" 
+              @click="closeMenu"
+              class="block py-3 text-sm font-bold uppercase tracking-widest text-slate-700 hover:text-[#3B82F6] hover:pl-2 transition-all duration-300 border-b border-slate-100"
+            >
+              👤 Perfil
+            </router-link>
+            <button 
+              @click="handleLogout"
+              class="block w-full text-left py-3 text-sm font-bold uppercase tracking-widest text-red-400 hover:text-red-500 hover:pl-2 transition-all duration-300"
+            >
+              🚪 Sair
+            </button>
+          </template>
+          
           <router-link 
             v-if="!isLoggedIn" 
             to="/login" 
@@ -122,3 +128,39 @@ const closeMenu = () => {
     </Transition>
   </nav>
 </template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { User, Menu, X } from 'lucide-vue-next';
+import Button from '@/components/ui/forms/Button.vue'
+import { Cache } from '@/CacheManagement/cachemanager';
+
+const isMenuOpen = ref(false);
+const router = useRouter();
+const isLoggedIn = computed(() => !!Cache.Session.value);
+
+const navLinks = [
+  { name: 'Home', path: '/' },
+  { name: 'Serviços', path: '/servicos' },
+  { name: 'Preços', path: '/precos' },
+  { name: 'Portfólio', path: '/portfolio' },
+  { name: 'Sobre', path: '/sobre' },
+  { name: 'Contactos', path: '/contacto' },
+];
+
+const closeMenu = () => {
+  isMenuOpen.value = false;
+};
+
+onMounted(() => {
+  console.log('🔍 Navbar montada - Logged in?', isLoggedIn.value);
+  console.log('🔑 Session:', Cache.Session.value);
+  console.log('👤 User:', Cache.UserName.value);
+});
+
+const handleLogout = async () => {
+  Cache.clearAuth();
+  router.push('/');
+};
+</script>

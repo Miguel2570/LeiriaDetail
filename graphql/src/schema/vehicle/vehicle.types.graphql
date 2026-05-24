@@ -1,17 +1,31 @@
 type Vehicle {
   id: ID!
-  user_id: Int!
+  userId: Int!
+  licensePlate: String!
   brand: String!
   model: String!
-  license_plate: String!
-  size_category: String! # Pode ser 'A/B', 'C' ou 'D/E'
-  created_at: String!
+  year: Int
+  fuelType: String
+  sizeCategory: String!
+  vin: String
+  isPrimary: Boolean!
+  createdAt: String!
+  updatedAt: String
 }
 
-input CreateVehicleInput {
-  user_id: Int!
-  brand: String!
-  model: String!
-  license_plate: String!
-  size_category: String! # NOVO CAMPO OBRIGATÓRIO
+type VehicleOutput {
+  vehicle: Vehicle
+  vehicles: [Vehicle!]
+  hasError: Boolean!
+  error: ErrorField
+}
+
+type ErrorField {
+  field: String!
+  message: String!
+}
+
+type DeleteVehicleOutput {
+  success: Boolean!
+  error: String
 }

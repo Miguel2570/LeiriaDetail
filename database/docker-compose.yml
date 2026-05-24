@@ -1,7 +1,4 @@
-version: "3.9"
-
 services:
-
   postgres:
     image: postgres:16
     container_name: leiriadetail-postgres
@@ -57,47 +54,19 @@ services:
         condition: service_healthy
 
   liquibase:
-    image: liquibase/liquibase:latest
+    image: liquibase/liquibase:4.25
     container_name: leiriadetail-liquibase
+    profiles:
+      - liquibase
     depends_on:
       postgres:
         condition: service_healthy
     volumes:
-      - ./database:/liquibase/database
-    working_dir: /liquibase/database/changelog
-    command: 
-      - --url=jdbc:postgresql://postgres:5432/leiriadetail
-      - --username=postgres
-      - --password=admin123
-      - --changeLogFile=changelog.yaml
-      - --classpath=/liquibase/database/drivers/postgresql-42.7.11.jar
-      - --driver=org.postgresql.Driver
-      - update
-
-  graphql:
-    build: ./graphql
-    container_name: leiriadetail-graphql
-    ports:
-      - "4001:4001"
+      - ./changelog:/liquibase/changelog
     environment:
-      DATABASE_URL: postgres://postgres:admin123@postgres:5432/leiriadetail
-      ELASTIC_URL: http://elasticsearch:9200
-    depends_on:
-      liquibase:
-        condition: service_completed_successfully
-      elasticsearch:
-        condition: service_healthy
+      INSTALL_POSTGRESQL: "true"
+    working_dir: /liquibase/changelog
 
-  api:
-    build: ./api
-    container_name: leiriadetail-api
-    ports:
-      - "3001:3001"
-    environment:
-      DATABASE_URL: postgres://postgres:admin123@postgres:5432/leiriadetail
-    depends_on:
-      liquibase:
-        condition: service_completed_successfully
 volumes:
   pgdata:
   esdata:

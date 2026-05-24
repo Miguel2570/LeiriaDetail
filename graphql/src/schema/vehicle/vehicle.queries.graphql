@@ -1,4 +1,3 @@
 extend type Query {
-  # Para o ecrã da Agenda mostrar só os carros daquele cliente
-  customerVehicles(user_id: Int!): [Vehicle!]!
+  userVehicles: VehicleOutput!
 }
