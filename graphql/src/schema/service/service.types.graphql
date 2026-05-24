@@ -2,6 +2,8 @@ type Service {
   id: ID!
   name: String!
   description: String
-  price: Float!
   duration_minutes: Int!
+  price_ab: Float!
+  price_c: Float!
+  price_de: Float!
 }

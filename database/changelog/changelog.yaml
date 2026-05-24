@@ -1,7 +1,18 @@
 databaseChangeLog:
-  - includeAll:
-      path: tables/
-      relativeToChangelogFile: true
-  - includeAll:
-      path: seed/
-      relativeToChangelogFile: true
+  # 1. Estrutura (Tabelas) - SEMPRE primeiro
+  - include:
+      file: tables/001-Users.sql
+  - include:
+      file: tables/002-Services.sql
+  - include:
+      file: tables/003-Vehicles.sql
+  - include:
+      file: tables/004-Bookings.sql
+      
+  # 2. Dados (Seed) - SEMPRE depois
+  - include:
+      file: seed/000-users-seed.sql
+  - include:
+      file: seed/001-services_insert.sql
+  - include:
+      file: seed/002-vehicles-seed.sql

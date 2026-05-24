@@ -1,11 +1,12 @@
 -- liquibase formatted sql
--- changeset leiria:003-create-vehicles
+-- changeset leiriadetail:create-vehicles
 
 CREATE TABLE vehicles (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    brand VARCHAR(100),
-    model VARCHAR(100),
-    license_plate VARCHAR(20),
-    CONSTRAINT fk_vehicle_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    brand VARCHAR(50) NOT NULL,
+    model VARCHAR(50) NOT NULL,
+    license_plate VARCHAR(20) UNIQUE NOT NULL,
+    size_category VARCHAR(10) NOT NULL, -- NOVO: 'A/B', 'C' ou 'D/E'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

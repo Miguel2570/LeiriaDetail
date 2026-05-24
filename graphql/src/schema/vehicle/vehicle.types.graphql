@@ -4,5 +4,14 @@ type Vehicle {
   brand: String!
   model: String!
   license_plate: String!
+  size_category: String! # Pode ser 'A/B', 'C' ou 'D/E'
   created_at: String!
+}
+
+input CreateVehicleInput {
+  user_id: Int!
+  brand: String!
+  model: String!
+  license_plate: String!
+  size_category: String! # NOVO CAMPO OBRIGATÓRIO
 }

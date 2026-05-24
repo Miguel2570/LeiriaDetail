@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
+import { Request, Response } from 'express';
 
 import typeDefs from './schema/schema-manager';
 import resolvers from './resolvers';
@@ -66,9 +67,12 @@ async function startServer() {
    * Middleware do GraphQL com injeção do contexto
    */
   app.use(
-    '/graphql',
+  '/graphql',
     expressMiddleware(server, {
-      context: async ({ req, res }) => ({ req, res }),
+      context: async ({ req, res }: { req: Request; res: Response }) => ({ 
+        req, 
+        res 
+      }),
     })
   );
 
