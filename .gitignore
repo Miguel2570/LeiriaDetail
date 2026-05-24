@@ -7,7 +7,7 @@ Database/.DS_Store
 /node_modules
 API/tsconfig.tsbuildinfo
 API/tsconfig.tsbuildinfo
-
+api/.env
 # Environment variables
 .env
 .env.local
