@@ -3,12 +3,28 @@ import { API } from '../../proxy/serviceproxy/api';
 export const vehicleMutations = {
     addVehicle: async (_: any, { input }: any, context: any) => {
         try {
-            const data: any = await API.POST<any>(context, "/Vehicles/Add", input);
+            // Obter o user_id da sessão
+            const sessionKey = context?.req?.headers?.['session-key'] || 
+                            context?.headers?.['session-key'] ||
+                            context?.sessionKey;
+            
+            // Enviar todos os campos necessários
+            const data: any = await API.POST<any>(context, "/Vehicles/Add", {
+                license_plate: input.licensePlate,
+                brand: input.brand,
+                model: input.model,
+                year: input.year,
+                fuel_type: input.fuelType,
+                size_category: input.sizeCategory
+            });
             
             return {
                 vehicle: data.Vehicle || null,
                 hasError: data.HasError || false,
-                error: data.Error || null
+                error: data.Error ? { 
+                    field: data.Error.Field || "unknown", 
+                    message: data.Error.Message || "Erro desconhecido" 
+                } : null
             };
         } catch (error: any) {
             return {

@@ -8,5 +8,6 @@ CREATE TABLE services (
     price_ab DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     price_c DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     price_de DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
-    duration_minutes INTEGER
+    duration_minutes INTEGER DEFAULT 60,
+    pack_type VARCHAR(50) NOT NULL DEFAULT 'Básico'
 );

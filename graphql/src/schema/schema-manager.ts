@@ -38,12 +38,32 @@ const profileTypes = loadGraphQL("./profile/profile.types.graphql");
 const profileInputs = loadGraphQL("./profile/profile.inputs.graphql");
 const profileQueries = loadGraphQL("./profile/profile.queries.graphql");
 const profileMutations = loadGraphQL("./profile/profile.mutations.graphql");
+
+const errorTypes = loadGraphQL("./error/error.types.graphql");
+
+const portfolioTypes = loadGraphQL("./portfolio/portfolio.types.graphql");
+const portfolioQueries = loadGraphQL("./portfolio/portfolio.queries.graphql");
+const portfolioMutations = loadGraphQL("./portfolio/portfolio.mutations.graphql");
+const portfolioInputs = loadGraphQL("./portfolio/portfolio.inputs.graphql");
+
+const reviewsTypes = loadGraphQL("./reviews/reviews.types.graphql");
+const reviewsQueries = loadGraphQL("./reviews/reviews.queries.graphql");
+const reviewsMutations = loadGraphQL("./reviews/reviews.mutations.graphql");
+const reviewsInputs = loadGraphQL("./reviews/reviews.inputs.graphql");
+
+const faqsTypes = loadGraphQL("./faqs/faqs.types.graphql");
+const faqsQueries = loadGraphQL("./faqs/faqs.queries.graphql");
+const faqsMutations = loadGraphQL("./faqs/faqs.mutations.graphql");
+const faqsInputs = loadGraphQL("./faqs/faqs.inputs.graphql");
+
 /**
  * Interpolação e combinação de todos os módulos de schemas.
  * O Apollo Server irá compilar esta string final e validar todas as relações.
  */
 const typeDefs = `
   ${baseSchema}
+
+  ${errorTypes}
 
   ${authTypes}
   ${authInputs}
@@ -69,6 +89,21 @@ const typeDefs = `
   ${profileInputs}
   ${profileQueries}
   ${profileMutations}
+
+  ${portfolioTypes}
+  ${portfolioQueries}
+  ${portfolioMutations}
+  ${portfolioInputs}
+
+  ${reviewsTypes}
+  ${reviewsQueries}
+  ${reviewsMutations}
+  ${reviewsInputs}
+
+  ${faqsTypes}
+  ${faqsQueries}
+  ${faqsMutations}
+  ${faqsInputs}
 `;
 
 export default typeDefs;

@@ -1,41 +1,3 @@
-<script setup lang="ts">
-import { ref, watch } from 'vue';
-import { Calendar as CalendarIcon, Clock } from 'lucide-vue-next';
-import Calendar from '@/components/ui/forms/Calendar.vue';
-
-// 1. Importamos as funções que vão descobrir qual é o "dia de hoje" para bloquear o passado
-import { today, getLocalTimeZone } from '@internationalized/date';
-
-const props = defineProps<{ selectedDate: any; selectedTime: string; }>();
-const emit = defineEmits(['update:date', 'update:time']);
-
-const localDate = ref(props.selectedDate || undefined);
-
-// 2. Definimos que a data mínima permitida é o dia de hoje
-const minDate = today(getLocalTimeZone());
-
-watch(localDate, (newValue) => {
-  emit('update:date', newValue);
-});
-
-// 3. Os teus novos horários divididos entre Manhã e Tarde (intervalos de 30 min)
-const timeSlots = [
-  // Manhã (09:30 às 14:00) -> O último agendamento começa às 13:30
-  { time: '09:30', available: true }, { time: '10:00', available: true },
-  { time: '10:30', available: true }, { time: '11:00', available: true },
-  { time: '11:30', available: true }, { time: '12:00', available: true },
-  { time: '12:30', available: true }, { time: '13:00', available: true },
-  { time: '13:30', available: true },
-  
-  // Tarde (15:00 às 20:00) -> O último agendamento começa às 19:30
-  { time: '15:00', available: true }, { time: '15:30', available: true },
-  { time: '16:00', available: true }, { time: '16:30', available: true },
-  { time: '17:00', available: true }, { time: '17:30', available: true },
-  { time: '18:00', available: true }, { time: '18:30', available: true },
-  { time: '19:00', available: true }, { time: '19:30', available: true }
-];
-</script>
-
 <template>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
     
@@ -76,6 +38,56 @@ const timeSlots = [
     
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref, watch, onMounted } from 'vue';
+import { Calendar as CalendarIcon, Clock } from 'lucide-vue-next';
+import Calendar from '@/components/ui/forms/Calendar.vue';
+import { today, getLocalTimeZone } from '@internationalized/date';
+import { graphql } from '@/graphql';
+
+const props = defineProps<{ selectedDate: any; selectedTime: string }>();
+const emit = defineEmits(['update:date', 'update:time']);
+
+const localDate = ref(props.selectedDate || undefined);
+const minDate = today(getLocalTimeZone());
+const timeSlots = ref<{ time: string; available: boolean }[]>([]);
+const isLoadingSlots = ref(false);
+
+watch(localDate, (newValue) => {
+  emit('update:date', newValue);
+  if (newValue) fetchSlots(newValue.toString());
+});
+
+const fetchSlots = async (date: string) => {
+  isLoadingSlots.value = true;
+  try {
+    const query = `
+      query($date: String!) {
+        availableSlots(date: $date) {
+          availableSlots
+          occupiedSlots
+        }
+      }
+    `;
+    const data = await graphql<{ availableSlots: { availableSlots: string[], occupiedSlots: string[] } }>(query, { date });
+    
+    const allSlots = [
+      '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30',
+      '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30'
+    ];
+    
+    timeSlots.value = allSlots.map(time => ({
+      time,
+      available: data.availableSlots?.availableSlots?.includes(time) ?? true
+    }));
+  } catch (error) {
+    console.error('Erro ao carregar slots:', error);
+  } finally {
+    isLoadingSlots.value = false;
+  }
+};
+</script>
 
 <style scoped>
 /* Estilo para a barra de scroll ficar fina e com as cores do teu site */

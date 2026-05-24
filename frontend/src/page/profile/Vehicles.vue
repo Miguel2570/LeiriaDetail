@@ -38,26 +38,33 @@
       </div>
       <div>
         <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Combustível</label>
-        <select v-model="newVehicle.fuel_type" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-[#3B82F6]">
-          <option value="">Selecionar</option>
-          <option value="Gasolina">Gasolina</option>
-          <option value="Diesel">Diesel</option>
-          <option value="Elétrico">Elétrico</option>
-          <option value="Híbrido">Híbrido</option>
+        <!-- Combustível -->
+        <select 
+          v-model="newVehicle.fuel_type" 
+          class="w-full px-4 py-3 rounded-xl outline-none cursor-pointer"
+          style="background-color: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; color-scheme: dark;"
+        >
+          <option value="" disabled style="color: #6b7280; background: #1a1a1a;">Selecionar</option>
+          <option value="Gasolina" style="background: #1a1a1a; color: white;">Gasolina</option>
+          <option value="Diesel" style="background: #1a1a1a; color: white;">Diesel</option>
+          <option value="Elétrico" style="background: #1a1a1a; color: white;">Elétrico</option>
+          <option value="Híbrido" style="background: #1a1a1a; color: white;">Híbrido</option>
         </select>
-      </div>
-      <div>
-        <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Categoria</label>
-        <select v-model="newVehicle.size_category" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-[#3B82F6]">
-          <option value="A">A - Pequeno</option>
-          <option value="B">B - Médio</option>
-          <option value="C">C - Grande</option>
-          <option value="D">D - SUV</option>
-          <option value="E">E - Comercial</option>
-        </select>
-      </div>
-    </div>
 
+        <!-- Categoria -->
+        <select 
+          v-model="newVehicle.size_category" 
+          class="w-full px-4 py-3 rounded-xl outline-none cursor-pointer"
+          style="background-color: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; color-scheme: dark;"
+        >
+          <option value="A" style="background: #1a1a1a; color: white;">A - Pequeno</option>
+          <option value="B" style="background: #1a1a1a; color: white;">B - Médio</option>
+          <option value="C" style="background: #1a1a1a; color: white;">C - Grande</option>
+          <option value="D" style="background: #1a1a1a; color: white;">D - SUV</option>
+          <option value="E" style="background: #1a1a1a; color: white;">E - Comercial</option>
+        </select>
+        </div>
+      </div>
     <button type="submit" :disabled="isSubmitting || !plateStatus.isValid" class="w-full py-3 bg-gradient-to-r from-[#2563EB] to-[#00D8FF] text-white font-bold rounded-xl disabled:opacity-50">
       {{ isSubmitting ? 'A guardar...' : 'Guardar Veículo' }}
     </button>
@@ -67,8 +74,8 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
-import { validatePortuguesePlate } from '@/services/licensePlateService';
-import { graphql } from '@/services/graphql';
+import { validateLicensePlate } from '@/services/licensePlateService';
+import { graphql } from '@/graphql';
 
 const newVehicle = ref({
   license_plate: '',
@@ -99,7 +106,7 @@ const handlePlateInput = () => {
     return;
   }
   
-  const result = validatePortuguesePlate(plate);
+  const result = validateLicensePlate(plate);
   plateStatus.isValid = result.isValid;
   
   if (result.isValid) {

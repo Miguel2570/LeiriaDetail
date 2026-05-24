@@ -1,0 +1,5 @@
+extend type Mutation {
+  addReview(input: AddReviewInput!): ReviewMutationOutput!
+  approveReview(id: ID!): ReviewDeleteOutput!
+  deleteReview(id: ID!): ReviewDeleteOutput!
+}

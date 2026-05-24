@@ -1,4 +1,4 @@
-import { Cache } from "@/CacheManagement/cachemanager";
+import { Cache } from "@/services/cachemanager";
 import router from "@/router";
 
 // Vai buscar o URL da API ao ficheiro .env (ex: http://localhost:4001/graphql)
@@ -16,7 +16,7 @@ export const graphql = async <T>(
             headers: {
                 "Content-Type": "application/json",
                 // Passa a chave de sessão se existir, senão passa um valor default (podes ajustar futuramente)
-                "Session-Key": Cache.Session?.value || "1234"
+                ...(Cache.Session?.value && Cache.Session.value !== '1234' && { "Session-Key": Cache.Session.value })
             },
             body: JSON.stringify({ query, variables })
         });

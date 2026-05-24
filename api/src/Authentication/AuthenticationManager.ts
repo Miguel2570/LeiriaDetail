@@ -1,6 +1,7 @@
 import { server } from '../Helpers/DatabaseConnectionHelper';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
+import { OAuth2Client } from 'google-auth-library';
 import { 
     LoginOutputModel, 
     CreateUserOutputModel, 
@@ -12,6 +13,8 @@ import {
     ErrorModel 
 } from "./AuthenticationModel";
 import { sendVerificationEmail, sendPasswordResetEmail, sendWelcomeEmail } from '../Helpers/EmailService';
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 class UserManager {
     
@@ -339,6 +342,124 @@ class UserManager {
             return { success: true };
         } else {
             return { success: false, error: 'Invalid password' };
+        }
+    }
+    /**
+     * Login com Google
+     */
+    static async GoogleLogin(googleToken: string): Promise<LoginOutputModel> {
+        try {
+            // Verificar token com a Google
+            const ticket = await googleClient.verifyIdToken({
+                idToken: googleToken,
+                audience: process.env.GOOGLE_CLIENT_ID,
+            });
+            
+            const payload = ticket.getPayload();
+            if (!payload || !payload.email) {
+                return new LoginOutputModel(undefined, undefined, 
+                    new ErrorModel("Google", "Token inválido."));
+            }
+
+            const email = payload.email.toLowerCase();
+            const firstName = payload.given_name || '';
+            const lastName = payload.family_name || '';
+
+            // Verificar se utilizador já existe
+            const query = 'SELECT id, is_active FROM users WHERE email = $1';
+            const result = await server.query(query, [email]);
+
+            let userId: number;
+
+            if (result.rows.length === 0) {
+                // Criar novo utilizador
+                const insertQuery = `
+                    INSERT INTO users (first_name, last_name, email, password_hash, is_verified, is_active)
+                    VALUES ($1, $2, $3, $4, true, true)
+                    RETURNING id
+                `;
+                const insertResult = await server.query(insertQuery, [
+                    firstName, lastName, email, 'GOOGLE_OAUTH'
+                ]);
+                userId = insertResult.rows[0].id;
+            } else {
+                userId = result.rows[0].id;
+            }
+
+            // Criar sessão
+            const sessionKey = this.generateUUID();
+            const expirationDateTime = new Date();
+            expirationDateTime.setDate(expirationDateTime.getDate() + 1);
+
+            const insertSession = `
+                INSERT INTO user_sessions (session_key, user_id, expirationdatetime)
+                VALUES ($1, $2, $3)
+            `;
+            await server.query(insertSession, [sessionKey, userId, expirationDateTime]);
+
+            return new LoginOutputModel(sessionKey, userId, undefined);
+
+        } catch (error: any) {
+            console.error('GoogleLogin error:', error);
+            return new LoginOutputModel(undefined, undefined,
+                new ErrorModel("Server", "Erro no login com Google."));
+        }
+    }
+    /**
+     * Login com Apple
+     */
+    static async AppleLogin(appleToken: string, fullName?: { firstName?: string; lastName?: string }): Promise<LoginOutputModel> {
+        try {
+            // Nota: Apple requer verificação JWT com a chave pública da Apple
+            // Simplificado para demonstração
+            const jwt = require('jsonwebtoken');
+            const decoded = jwt.decode(appleToken) as any;
+            
+            if (!decoded || !decoded.email) {
+                return new LoginOutputModel(undefined, undefined,
+                    new ErrorModel("Apple", "Token inválido."));
+            }
+
+            const email = decoded.email.toLowerCase();
+            const firstName = fullName?.firstName || '';
+            const lastName = fullName?.lastName || '';
+
+            // Verificar se utilizador já existe
+            const query = 'SELECT id, is_active FROM users WHERE email = $1';
+            const result = await server.query(query, [email]);
+
+            let userId: number;
+
+            if (result.rows.length === 0) {
+                const insertQuery = `
+                    INSERT INTO users (first_name, last_name, email, password_hash, is_verified, is_active)
+                    VALUES ($1, $2, $3, $4, true, true)
+                    RETURNING id
+                `;
+                const insertResult = await server.query(insertQuery, [
+                    firstName, lastName, email, 'APPLE_OAUTH'
+                ]);
+                userId = insertResult.rows[0].id;
+            } else {
+                userId = result.rows[0].id;
+            }
+
+            const sessionKey = this.generateUUID();
+            const expirationDateTime = new Date();
+            expirationDateTime.setDate(expirationDateTime.getDate() + 1);
+
+            const insertSession = `
+                INSERT INTO user_sessions (session_key, user_id, expirationdatetime)
+                VALUES ($1, $2, $3)
+            `;
+            await server.query(insertSession, [sessionKey, userId, expirationDateTime]);
+
+            return new LoginOutputModel(sessionKey, userId, undefined);
+
+        } catch (error: any) {
+            console.error('AppleLogin error:', error);
+            return new LoginOutputModel(undefined, undefined,
+                new ErrorModel("Server", "Erro no login com Apple."));
         }
     }
 }

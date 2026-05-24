@@ -1,79 +1,120 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { ChevronDown } from 'lucide-vue-next'
+import { ref, onMounted } from 'vue';
+import { ChevronDown, HelpCircle, Mail } from 'lucide-vue-next';
+import { graphql } from '@/graphql';
 
-const faqs = [
-  { q: 'Quanto tempo demora um detalhe interior?', a: 'O detalhe Basic demora cerca de 1h, enquanto o Standard pode ir até às 2h, dependendo do estado da viatura.' },
-  { q: 'Fazem serviço ao domicílio?', a: 'Atualmente trabalhamos apenas nas nossas instalações em Leiria para garantirmos o ambiente controlado e a iluminação ideal para o detalhe.' },
-  { q: 'Que métodos de pagamento aceitam?', a: 'Aceitamos pagamentos por MB Way, Multibanco, numerário e cartões Visa/Mastercard no nosso estúdio.' },
-  { q: 'É preciso fazer marcação prévia?', a: 'Sim, trabalhamos exclusivamente por marcação para garantir que cada viatura tem o tempo e a dedicação necessários.' }
-]
+interface Faq {
+  id: string;
+  question: string;
+  answer: string;
+  orderIndex: number;
+}
 
-const openIndex = ref<number | null>(null)
+const faqs = ref<Faq[]>([]);
+const isLoading = ref(true);
+const openIndex = ref<number | null>(null);
 
 const toggleFaq = (index: number) => {
-  openIndex.value = openIndex.value === index ? null : index
-}
+  openIndex.value = openIndex.value === index ? null : index;
+};
+
+const fetchFaqs = async () => {
+  try {
+    const query = `
+      query {
+        faqs {
+          faqs { id question answer orderIndex }
+        }
+      }
+    `;
+    const data = await graphql<{ faqs: { faqs: Faq[] } }>(query);
+    faqs.value = data.faqs.faqs;
+  } catch (error) {
+    console.error("Erro ao carregar FAQs:", error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+onMounted(fetchFaqs);
 </script>
 
 <template>
-  <section class="py-24 relative overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-b from-transparen to-transparent -z-10"></div>
+  <section class="py-24 bg-[#020204] relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-[#2563EB]/8 blur-[120px] rounded-full pointer-events-none"></div>
 
-    <div class="container mx-auto max-w-4xl px-4 relative z-10">
+    <div class="container mx-auto max-w-3xl px-4 relative z-10">
       
-      <div class="text-center mb-20">
-        <span class="text-[12px] font-bold text-[#3B82F6] tracking-[0.5em] uppercase mb-4 block italic">F A Q</span>
-        <h3 class="text-5xl md:text-6xl font-black text-white uppercase italic tracking-tighter leading-none drop-shadow-2xl">
-          QUESTÕES <span class="text-leiria-gradient">FREQUENTES</span>
-        </h3>
-        <p class="text-white/40 mt-4 text-[11px] uppercase tracking-[0.2em] font-medium italic">
-          Esclareça todas as suas dúvidas
-        </p>
+      <!-- Header -->
+      <div class="text-center mb-16">
+        <div class="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2 mb-6">
+          <HelpCircle class="w-4 h-4 text-[#00D8FF]" />
+          <span class="text-[10px] font-black text-[#00D8FF] uppercase tracking-[0.3em]">Perguntas Frequentes</span>
+        </div>
+        <h2 class="text-4xl md:text-5xl font-black text-white uppercase italic tracking-tighter">
+          Tudo o que <span class="text-leiria-gradient">precisas</span> de saber
+        </h2>
       </div>
 
-      <div class="border-t border-white/10">
-        <div v-for="(faq, i) in faqs" :key="i" 
-             class="border-b border-white/5 transition-all duration-500">
-          
+      <!-- Loading -->
+      <div v-if="isLoading" class="flex justify-center py-12">
+        <div class="animate-spin rounded-full h-8 w-8 border-2 border-[#00D8FF] border-t-transparent"></div>
+      </div>
+
+      <!-- FAQ List -->
+      <div v-else class="space-y-3">
+        <div 
+          v-for="(faq, i) in faqs" 
+          :key="faq.id"
+          class="bg-[#050508] border rounded-2xl overflow-hidden transition-all duration-300"
+          :class="openIndex === i ? 'border-[#00D8FF]/30' : 'border-white/5'"
+        >
           <button 
             @click="toggleFaq(i)" 
-            class="w-full py-8 flex items-center justify-between text-left focus:outline-none group"
+            class="w-full px-6 py-5 flex items-center justify-between text-left gap-4"
           >
-            <span :class="[
-              'font-black text-lg md:text-xl uppercase italic tracking-tight transition-all duration-300 pr-8',
-              openIndex === i ? 'text-[#3B82F6]' : 'text-white group-hover:text-white'
-            ]">
-              {{ faq.q }}
+            <span class="text-sm font-bold text-white pr-4">
+              {{ faq.question }}
             </span>
             
-            <div :class="[
-              'h-9 w-9 rounded-full border flex items-center justify-center transition-all duration-500 shrink-0',
-              openIndex === i 
-                ? 'border-[#3B82F6] bg-[#3B82F6] text-white rotate-180 shadow-[0_0_20px_rgba(59,130,246,0.4)]' 
-                : 'border-white/10 text-gray-500 group-hover:border-white/30 group-hover:text-white'
-            ]">
-              <ChevronDown class="h-4 w-4" />
-            </div>
+            <ChevronDown 
+              class="w-5 h-5 shrink-0 transition-transform duration-300"
+              :class="openIndex === i ? 'text-[#00D8FF] rotate-180' : 'text-gray-500'"
+            />
           </button>
 
           <div 
-            class="grid transition-all duration-500 ease-in-out overflow-hidden"
+            class="grid transition-all duration-300"
             :style="{ gridTemplateRows: openIndex === i ? '1fr' : '0fr' }"
           >
-            <div class="min-h-0">
-              <div class="pb-9 pr-12 flex gap-6">
-                <div class="w-1 bg-gradient-to-b from-[#3B82F6] to-transparent mb-2 rounded-full opacity-60"></div>
-                <p class="text-white/60 text-base leading-relaxed antialiased">
-                  {{ faq.a }}
-                </p>
-              </div>
+            <div class="min-h-0 overflow-hidden">
+              <p class="px-6 pb-5 text-sm text-gray-400 leading-relaxed">
+                {{ faq.answer }}
+              </p>
             </div>
           </div>
-
         </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="text-center mt-12 pt-8 border-t border-white/5">
+        <p class="text-gray-400 text-sm mb-4">Não encontraste o que procuravas?</p>
+        <router-link 
+          to="/contacto" 
+          class="inline-flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 text-white text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-white/10 transition-all"
+        >
+          <Mail class="w-4 h-4" /> Fala Connosco
+        </router-link>
       </div>
 
     </div>
   </section>
 </template>
+
+<style scoped>
+.text-leiria-gradient {
+  background: linear-gradient(to right, #2563EB, #00D8FF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+</style>

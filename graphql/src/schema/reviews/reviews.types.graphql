@@ -1,0 +1,28 @@
+type Review {
+  id: ID!
+  name: String!
+  car: String!
+  text: String!
+  rating: Int!
+  createdAt: String
+}
+
+type ReviewOutput {
+  reviews: [Review!]
+  message: String
+  hasError: Boolean!
+}
+
+type ReviewMutationOutput {
+  review: Review
+  message: String
+  hasError: Boolean!
+  error: ErrorField
+}
+
+type ReviewDeleteOutput {
+  success: Boolean!
+  message: String
+  hasError: Boolean!
+  error: ErrorField
+}

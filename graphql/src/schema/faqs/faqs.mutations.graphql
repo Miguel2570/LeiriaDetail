@@ -1,0 +1,5 @@
+extend type Mutation {
+  addFaq(input: AddFaqInput!): FaqMutationOutput!
+  updateFaq(id: ID!, input: UpdateFaqInput!): FaqMutationOutput!
+  deleteFaq(id: ID!): FaqDeleteOutput!
+}

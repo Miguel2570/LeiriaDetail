@@ -2,8 +2,16 @@ type Service {
   id: ID!
   name: String!
   description: String
-  duration_minutes: Int!
-  price_ab: Float!
-  price_c: Float!
-  price_de: Float!
+  priceAB: Float!
+  priceC: Float!
+  priceDE: Float!
+  durationMinutes: Int
+  packType: String
+}
+
+type ServiceOutput {
+  services: [Service!]
+  message: String
+  hasError: Boolean!
+  error: ErrorField
 }

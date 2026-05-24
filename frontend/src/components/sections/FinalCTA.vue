@@ -3,33 +3,35 @@ import { MessageSquare, FileText } from 'lucide-vue-next'
 </script>
 
 <template>
-  <section class="py-32 relative overflow-hidden bg-white/50">
+  <section class="py-32 relative overflow-hidden bg-[#020204]">
     
-    <div class="absolute inset-0 bg-gradient-to-t from-transparent to-transparent -z-10"></div>
+    <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-[#2563EB]/8 blur-[120px] rounded-full pointer-events-none"></div>
 
-    <div class="container mx-auto px-4 text-center max-w-5xl relative z-10">
+    <div class="container mx-auto px-4 text-center max-w-3xl relative z-10">
       
-      <p class="text-xs md:text-sm font-black text-leiria-gradient uppercase tracking-[0.4em] mb-6 italic antialiased">
-        Não fiques com dúvidas,
+      <div class="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2 mb-8">
+        <MessageSquare class="w-4 h-4 text-[#00D8FF]" />
+        <span class="text-[10px] font-black text-[#00D8FF] uppercase tracking-[0.3em]">Não fiques com dúvidas</span>
+      </div>
+
+      <h2 class="text-5xl md:text-7xl font-black text-white uppercase italic tracking-tighter mb-6">
+        FALA <span class="text-leiria-gradient">CONNOSCO</span>
+      </h2>
+      
+      <p class="text-gray-400 text-sm mb-10 max-w-md mx-auto">
+        Pronto para transformar o seu carro? Fale connosco hoje mesmo.
       </p>
 
-      <h2 class="text-6xl md:text-8xl font-black text-white uppercase italic tracking-tighter mb-14 drop-shadow-2xl">
-        FALA <span class="text-white/90">CONNOSCO</span>
-      </h2>
-
-      <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
-        
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <a href="https://wa.me/351912345678" target="_blank" class="w-full sm:w-auto">
-          <button class="group w-full sm:w-auto bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white font-black px-12 py-5 rounded-2xl uppercase text-xs tracking-[0.2em] shadow-[0_15px_35px_rgba(59,130,246,0.3)] hover:shadow-[0_20px_50px_rgba(59,130,246,0.5)] hover:-translate-y-1.5 transition-all duration-300 flex items-center justify-center gap-3">
-            <MessageSquare class="h-5 w-5 transition-transform group-hover:scale-110" /> 
-            Enviar Whatsapp
+          <button class="w-full bg-gradient-to-r from-[#25D366] to-[#128C7E] text-white font-black px-8 py-4 rounded-xl uppercase text-xs tracking-widest hover:shadow-[0_10px_25px_rgba(37,211,102,0.4)] hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-3">
+            <MessageSquare class="h-4 w-4" /> WhatsApp
           </button>
         </a>
         
-        <router-link to="/precos" class="w-full sm:w-auto">
-          <button class="w-full sm:w-auto bg-black border-2 border-white/10 text-white font-black px-12 py-5 rounded-2xl uppercase text-xs tracking-[0.2em] hover:bg-white hover:text-[#0A0A0F] hover:border-white transition-all duration-300 flex items-center justify-center gap-3">
-            <FileText class="h-5 w-5" /> 
-            Pedir Orçamento
+        <router-link to="/contacto" class="w-full sm:w-auto">
+          <button class="w-full bg-white/5 border border-white/10 text-white font-black px-8 py-4 rounded-xl uppercase text-xs tracking-widest hover:bg-white/10 hover:border-[#00D8FF]/30 transition-all duration-300 flex items-center justify-center gap-3">
+            <FileText class="h-4 w-4" /> Pedir Orçamento
           </button>
         </router-link>
       </div>
@@ -39,16 +41,9 @@ import { MessageSquare, FileText } from 'lucide-vue-next'
 </template>
 
 <style scoped>
-/* Gradiente oficial da marca Leiria Detalhe */
 .text-leiria-gradient {
-  background: linear-gradient(to right, #3B82F6, #06B6D4);
+  background: linear-gradient(to right, #2563EB, #00D8FF);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-
-/* Otimização para dispositivos com ecrãs de alta densidade */
-.antialiased {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 </style>

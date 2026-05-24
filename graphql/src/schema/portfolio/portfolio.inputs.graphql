@@ -1,0 +1,19 @@
+input AddPortfolioInput {
+  title: String!
+  description: String
+  category: String!
+  imageUrl: String!
+  beforeImageUrl: String
+  afterImageUrl: String
+  isFeatured: Boolean
+}
+
+input UpdatePortfolioInput {
+  title: String
+  description: String
+  category: String
+  imageUrl: String
+  beforeImageUrl: String
+  afterImageUrl: String
+  isFeatured: Boolean
+}

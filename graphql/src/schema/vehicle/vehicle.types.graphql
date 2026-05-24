@@ -1,12 +1,12 @@
 type Vehicle {
   id: ID!
   userId: Int!
-  licensePlate: String!
+  licensePlate: String
   brand: String!
   model: String!
   year: Int
   fuelType: String
-  sizeCategory: String!
+  sizeCategory: String
   vin: String
   isPrimary: Boolean!
   createdAt: String!
@@ -22,7 +22,7 @@ type VehicleOutput {
 
 type ErrorField {
   field: String!
-  message: String!
+  message: String
 }
 
 type DeleteVehicleOutput {

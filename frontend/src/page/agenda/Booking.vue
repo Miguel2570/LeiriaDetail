@@ -36,6 +36,7 @@
               <CustomerDetails 
                 v-else-if="step === 2"
                 :modelValue="bookingData.customer"
+                :vehicle="bookingData.vehicle"
                 @update:modelValue="(val: any) => bookingData.customer = val"
               />
 
@@ -102,8 +103,8 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-vue-next';
-import { graphql } from '@/services/graphql';
-import { Cache } from '@/CacheManagement/cachemanager';
+import { graphql } from '@/graphql';
+import { Cache } from '@/services/cachemanager';
 
 // Componentes dos passos
 import CustomerDetails from '@/components/booking/CustomerDetails.vue'; 
@@ -120,14 +121,21 @@ const isSubmitting = ref(false); // Estado para evitar duplos cliques no botão 
 const steps = [
   { number: 1, label: 'Viatura' },
   { number: 2, label: 'Dados' },     
-  { number: 3, label: 'Serviço' },
+  { number: 3, label: 'Serviço' },  
   { number: 4, label: 'Agenda' },
   { number: 5, label: 'Confirmação' }
 ];
 
 const bookingData = ref({
   vehicle: null as any,
-  customer: null as any, 
+  customer: {
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    vehicle: '',
+    licensePlate: ''
+  },
   service: null as any,
   date: null as any,
   time: ''
@@ -146,53 +154,45 @@ const submitBooking = async () => {
   isSubmitting.value = true;
 
   try {
-    // 1. Verifica se o cliente tem sessão iniciada
     const userIdStr = Cache.UserId.value;
     if (!userIdStr) {
-      alert("Sessão expirada. Por favor inicie sessão para concluir a reserva.");
+      alert("Sessão expirada.");
       router.push('/login');
       return;
     }
 
-    const userId = parseInt(userIdStr, 10);
-    
-    // Converte os IDs para número para o GraphQL aceitar
-    // Se ainda não tens a viatura gravada na BD, podes meter um fallback como 1
-    const vehicleId = bookingData.value.vehicle?.id ? parseInt(bookingData.value.vehicle.id, 10) : 1; 
-    const serviceId = parseInt(bookingData.value.service.id, 10);
-
-    // 2. A Mutation GraphQL
     const mutation = `
-      mutation CreateNewBooking($input: BookingInput!) {
+      mutation CreateBooking($input: CreateBookingInput!) {
         createBooking(input: $input) {
-          id
-          status
-          booking_date
+          booking { id status }
+          hasError
+          error { message }
         }
       }
     `;
 
     const variables = {
       input: {
-        user_id: userId,
-        vehicle_id: vehicleId,
-        service_id: serviceId,
-        booking_date: bookingData.value.date,
-        booking_time: bookingData.value.time
+        userId: parseInt(userIdStr, 10),
+        vehicleId: parseInt(bookingData.value.vehicle.id, 10),
+        serviceId: parseInt(bookingData.value.service.id, 10),
+        bookingDate: bookingData.value.date.toString(),
+        bookingTime: bookingData.value.time
       }
     };
 
-    // 3. Executar o pedido
-    await graphql(mutation, variables);
+    const data = await graphql<{ createBooking: any }>(mutation, variables);
     
-    alert("Agendamento concluído com sucesso!");
-    
-    // Volta para o início ou para uma Área de Cliente
-    router.push('/'); 
+    if (data.createBooking.hasError) {
+      alert(data.createBooking.error?.message || "Erro ao criar marcação.");
+      return;
+    }
 
+    alert("Agendamento concluído com sucesso!");
+    router.push('/client-area');
+    
   } catch (error) {
     console.error("Erro ao gravar reserva:", error);
-    // Nota: O teu graphql.ts já faz o redirecionamento automático para a página de erro, se necessário.
   } finally {
     isSubmitting.value = false;
   }

@@ -1,0 +1,12 @@
+input AddFaqInput {
+  question: String!
+  answer: String!
+  orderIndex: Int
+}
+
+input UpdateFaqInput {
+  question: String
+  answer: String
+  orderIndex: Int
+  isActive: Boolean
+}

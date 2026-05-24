@@ -45,11 +45,13 @@ import { MapPin, Phone, Mail, Instagram, Facebook, Youtube } from 'lucide-vue-ne
                 Tabela de Preços
               </router-link>
             </li>
+            <!--
             <li>
               <router-link to="/portfolio" class="hover:text-[#3B82F6] transition-all duration-300 hover:pl-1">
                 Portfólio
               </router-link>
             </li>
+            -->
             <li>
               <router-link to="/agenda" class="text-[#3B82F6] font-bold hover:text-[#06B6D4] transition-all duration-300 hover:pl-1">
                 Agendar Agora →

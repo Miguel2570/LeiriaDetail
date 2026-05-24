@@ -1,16 +1,36 @@
 type Booking {
   id: ID!
-  user_id: Int!
-  vehicle_id: Int!
-  service_id: Int!
-  booking_date: String!
-  booking_time: String!
+  userId: Int!
+  bookingDate: String!
+  bookingTime: String!
   status: String!
-  created_at: String!
-  
-  # CAMPOS EXTRA QUE ADICIONÁMOS:
-  vehicle_name: String
-  vehicle_plate: String
-  service_name: String
-  service_price: Float
+  vehicleName: String
+  vehiclePlate: String
+  serviceName: String
+  servicePrice: Float
+  createdAt: String
+}
+
+type BookingOutput {
+  booking: Booking
+  message: String
+  hasError: Boolean!
+  error: ErrorField
+}
+
+type SlotOutput {
+  date: String
+  availableSlots: [String!]
+  occupiedSlots: [String!]
+  hasError: Boolean!
+  error: ErrorField
+}
+
+type PriceOutput {
+  vehicleCategory: String
+  serviceName: String
+  price: Float
+  durationMinutes: Int
+  hasError: Boolean!
+  error: ErrorField
 }

@@ -233,6 +233,30 @@ async function VerifyPassword(request: Request, response: Response): Promise<voi
     }
 }
 
+async function GoogleLogin(request: Request, response: Response) {
+    const { token } = request.body;
+
+    if (!token) {
+        response.status(400).json({ HasError: true, Error: { Message: "Token não fornecido." } });
+        return;
+    }
+
+    const result = await AuthenticationManager.GoogleLogin(token);
+    response.status(200).send(result);
+}
+
+async function AppleLogin(request: Request, response: Response) {
+    const { token, fullName } = request.body;
+
+    if (!token) {
+        response.status(400).json({ HasError: true, Error: { Message: "Token não fornecido." } });
+        return;
+    }
+
+    const result = await AuthenticationManager.AppleLogin(token, fullName);
+    response.status(200).send(result);
+}
+
 router.post("/Register", Register);
 router.post("/Login", Login);
 router.post("/Logout/:SecurityToken", Logout);
@@ -244,5 +268,7 @@ router.post("/verify-password", VerifyPassword);
 router.get("/Verify", VerifyAccount);
 router.get("/ValidateToken", ValidateToken);
 router.get("/CheckEmail", CheckEmail);
+router.post("/GoogleLogin", GoogleLogin);
+router.post("/AppleLogin", AppleLogin);
 
 export default router;

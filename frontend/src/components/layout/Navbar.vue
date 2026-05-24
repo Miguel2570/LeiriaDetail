@@ -134,7 +134,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { User, Menu, X } from 'lucide-vue-next';
 import Button from '@/components/ui/forms/Button.vue'
-import { Cache } from '@/CacheManagement/cachemanager';
+import { Cache } from '@/services/cachemanager';
 
 const isMenuOpen = ref(false);
 const router = useRouter();
@@ -144,7 +144,7 @@ const navLinks = [
   { name: 'Home', path: '/' },
   { name: 'Serviços', path: '/servicos' },
   { name: 'Preços', path: '/precos' },
-  { name: 'Portfólio', path: '/portfolio' },
+  //{ name: 'Portfólio', path: '/portfolio' },
   { name: 'Sobre', path: '/sobre' },
   { name: 'Contactos', path: '/contacto' },
 ];

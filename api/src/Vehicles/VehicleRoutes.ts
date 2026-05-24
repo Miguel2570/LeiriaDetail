@@ -1,20 +1,38 @@
 import { Request, Response, Router } from "express";
 import VehicleManager from "./VehicleManager";
 import { VehicleOutputModel } from "./VehicleModel";
+import { server } from "../Helpers/DatabaseConnectionHelper";
 
 const router = Router();
 
 async function AddVehicle(request: Request, response: Response) {
     const data = request.body;
-    const userId = parseInt(request.headers['user-id'] as string) || data.user_id;
+    const sessionKey = request.headers['session-key'] as string;
 
-    if (!userId) {
+    if (!sessionKey) {
         response.status(200).send(new VehicleOutputModel(undefined, undefined, {
-            Field: "user_id",
-            Message: "Utilizador não identificado."
+            Field: "session",
+            Message: "Sessão não fornecida."
         }));
         return;
     }
+
+    // Buscar user_id da sessão
+    const sessionQuery = `
+        SELECT user_id FROM user_sessions 
+        WHERE session_key = $1 AND expirationdatetime > NOW()
+    `;
+    const sessionResult = await server.query(sessionQuery, [sessionKey]);
+    
+    if (sessionResult.rows.length === 0) {
+        response.status(200).send(new VehicleOutputModel(undefined, undefined, {
+            Field: "session",
+            Message: "Sessão inválida ou expirada."
+        }));
+        return;
+    }
+
+    const userId = sessionResult.rows[0].user_id;
 
     if (!data.license_plate) {
         response.status(200).send(new VehicleOutputModel(undefined, undefined, {
@@ -25,7 +43,7 @@ async function AddVehicle(request: Request, response: Response) {
     }
 
     const result = await VehicleManager.addVehicle({
-        user_id: userId,
+        user_id: userId,  // ← Agora tem user_id
         license_plate: data.license_plate,
         brand: data.brand || '',
         model: data.model || '',
@@ -39,17 +57,32 @@ async function AddVehicle(request: Request, response: Response) {
 }
 
 async function GetUserVehicles(request: Request, response: Response) {
-    const userId = parseInt(request.query.user_id as string) || 
-                   parseInt(request.headers['user-id'] as string);
+    const sessionKey = request.headers['session-key'] as string;
 
-    if (!userId) {
+    if (!sessionKey) {
         response.status(200).send(new VehicleOutputModel(undefined, undefined, {
-            Field: "user_id",
-            Message: "Utilizador não identificado."
+            Field: "session",
+            Message: "Sessão não fornecida."
         }));
         return;
     }
 
+    // Buscar user_id da sessão
+    const sessionQuery = `
+        SELECT user_id FROM user_sessions 
+        WHERE session_key = $1 AND expirationdatetime > NOW()
+    `;
+    const sessionResult = await server.query(sessionQuery, [sessionKey]);
+    
+    if (sessionResult.rows.length === 0) {
+        response.status(200).send(new VehicleOutputModel(undefined, undefined, {
+            Field: "session",
+            Message: "Sessão inválida ou expirada."
+        }));
+        return;
+    }
+
+    const userId = sessionResult.rows[0].user_id;
     const result = await VehicleManager.getUserVehicles(userId);
     response.status(200).send(result);
 }

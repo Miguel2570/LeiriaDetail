@@ -1,4 +1,5 @@
 extend type Mutation {
-  # Adiciona um novo tratamento ao catálogo da LeiriaDetail
   createService(input: CreateServiceInput!): Service!
+  updateService(id: ID!, input: UpdateServiceInput!): Service!
+  deleteService(id: ID!): SimpleResponse!
 }

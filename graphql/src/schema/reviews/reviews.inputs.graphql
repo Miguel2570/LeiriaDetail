@@ -1,0 +1,6 @@
+input AddReviewInput {
+  name: String!
+  car: String!
+  text: String!
+  rating: Int
+}

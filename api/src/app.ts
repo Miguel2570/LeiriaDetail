@@ -4,7 +4,12 @@ import dotenv from "dotenv";
 import authenticationRouters from "./Authentication/AuthenticationRoutes";
 import { LoginValidationMiddleware } from "./Helpers/AuthorizationMiddleware";
 import profileRoutes from "./Profile/ProfileRoutes";
-
+import serviceRoutes from "./Services/ServiceRoutes";
+import bookingRoutes from "./Bookings/BookingRoutes";
+import vehicleRoutes from "./Vehicles/VehicleRoutes";
+import portfolioRoutes from "./Portfolio/PortfolioRoutes";
+import reviewRoutes from "./Reviews/ReviewRoutes";
+import faqRoutes from "./Faqs/FaqRoutes";
 
 dotenv.config();
 
@@ -19,43 +24,36 @@ app.use(cors({
     origin: allowedOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'X-Requested-With', 'credencialkey', 'Session-Key', 'token']
+    allowedHeaders: ['Content-Type', 'X-Requested-With', 'credencialkey', 'Session-Key', 'session-key', 'token']
 }));
 
+// Rotas públicas (sem autenticação)
 const publicRoutes = [
     '/Authentication/Login',
     '/Authentication/Register',
     '/Authentication/CheckEmail',
     '/Authentication/Verify',
     '/Authentication/Resend-Verification',
-    
+    '/Authentication/Reset-Password',
+    '/Authentication/ValidateToken',
 ];
 
+// Aplicar middleware de autenticação
+app.use(LoginValidationMiddleware(publicRoutes));
+
+// Rotas
 app.use('/Authentication', authenticationRouters);
 app.use("/Profile", profileRoutes);
+app.use("/Services", serviceRoutes);
+app.use("/Bookings", bookingRoutes);
+app.use("/Vehicles", vehicleRoutes);
+app.use("/Portfolio", portfolioRoutes);
+app.use("/Reviews", reviewRoutes);
+app.use("/Faqs", faqRoutes);
 
-app.get("/health", (req, res) => {
-    res.json({ 
-        status: "ok", 
-        service: "leiriadetail-api",
-        environment: process.env.NODE_ENV,
-        timestamp: new Date().toISOString()
-    });
-});
 
 app.get("/", (req, res) => {
-    res.send(`
-        <html>
-            <body>
-                <h1>LeiriaDetail API</h1>
-                <ul>
-                    <li><a href="/health">Health Check</a></li>
-                    <li><a href="/Authentication">Authentication</a></li>
-                </ul>
-                <p>Environment: ${process.env.NODE_ENV}</p>
-            </body>
-        </html>
-    `);
+    res.send(`...`);
 });
 
 const PORT: number = Number(process.env.API_PORT) || 3001;

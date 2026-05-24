@@ -1,10 +1,3 @@
-<script setup lang="ts">
-import { User, Car, Mail, Phone, Hash } from 'lucide-vue-next';
-const props = defineProps<{ modelValue: any; }>();
-const emit = defineEmits(['update:modelValue']);
-const updateField = (field: string, value: any) => emit('update:modelValue', { ...props.modelValue, [field]: value });
-</script>
-
 <template>
   <div class="bg-white/[0.01] border border-white/5 rounded-[2rem] p-8 md:p-10 shadow-lg">
     
@@ -59,3 +52,67 @@ const updateField = (field: string, value: any) => emit('update:modelValue', { .
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { computed, watch } from 'vue';
+import { User, Car, Mail, Phone, Hash } from 'lucide-vue-next';
+import { graphql } from '@/graphql';
+import { Cache } from '@/services/cachemanager';
+
+const props = defineProps<{ 
+  modelValue: any;
+  vehicle: any;  // ← Veículo selecionado no passo 1
+}>();
+const emit = defineEmits(['update:modelValue']);
+
+const safeValue = computed(() => props.modelValue || { 
+  firstName: '', 
+  lastName: '', 
+  email: '', 
+  phone: '', 
+  vehicle: '', 
+  licensePlate: '' 
+});
+
+// Preencher automaticamente quando o veículo é selecionado
+watch(() => props.vehicle, (newVehicle) => {
+  if (newVehicle) {
+    emit('update:modelValue', {
+      ...safeValue.value,
+      vehicle: `${newVehicle.brand} ${newVehicle.model}`,
+      licensePlate: newVehicle.licensePlate
+    });
+  }
+}, { immediate: true });
+
+// Carregar dados do perfil
+const loadProfileData = async () => {
+  try {
+    const query = `
+      query {
+        profile {
+          profile { firstName lastName email phone }
+        }
+      }
+    `;
+    const data = await graphql<{ profile: { profile: any } }>(query);
+    if (data.profile?.profile) {
+      emit('update:modelValue', {
+        ...safeValue.value,
+        firstName: data.profile.profile.firstName || '',
+        lastName: data.profile.profile.lastName || '',
+        email: data.profile.profile.email || '',
+        phone: data.profile.profile.phone || ''
+      });
+    }
+  } catch (error) {
+    console.error('Erro ao carregar perfil:', error);
+  }
+};
+
+loadProfileData();
+
+const updateField = (field: string, value: any) => {
+  emit('update:modelValue', { ...safeValue.value, [field]: value });
+};
+</script>

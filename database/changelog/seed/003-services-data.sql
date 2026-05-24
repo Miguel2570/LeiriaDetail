@@ -1,13 +1,47 @@
 -- liquibase formatted sql
+-- changeset leiria:seed-services
 
--- changeset leiriadetail:seed-real-services
--- Limpar os serviços antigos
-TRUNCATE TABLE services CASCADE;
+-- ============================================
+-- PACK BÁSICO (3 preços: Citadino, Luxo, Premium)
+-- ============================================
 
--- Inserir os teus serviços reais! (Duração estimada em minutos para referência na agenda)
-INSERT INTO services (name, description, duration_minutes, price_ab, price_c, price_de) VALUES 
-('Lavagem Detalhada', 'Lavagem manual premium com descontaminação leve.', 90, 30.00, 35.00, 40.00),
-('Detalhe Interior', 'Limpeza profunda de estofos, plásticos e hidratação.', 180, 80.00, 90.00, 100.00),
-('Polimento 1 Fase', 'Correção de pintura leve para remover swirls e puxar brilho.', 300, 120.00, 140.00, 160.00),
-('Detalhe Completo', 'Exterior e Interior tratados com a máxima atenção ao detalhe.', 480, 180.00, 210.00, 240.00),
-('Proteção Cerâmica', 'Revestimento cerâmico para proteção extrema e hidrofobia.', 600, 250.00, 280.00, 320.00);
+INSERT INTO services (name, description, price_ab, price_c, price_de, duration_minutes, pack_type) VALUES
+('Lavagem Exterior', 'Lavagem à mão + secar com pano de microfibra', 20, 30, 40, 30, 'Básico');
+
+INSERT INTO services (name, description, price_ab, price_c, price_de, duration_minutes, pack_type) VALUES
+('Lavagem Interior', 'Aspiração, limpeza de plásticos (pano de microfibra)', 25, 35, 50, 45, 'Básico');
+
+INSERT INTO services (name, description, price_ab, price_c, price_de, duration_minutes, pack_type) VALUES
+('Lavagem Exterior e Interior', 'Junção dos dois serviços', 40, 55, 75, 60, 'Básico');
+
+INSERT INTO services (name, description, price_ab, price_c, price_de, duration_minutes, pack_type) VALUES
+('Lavagem Jantes e Pneus', 'Lavagem à mão', 15, 20, 25, 20, 'Básico');
+
+INSERT INTO services (name, description, price_ab, price_c, price_de, duration_minutes, pack_type) VALUES
+('Lavagem Jantes, Pneus e Discos', 'Sem remoção da roda', 20, 25, 35, 30, 'Básico');
+
+INSERT INTO services (name, description, price_ab, price_c, price_de, duration_minutes, pack_type) VALUES
+('Lavagem Completa', 'Exterior, interior, jantes, pneus e discos + oferta de ambientador', 55, 75, 100, 90, 'Básico');
+
+
+-- ============================================
+-- PACK PREMIUM (3 preços: Citadino, Luxo, Premium)
+-- ============================================
+
+INSERT INTO services (name, description, price_ab, price_c, price_de, duration_minutes, pack_type) VALUES
+('Lavagem Exterior', 'Snow-foam + pincéis + secar com pano de microfibra', 30, 40, 55, 45, 'Premium');
+
+INSERT INTO services (name, description, price_ab, price_c, price_de, duration_minutes, pack_type) VALUES
+('Lavagem Interior', 'Aspiração profunda, lavagem de estofos, detalhamento com pincel', 40, 50, 70, 60, 'Premium');
+
+INSERT INTO services (name, description, price_ab, price_c, price_de, duration_minutes, pack_type) VALUES
+('Lavagem Exterior e Interior', 'Junção dos dois serviços premium', 60, 75, 90, 90, 'Premium');
+
+INSERT INTO services (name, description, price_ab, price_c, price_de, duration_minutes, pack_type) VALUES
+('Lavagem Jantes e Pneus', 'Lavagem com piaçaba', 20, 25, 35, 30, 'Premium');
+
+INSERT INTO services (name, description, price_ab, price_c, price_de, duration_minutes, pack_type) VALUES
+('Lavagem Jantes, Pneus e Discos', 'Com remoção da roda', 25, 30, 45, 40, 'Premium');
+
+INSERT INTO services (name, description, price_ab, price_c, price_de, duration_minutes, pack_type) VALUES
+('Lavagem Completa', 'Tratamento premium completo + oferta de ambientador', 80, 95, 120, 120, 'Premium');

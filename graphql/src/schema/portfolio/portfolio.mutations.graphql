@@ -1,0 +1,5 @@
+extend type Mutation {
+  addPortfolioItem(input: AddPortfolioInput!): PortfolioMutationOutput!
+  updatePortfolioItem(id: ID!, input: UpdatePortfolioInput!): PortfolioMutationOutput!
+  deletePortfolioItem(id: ID!): PortfolioMutationOutput!
+}

@@ -1,7 +1,5 @@
 extend type Query {
-  # Retorna a lista completa de serviços para a seleção no frontend
-  services: [Service!]!
-  
-  # Procura um serviço específico pelo ID (útil para detalhes ou faturamento)
-  service(id: ID!): Service
+  services: ServiceOutput!
+  service(id: ID!): ServiceOutput!
+  servicesByPack(pack: String!): ServiceOutput!
 }

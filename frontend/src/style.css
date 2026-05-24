@@ -78,3 +78,22 @@ body.booking-dark-mode::before {
   transform: translateZ(0);
   -webkit-backface-visibility: hidden;
 }
+
+select {
+  color-scheme: dark;
+}
+
+/* Fallback para browsers que não suportam color-scheme */
+@supports not (color-scheme: dark) {
+  select option {
+    background-color: #1a1a1a;
+    color: white;
+  }
+}
+
+/* Garante que opções são legíveis em qualquer situação */
+select option {
+  background-color: #1a1a1a;
+  color: white;
+  padding: 8px;
+}

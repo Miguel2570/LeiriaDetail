@@ -1,0 +1,26 @@
+type Faq {
+  id: ID!
+  question: String!
+  answer: String!
+  orderIndex: Int!
+}
+
+type FaqOutput {
+  faqs: [Faq!]
+  message: String
+  hasError: Boolean!
+}
+
+type FaqMutationOutput {
+  faq: Faq
+  message: String
+  hasError: Boolean!
+  error: ErrorField
+}
+
+type FaqDeleteOutput {
+  success: Boolean!
+  message: String
+  hasError: Boolean!
+  error: ErrorField
+}

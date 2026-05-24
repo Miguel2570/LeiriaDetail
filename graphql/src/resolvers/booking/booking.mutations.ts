@@ -1,20 +1,21 @@
-import { pool } from '../../db';
+import { API } from '../../proxy/serviceproxy/api';
 
-export const bookingMutations = {
-    createBooking: async (_: any, { input }: { input: any }, context: any) => {
-        const { user_id, vehicle_id, service_id, booking_date, booking_time } = input;
+export const bookingsMutations = {
+    createBooking: async (_: any, { input }: any, context: any) => {
         try {
-            const q = `
-                INSERT INTO bookings (user_id, vehicle_id, service_id, booking_date, booking_time, status)
-                VALUES ($1, $2, $3, $4, $5, 'PENDENTE')
-                RETURNING *
-            `;
-            const values = [user_id, vehicle_id, service_id, booking_date, booking_time];
-            const res = await pool.query(q, values);
-            return res.rows[0];
-        } catch (err) {
-            console.error("Erro ao criar marcação:", err);
-            throw new Error("Erro ao guardar a marcação na base de dados.");
+            const data: any = await API.POST<any>(context, "/Bookings/", input);
+            return {
+                booking: data.Booking || null,
+                message: data.Message,
+                hasError: data.HasError || false,
+                error: data.Error || null
+            };
+        } catch (error: any) {
+            return {
+                booking: null,
+                hasError: true,
+                error: { field: "server", message: error.message }
+            };
         }
     }
 };

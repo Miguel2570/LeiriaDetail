@@ -1,45 +1,109 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import Home from '@/page/Home.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+
+import Home from '@/page/Home.vue';
 
 const routes = [
-  { path: '/', name: 'home', component: Home },
-  
-  { path: '/login', name: 'login', component: () => import('@/page/auth/Login.vue') },
-  { path: '/registar', name: 'register', component: () => import('@/page/auth/Register.vue') },
-  
-  { 
-    path: '/agenda', 
-    alias: ['/booking', '/marcacao'], 
-    name: 'booking', 
-    component: () => import('@/page/agenda/Booking.vue') 
+  {
+    path: '/',
+    name: 'home',
+    component: Home,
   },
-  { path: '/sobre', component: () => import('@/page/About.vue') },
-  { path: '/contacto', component: () => import('@/page/Contact.vue') },
-  { path: '/servicos', component: () => import('@/page/services/Services.vue') },
-  { path: '/precos', component: () => import('@/page/Pricing.vue') },
-  { path: '/portfolio', component: () => import('@/page/Portfolio.vue') },
-  { path: '/privacidade', component: () => import('@/page/legal/Privacy.vue') },
-  { path: '/termos', component: () => import('@/page/legal/Terms.vue') },
-  { path: '/cookies', component: () => import('@/page/legal/Cookies.vue') },
-  { 
-    path: '/client-area', 
-    name: 'client-area', 
-    component: () => import('@/page/ClientArea.vue') 
+
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('@/page/auth/Login.vue'),
   },
-  { 
+
+  {
+    path: '/registar',
+    name: 'register',
+    component: () => import('@/page/auth/Register.vue'),
+  },
+
+  {
+    path: '/agenda',
+    alias: ['/booking', '/marcacao'],
+    name: 'booking',
+    component: () => import('@/page/agenda/Booking.vue'),
+  },
+
+  {
+    path: '/sobre',
+    component: () => import('@/page/About.vue'),
+  },
+
+  {
+    path: '/contacto',
+    component: () => import('@/page/Contact.vue'),
+  },
+
+  {
+    path: '/servicos',
+    component: () => import('@/page/services/Services.vue'),
+  },
+
+  {
+    path: '/precos',
+    component: () => import('@/page/services/Pricing.vue'),
+  },
+
+  {
+    path: '/portfolio',
+    component: () => import('@/page/Portfolio.vue'),
+  },
+
+  {
+    path: '/privacidade',
+    component: () => import('@/page/legal/Privacy.vue'),
+  },
+
+  {
+    path: '/termos',
+    component: () => import('@/page/legal/Terms.vue'),
+  },
+
+  {
+    path: '/cookies',
+    component: () => import('@/page/legal/Cookies.vue'),
+  },
+
+  {
+    path: '/client-area',
+    name: 'client-area',
+    component: () => import('@/page/profile/ClientArea.vue'),
+  },
+
+  {
     path: '/clientarea',
-    name: 'clientarea', 
-    component: () => import('@/page/ClientArea.vue') 
+    name: 'clientarea',
+    component: () => import('@/page/profile/ClientArea.vue'),
   },
+  {
+    path: '/error',
+    name: 'error',
+    component: () => import('@/page/Error.vue'),
+    // Permite passar dados via state
+    props: true
+  },
+
   // Rota obrigatória para o nosso sistema global de tratamento de exceções
-  //&{ path: '/error', name: 'error', component: () => import('@/page/Error.vue') }
-]
+  // {
+  //   path: '/error',
+  //   name: 'error',
+  //   component: () => import('@/page/Error.vue'),
+  // },
+];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes,
-  // Excelente toque: faz a página voltar sempre ao topo ao mudar de rota!
-  scrollBehavior: () => ({ top: 0 }) 
-})
 
-export default router
+  routes,
+
+  // Faz a página voltar ao topo ao mudar de rota
+  scrollBehavior: () => ({
+    top: 0,
+  }),
+});
+
+export default router;

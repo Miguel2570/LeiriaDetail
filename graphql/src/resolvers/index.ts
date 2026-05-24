@@ -1,11 +1,11 @@
 import { authMutations } from './auth/auth.mutation';
 import { authQueries } from './auth/auth.queries';
 
-import { serviceQueries } from "./service/service.queries";
+import { servicesQueries } from './service/service.queries';
 import { serviceMutations } from "./service/service.mutations";
 
-import { bookingQueries } from "./booking/booking.queries";
-import { bookingMutations } from "./booking/booking.mutations";
+import { bookingsQueries } from './booking/booking.queries';
+import { bookingsMutations } from './booking/booking.mutations';
 
 import { vehicleQueries } from './vehicle/vehicle.queries';
 import { vehicleMutations } from './vehicle/vehicle.mutations';
@@ -13,20 +13,35 @@ import { vehicleMutations } from './vehicle/vehicle.mutations';
 import { profileQueries } from './profile/profile.queries';
 import { profileMutations } from './profile/profile.mutations';
 
+import { portfolioQueries } from './portfolio/portfolio.queries';
+import { portfolioMutations } from './portfolio/portfolio.mutations';
+
+import { reviewsQueries } from './reviews/reviews.queries';
+import { reviewsMutations } from './reviews/reviews.mutations';
+
+import { faqsQueries } from './faqs/faqs.queries';
+import { faqsMutations } from './faqs/faqs.mutations';
+
 const resolvers = {
     Query: {
-        ...serviceQueries,
-        ...bookingQueries,
+        ...servicesQueries,
+        ...bookingsQueries,
         ...vehicleQueries,
         ...authQueries,
-        ...profileQueries
+        ...profileQueries,
+        ...portfolioQueries,
+        ...reviewsQueries,
+        ...faqsQueries
     },
     Mutation: {
         ...authMutations,
         ...serviceMutations,
-        ...bookingMutations,
+        ...bookingsMutations,
         ...vehicleMutations,
-        ...profileMutations
+        ...profileMutations,
+        ...portfolioMutations,
+        ...reviewsMutations,
+        ...faqsMutations
     }
 };
 

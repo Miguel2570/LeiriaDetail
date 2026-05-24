@@ -1,50 +1,64 @@
-import { pool } from "../../db";
+import { API } from '../../proxy/serviceproxy/api';
 
-export const bookingQueries = {
-  bookings: async () => {
-    const res = await pool.query("SELECT * FROM bookings ORDER BY booking_date DESC");
-    return res.rows;
-  },
-  // Faz um JOIN para trazer os dados do serviço e do veículo tudo junto!
-  customerBookings: async (_: any, { user_id }: { user_id: number }) => {
-    const query = `
-      SELECT 
-        b.id,
-        b.user_id,
-        b.booking_date,
-        b.booking_time,
-        b.status,
-        b.created_at,
-        v.brand as vehicle_brand,
-        v.model as vehicle_model,
-        v.license_plate as vehicle_plate,
-        v.size_category,
-        s.name as service_name,
-        CASE 
-          WHEN v.size_category = 'A' OR v.size_category = 'B' THEN s.price_ab
-          WHEN v.size_category = 'C' THEN s.price_c
-          WHEN v.size_category = 'D' OR v.size_category = 'E' THEN s.price_de
-          ELSE s.price_c
-        END as service_price
-      FROM bookings b
-      JOIN vehicles v ON b.vehicle_id = v.id
-      JOIN services s ON b.service_id = s.id
-      WHERE b.user_id = $1
-      ORDER BY b.booking_date DESC, b.booking_time DESC
-    `;
-    const res = await pool.query(query, [user_id]);
-    
-    return res.rows.map(row => ({
-      id: row.id,
-      user_id: row.user_id,
-      booking_date: row.booking_date,
-      booking_time: row.booking_time,
-      status: row.status,
-      created_at: row.created_at,
-      vehicle_name: `${row.vehicle_brand} ${row.vehicle_model}`,
-      vehicle_plate: row.vehicle_plate,
-      service_name: row.service_name,
-      service_price: row.service_price
-    }));
-  }
+export const bookingsQueries = {
+    userBookings: async (_: any, { userId }: { userId: number }, context: any) => {
+        try {
+            const data: any = await API.GET<any>(context, `/Bookings?user_id=${userId}`);
+            
+            console.log('📦 Bookings API response:', JSON.stringify(data)); // Debug
+            
+            // A API retorna { Booking: [...] } - um array
+            if (data.Booking && Array.isArray(data.Booking)) {
+                return data.Booking;
+            }
+            
+            // Se for um objeto único, mete em array
+            if (data.Booking) {
+                return [data.Booking];
+            }
+            
+            return [];
+        } catch (error) {
+            console.error('❌ userBookings error:', error);
+            return [];
+        }
+    },
+
+    availableSlots: async (_: any, { date }: { date: string }, context: any) => {
+        try {
+            const data: any = await API.GET<any>(context, `/Bookings/slots?date=${date}`);
+            return {
+                date: data.Date,
+                availableSlots: data.AvailableSlots || [],
+                occupiedSlots: data.OccupiedSlots || [],
+                hasError: data.HasError || false,
+                error: data.Error || null
+            };
+        } catch (error: any) {
+            return {
+                availableSlots: [],
+                hasError: true,
+                error: { field: "server", message: error.message }
+            };
+        }
+    },
+
+    calculatePrice: async (_: any, { vehicleId, serviceId }: any, context: any) => {
+        try {
+            const data: any = await API.GET<any>(context, `/Bookings/price?vehicle_id=${vehicleId}&service_id=${serviceId}`);
+            return {
+                vehicleCategory: data.VehicleCategory,
+                serviceName: data.ServiceName,
+                price: data.Price,
+                durationMinutes: data.DurationMinutes,
+                hasError: data.HasError || false,
+                error: data.Error || null
+            };
+        } catch (error: any) {
+            return {
+                hasError: true,
+                error: { field: "server", message: error.message }
+            };
+        }
+    }
 };

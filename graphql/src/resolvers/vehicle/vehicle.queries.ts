@@ -6,7 +6,16 @@ export const vehicleQueries = {
             const data: any = await API.GET<any>(context, "/Vehicles/List");
             
             return {
-                vehicles: data.Vehicles || [],
+                vehicles: (data.Vehicles || []).map((v: any) => ({
+                    id: v.id?.toString(),
+                    licensePlate: v.license_plate || '',
+                    brand: v.brand || '',
+                    model: v.model || '',
+                    year: v.year || null,
+                    fuelType: v.fuel_type || null,
+                    sizeCategory: v.size_category || 'C',
+                    isPrimary: v.is_primary || false
+                })),
                 hasError: data.HasError || false,
                 error: data.Error || null
             };

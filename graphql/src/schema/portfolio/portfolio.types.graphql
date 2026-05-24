@@ -1,0 +1,25 @@
+type PortfolioItem {
+  id: ID!
+  title: String!
+  description: String
+  category: String!
+  imageUrl: String!
+  beforeImageUrl: String
+  afterImageUrl: String
+  isFeatured: Boolean!
+  createdAt: String
+}
+
+type PortfolioOutput {
+  items: [PortfolioItem!]
+  categories: [String!]
+  message: String
+  hasError: Boolean!
+}
+
+type PortfolioMutationOutput {
+  item: PortfolioItem
+  message: String
+  hasError: Boolean!
+  error: ErrorField
+}
