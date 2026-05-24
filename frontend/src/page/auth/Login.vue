@@ -1,33 +1,10 @@
-<script setup lang="ts">
-import { ref } from 'vue';
-import { Mail, Lock, LogIn, ArrowRight } from 'lucide-vue-next';
-
-const email = ref('');
-const password = ref('');
-
-const handleSubmit = () => {
-  console.log('Login Email:', { email: email.value, password: password.value });
-  alert('Login efetuado com sucesso!');
-};
-
-const loginWithGoogle = () => {
-  console.log('A iniciar login com Google...');
-  // Aqui vai entrar a lógica do Firebase/Supabase depois
-};
-
-const loginWithApple = () => {
-  console.log('A iniciar login com Apple...');
-  // Aqui vai entrar a lógica de Apple Sign-In depois
-};
-</script>
-
 <template>
   <div class="min-h-[85vh] flex items-center justify-center py-16 px-4 relative z-10">
     <div class="max-w-md w-full">
       
       <div class="text-center mb-8">
         <h1 class="text-4xl font-black mb-2 text-gray-900 uppercase italic tracking-tighter drop-shadow-sm">
-          Bem-vindo de <span class="text-leiria-gradient">volta</span>
+          Bem-vindo de <span class="bg-gradient-to-r from-[#2563EB] to-[#00D8FF] bg-clip-text text-transparent">volta</span>
         </h1>
         <p class="text-gray-600 font-medium">Acede à tua área de cliente LeiriaDetail</p>
       </div>
@@ -59,7 +36,11 @@ const loginWithApple = () => {
           <div class="h-px bg-white/10 flex-1"></div>
         </div>
 
-        <form @submit.prevent="handleSubmit" class="space-y-5">
+        <div v-if="errorMessage" class="mb-4 p-4 rounded-xl bg-red-500/10 border border-red-500/50 flex items-center text-red-500 text-sm font-bold">
+          {{ errorMessage }}
+        </div>
+
+        <form @submit.prevent="handleLogin" class="space-y-5">
           <div>
             <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Email</label>
             <div class="relative">
@@ -79,8 +60,9 @@ const loginWithApple = () => {
             </div>
           </div>
 
-          <button type="submit" class="w-full py-4 mt-2 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white font-black uppercase tracking-widest text-sm rounded-xl shadow-[0_10px_20px_rgba(59,130,246,0.3)] hover:shadow-[0_10px_25px_rgba(59,130,246,0.5)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
-            <LogIn class="h-5 w-5" /> Entrar na Conta
+          <button type="submit" :disabled="isLoading" class="w-full py-4 mt-2 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white font-black uppercase tracking-widest text-sm rounded-xl shadow-[0_10px_20px_rgba(59,130,246,0.3)] hover:shadow-[0_10px_25px_rgba(59,130,246,0.5)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            <LogIn v-if="!isLoading" class="h-5 w-5" /> 
+            {{ isLoading ? 'A entrar...' : 'Entrar na Conta' }}
           </button>
         </form>
 
@@ -93,7 +75,59 @@ const loginWithApple = () => {
           </p>
         </div>
       </div>
-
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { Mail, Lock, LogIn, ArrowRight } from 'lucide-vue-next';
+import { Cache } from '@/CacheManagement/cachemanager';
+
+const router = useRouter();
+const email = ref('');
+const password = ref('');
+const errorMessage = ref('');
+const isLoading = ref(false);
+
+const handleLogin = async () => {
+    isLoading.value = true;
+    errorMessage.value = '';
+
+    try {
+        const response = await fetch('http://localhost:3001/Authentication/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: email.value,
+                password: password.value
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Credenciais inválidas.');
+        }
+
+        // Login com sucesso! Guardar dados na Cache
+        Cache.setAuth(
+            data.user.id.toString(), // Token de sessão fictício (usando o ID)
+            data.user.id.toString(),
+            data.user.name || data.user.email
+        );
+
+        // Redireciona o utilizador para a Marcação
+        router.push('/agenda');
+        
+    } catch (error: any) {
+        errorMessage.value = error.message;
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+const loginWithGoogle = () => console.log('A implementar Google...');
+const loginWithApple = () => console.log('A implementar Apple...');
+</script>

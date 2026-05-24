@@ -1,0 +1,7 @@
+extend type Query {
+  # Permite ao painel de administração listar todas as marcações do sistema
+  bookings: [Booking!]!
+  
+  # Permite obter o histórico de agendamentos de um cliente específico
+  customerBookings(user_id: Int!): [Booking!]!
+}

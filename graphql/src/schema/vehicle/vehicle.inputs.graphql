@@ -1,0 +1,6 @@
+input CreateVehicleInput {
+  user_id: Int!
+  brand: String!
+  model: String!
+  license_plate: String!
+}

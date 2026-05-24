@@ -1,0 +1,7 @@
+input BookingInput {
+  user_id: Int!
+  vehicle_id: Int!
+  service_id: Int!
+  booking_date: String!
+  booking_time: String!
+}

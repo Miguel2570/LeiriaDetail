@@ -1,0 +1,4 @@
+extend type Mutation {
+  # Acionada quando o utilizador clica em "Finalizar Reserva" no Booking.vue
+  createBooking(input: BookingInput!): Booking!
+}

@@ -1,0 +1,4 @@
+extend type Mutation {
+  # Adiciona um novo tratamento ao catálogo da LeiriaDetail
+  createService(input: CreateServiceInput!): Service!
+}

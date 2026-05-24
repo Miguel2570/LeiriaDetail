@@ -1,0 +1,4 @@
+extend type Mutation {
+  # Para quando o cliente quiser adicionar um carro novo
+  createVehicle(input: CreateVehicleInput!): Vehicle!
+}

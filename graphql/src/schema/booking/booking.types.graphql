@@ -1,0 +1,16 @@
+type Booking {
+  id: ID!
+  user_id: Int!
+  vehicle_id: Int!
+  service_id: Int!
+  booking_date: String!
+  booking_time: String!
+  status: String!
+  created_at: String!
+  
+  # CAMPOS EXTRA QUE ADICIONÁMOS:
+  vehicle_name: String
+  vehicle_plate: String
+  service_name: String
+  service_price: Float
+}

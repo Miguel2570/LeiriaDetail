@@ -1,0 +1,8 @@
+type Vehicle {
+  id: ID!
+  user_id: Int!
+  brand: String!
+  model: String!
+  license_plate: String!
+  created_at: String!
+}

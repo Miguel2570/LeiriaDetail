@@ -1,0 +1,6 @@
+input CreateServiceInput {
+  name: String!
+  description: String
+  price: Float!
+  duration_minutes: Int!
+}

@@ -21,12 +21,20 @@ const routes = [
   { path: '/privacidade', component: () => import('@/page/legal/Privacy.vue') },
   { path: '/termos', component: () => import('@/page/legal/Terms.vue') },
   { path: '/cookies', component: () => import('@/page/legal/Cookies.vue') },
+  { 
+  path: '/client-area', 
+  name: 'client-area', 
+  component: () => import('@/page/ClientArea.vue') 
+},
+  // Rota obrigatória para o nosso sistema global de tratamento de exceções
+  //&{ path: '/error', name: 'error', component: () => import('@/page/Error.vue') }
 ]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
-  scrollBehavior: () => ({ top: 0 })
+  // Excelente toque: faz a página voltar sempre ao topo ao mudar de rota!
+  scrollBehavior: () => ({ top: 0 }) 
 })
 
 export default router
