@@ -22,6 +22,9 @@ import { reviewsMutations } from './reviews/reviews.mutations';
 import { faqsQueries } from './faqs/faqs.queries';
 import { faqsMutations } from './faqs/faqs.mutations';
 
+import { materialsQueries } from './materials/materials.queries';
+import { materialsMutations } from './materials/materials.mutations';
+
 const resolvers = {
     Query: {
         ...servicesQueries,
@@ -31,7 +34,8 @@ const resolvers = {
         ...profileQueries,
         ...portfolioQueries,
         ...reviewsQueries,
-        ...faqsQueries
+        ...faqsQueries,
+        ...materialsQueries
     },
     Mutation: {
         ...authMutations,
@@ -41,7 +45,8 @@ const resolvers = {
         ...profileMutations,
         ...portfolioMutations,
         ...reviewsMutations,
-        ...faqsMutations
+        ...faqsMutations,
+        ...materialsMutations
     }
 };
 

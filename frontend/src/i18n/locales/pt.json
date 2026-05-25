@@ -1,0 +1,233 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Serviços",
+    "prices": "Preços",
+    "portfolio": "Portfólio",
+    "materials": "Materiais",
+    "faq": "FAQ",
+    "about": "Sobre",
+    "contact": "Contactos",
+    "profile": "Perfil",
+    "login": "Entrar",
+    "logout": "Sair",
+    "schedule": "Agendar",
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu"
+  },
+  "footer": {
+    "brandDescription": "O estúdio de detalhe automóvel de excelência em Leiria. Porque o seu carro merece mais do que uma simples lavagem.",
+    "quickLinks": "Links Rápidos",
+    "legal": "Legal",
+    "contacts": "Contactos",
+    "address": "Zona Industrial, Leiria, Portugal",
+    "copyright": "© 2026 LeiriaDetail. Todos os direitos reservados.",
+    "social": {
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "youtube": "Youtube"
+    },
+    "links": {
+      "services": "Serviços",
+      "prices": "Tabela de Preços",
+      "schedule": "Agendar Agora",
+      "terms": "Termos e Condições",
+      "privacy": "Política de Privacidade",
+      "cookies": "Política de Cookies",
+      "complaints": "Livro de Reclamações"
+    }
+  },
+  "terms": {
+    "badge": "Acordo de Serviço",
+    "title1": "TERMOS E",
+    "title2": "CONDIÇÕES",
+    "subtitle": "LeiriaDetail — Condições Gerais de Operação",
+    "watermark": "Termos de Serviço",
+    "sections": {
+      "01": {
+        "title": "Orçamentos e Avaliação",
+        "content": "Os preços apresentados no nosso website são estimativas baseadas em viaturas com um estado de conservação padrão. A <span class=\"text-white font-bold\">LeiriaDetail</span> reserva-se o direito de ajustar o orçamento final após a inspeção presencial, caso sejam detetadas contaminações extremas ou danos não declarados."
+      },
+      "02": {
+        "title": "Política de Cancelamento",
+        "content": "Trabalhamos exclusivamente por marcação para garantir o tempo e dedicação necessários a cada detalhe. Solicitamos que qualquer cancelamento ou reagendamento seja comunicado com um aviso prévio de pelo menos <span class=\"text-[#3B82F6] font-black italic uppercase\">24 Horas</span>."
+      },
+      "03": {
+        "title": "Responsabilidade",
+        "content": "A <span class=\"text-white font-bold\">LeiriaDetail</span> não se responsabiliza por objetos de valor deixados no interior das viaturas. Recomendamos a remoção de todos os bens pessoais antes da entrega do veículo no nosso estúdio."
+      },
+      "04": {
+        "title": "Resolução de Litígios",
+        "content1": "Em caso de litígio, o consumidor pode recorrer a uma Entidade de Resolução Alternativa de Litígios de Consumo (RAL).",
+        "entity": "Entidade",
+        "entityName": "CNIACC - Centro Nacional de Informação"
+      }
+    }
+  },
+  "privacy": {
+    "badge": "Segurança & Confiança",
+    "title1": "POLÍTICA DE",
+    "title2": "PRIVACIDADE",
+    "subtitle": "Normativa Técnica — Última atualização: Maio 2026",
+    "watermark": "Protocolo de Segurança",
+    "sections": {
+      "01": {
+        "title": "Responsável pelo Tratamento",
+        "content": "A <span class=\"text-white font-bold\">LeiriaDetail</span>, operando sob rigorosos padrões técnicos em Leiria, é a entidade responsável pela recolha e processamento dos seus dados. Garantimos transparência absoluta e proteção certificada, tratando a sua privacidade com o mesmo detalhe que aplicamos às viaturas do nosso estúdio."
+      },
+      "02": {
+        "title": "Dados e Finalidade Técnica",
+        "description": "Recolhemos exclusivamente os dados mínimos necessários para a prestação de serviços de excelência no nosso estúdio:",
+        "items": {
+          "scheduling": {
+            "title": "Gestão de Agendamentos",
+            "description": "Nome, contacto telefónico e email para confirmação e coordenação técnica."
+          },
+          "billing": {
+            "title": "Faturação",
+            "description": "Dados fiscais para cumprimento de todas as obrigações legais em vigor."
+          },
+          "vehicle": {
+            "title": "Identificação da Viatura",
+            "description": "Marca, modelo e matrícula para organização interna e registo do processo."
+          }
+        }
+      },
+      "03": {
+        "title": "Direitos do Utilizador (RGPD)",
+        "content": "Em conformidade com o Regulamento Geral sobre a Proteção de Dados, tem o direito de aceder, retificar, limitar ou apagar os seus dados. Tratamos todas as solicitações com prioridade técnica.",
+        "channel": "Canal Oficial de Dúvidas"
+      }
+    }
+  },
+  "cookies": {
+    "badge": "Tracking Protocol",
+    "title1": "POLÍTICA DE",
+    "title2": "COOKIES",
+    "subtitle": "LeiriaDetail — Gestão de Dados e Performance Digital",
+    "watermark": "Política de Cookies",
+    "sections": {
+      "01": {
+        "title": "O que são Cookies?",
+        "content": "Cookies são pequenos ficheiros de texto armazenados no seu navegador para otimizar a performance técnica e garantir o correto funcionamento dos sistemas de agendamento online. Na <span class=\"text-white font-bold italic\">LeiriaDetail</span>, utilizamos esta tecnologia para elevar a sua experiência e garantir a segurança da navegação."
+      },
+      "02": {
+        "title": "Cookies Utilizados",
+        "technical": {
+          "title": "Cookies Técnicos",
+          "description": "Essenciais para manter a sua sessão ativa durante o processo de marcação e garantir a integridade da segurança do website. Estes cookies não recolhem informação para marketing."
+        },
+        "analytics": {
+          "title": "Cookies Analíticos",
+          "description": "Utilizamos dados anónimos (Google Analytics) para perceber como os clientes interagem com o nosso estúdio online, permitindo-nos otimizar o fluxo de agendamento e serviços."
+        }
+      },
+      "03": {
+        "title": "Gestão de Cookies",
+        "content": "Pode configurar o seu navegador para recusar cookies em qualquer altura. Alertamos, no entanto, que partes críticas da nossa plataforma técnica poderão perder funcionalidade ou impedir a conclusão de marcações.",
+        "browserHint": "Consulte as definições de privacidade do seu browser <br> (Chrome, Safari, Firefox) para gerir permissões."
+      }
+    }
+  },
+  "error": {
+    "label": "Erro {layer} • {statusCode}",
+    "viewDetails": "Ver Detalhes Técnicos",
+    "tryAgain": "Tentar Novamente",
+    "goHome": "Voltar ao Início"
+  },
+  "clientArea": {
+    "title": "Área Privada",
+    "greeting": "Olá",
+    "tabs": {
+      "profile": "Perfil",
+      "bookings": "Marcações",
+      "history": "Histórico",
+      "vehicles": "Veículos"
+    },
+    "profile": {
+      "personalData": "Dados Pessoais",
+      "firstName": "Nome",
+      "lastName": "Apelido",
+      "email": "Email",
+      "phone": "Telemóvel",
+      "save": "Guardar Alterações",
+      "saving": "A guardar...",
+      "changePassword": "Alterar Password",
+      "currentPassword": "Password Atual",
+      "newPassword": "Nova Password",
+      "change": "Alterar Password",
+      "changing": "A alterar...",
+      "account": "Conta",
+      "verified": "✅ Conta verificada",
+      "memberSince": "📅 Membro desde",
+      "vehiclesCount": "🚗 Veículos",
+      "bookingsCount": "📅 Marcações"
+    },
+    "vehicles": {
+      "title": "Os Meus Veículos",
+      "add": "Adicionar",
+      "cancel": "Cancelar",
+      "plate": "Matrícula",
+      "brand": "Marca",
+      "model": "Modelo",
+      "year": "Ano",
+      "fuel": "Combustível",
+      "category": "Categoria",
+      "select": "Selecionar",
+      "gasoline": "Gasolina",
+      "diesel": "Diesel",
+      "electric": "Elétrico",
+      "hybrid": "Híbrido",
+      "save": "Guardar Veículo",
+      "saving": "A guardar...",
+      "primary": "Principal",
+      "setPrimary": "Principal",
+      "remove": "Remover",
+      "empty": "Nenhum veículo."
+    },
+    "bookings": {
+      "empty": "Sem agendamentos",
+      "scheduleNow": "Agendar agora"
+    },
+    "history": {
+      "title": "Histórico de Serviços",
+      "generatePDF": "Gerar PDF",
+      "services": "Serviços",
+      "totalSpent": "Total Gasto",
+      "vehicles": "Veículos",
+      "favorite": "Favorito",
+      "empty": "Sem histórico",
+      "emptyDescription": "Os serviços concluídos aparecerão aqui.",
+      "basic": "BÁSICO"
+    }
+  },
+  "vehicles": {
+    "form": {
+      "plate": "Matrícula",
+      "platePlaceholder": "AA-11-BB",
+      "brand": "Marca",
+      "brandPlaceholder": "Ex: BMW",
+      "model": "Modelo",
+      "modelPlaceholder": "Ex: Série 4",
+      "year": "Ano",
+      "yearPlaceholder": "2024",
+      "fuel": "Combustível",
+      "category": "Categoria",
+      "select": "Selecionar",
+      "gasoline": "Gasolina",
+      "diesel": "Diesel",
+      "electric": "Elétrico",
+      "hybrid": "Híbrido",
+      "small": "Pequeno",
+      "medium": "Médio",
+      "large": "Grande",
+      "suv": "SUV",
+      "commercial": "Comercial",
+      "save": "Guardar Veículo",
+      "saving": "A guardar...",
+      "validPlate": "Matrícula válida",
+      "estimatedYear": "Ano estimado",
+      "error": "Erro ao adicionar veículo."
+    }
+  }
+}

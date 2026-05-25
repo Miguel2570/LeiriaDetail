@@ -1,7 +1,7 @@
 -- liquibase formatted sql
 -- changeset leiria:009-create-portfolio
 
-CREATE TABLE portfolio (
+CREATE TABLE IF NOT EXISTS portfolio (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description TEXT,

@@ -1,7 +1,8 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import './style.css' // Mantido para não perderes os estilos do Tailwind!
+import i18n from './i18n'  // ← Adiciona esta linha
+import './style.css'
 
 const app = createApp(App)
 
@@ -23,5 +24,6 @@ app.config.errorHandler = (err, instance, info) => {
     });
 }
 
+app.use(i18n)
 app.use(router)
 app.mount('#app')

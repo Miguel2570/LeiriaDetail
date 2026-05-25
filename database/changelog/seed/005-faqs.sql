@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+
+-- changeset leiria:005-faqs-seed
 INSERT INTO faqs (question, answer, order_index) VALUES
 ('Quanto tempo demora um detalhe interior?', 'O Pack Básico demora cerca de 1h, enquanto o Premium pode ir até 2h, dependendo do estado da viatura.', 1),
 ('Fazem serviço ao domicílio?', 'Atualmente trabalhamos apenas nas nossas instalações em Leiria para garantirmos o ambiente controlado e a iluminação ideal para o detalhe.', 2),

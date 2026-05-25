@@ -1,6 +1,5 @@
 import { readFileSync } from "fs";
 import { join } from "path";
-
 /**
  * Função utilitária para ler o conteúdo de um ficheiro .graphql
  * de forma síncrona e decodificá-lo como string UTF-8.
@@ -56,6 +55,11 @@ const faqsQueries = loadGraphQL("./faqs/faqs.queries.graphql");
 const faqsMutations = loadGraphQL("./faqs/faqs.mutations.graphql");
 const faqsInputs = loadGraphQL("./faqs/faqs.inputs.graphql");
 
+const materialsTypes = loadGraphQL("./materials/materials.types.graphql");
+const materialsQueries = loadGraphQL("./materials/materials.queries.graphql");
+const materialsMutations = loadGraphQL("./materials/materials.mutations.graphql");
+const materialsInputs = loadGraphQL("./materials/materials.inputs.graphql");
+
 /**
  * Interpolação e combinação de todos os módulos de schemas.
  * O Apollo Server irá compilar esta string final e validar todas as relações.
@@ -104,6 +108,11 @@ const typeDefs = `
   ${faqsQueries}
   ${faqsMutations}
   ${faqsInputs}
+
+  ${materialsTypes}
+  ${materialsQueries}
+  ${materialsMutations}
+  ${materialsInputs}
 `;
 
 export default typeDefs;

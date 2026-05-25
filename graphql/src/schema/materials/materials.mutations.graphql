@@ -1,0 +1,4 @@
+extend type Mutation {
+  addMaterial(input: AddMaterialInput!): MaterialMutationOutput!
+  deleteMaterial(id: ID!): MaterialMutationOutput!
+}

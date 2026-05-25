@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { MapPin, Phone, Mail, Instagram, Facebook, Youtube } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -16,16 +19,16 @@ import { MapPin, Phone, Mail, Instagram, Facebook, Youtube } from 'lucide-vue-ne
             </span>
           </router-link>
           <p class="text-sm mb-6 leading-relaxed">
-            O estúdio de detalhe automóvel de excelência em Leiria. Porque o seu carro merece mais do que uma simples lavagem.
+            {{ t('footer.brandDescription') }}
           </p>
           <div class="flex gap-4">
-            <a href="#" class="text-gray-400 hover:text-[#06B6D4] transition-all duration-300 hover:scale-110">
+            <a href="#" class="text-gray-400 hover:text-[#06B6D4] transition-all duration-300 hover:scale-110" :aria-label="t('footer.social.instagram')">
               <Instagram class="h-5 w-5" />
             </a>
-            <a href="#" class="text-gray-400 hover:text-[#3B82F6] transition-all duration-300 hover:scale-110">
+            <a href="#" class="text-gray-400 hover:text-[#3B82F6] transition-all duration-300 hover:scale-110" :aria-label="t('footer.social.facebook')">
               <Facebook class="h-5 w-5" />
             </a>
-            <a href="#" class="text-gray-400 hover:text-[#FF0000] transition-all duration-300 hover:scale-110">
+            <a href="#" class="text-gray-400 hover:text-[#FF0000] transition-all duration-300 hover:scale-110" :aria-label="t('footer.social.youtube')">
               <Youtube class="h-5 w-5" />
             </a>
           </div>
@@ -33,28 +36,21 @@ import { MapPin, Phone, Mail, Instagram, Facebook, Youtube } from 'lucide-vue-ne
 
         <!-- Quick Links -->
         <div>
-          <h4 class="font-bold uppercase mb-4 tracking-wider text-sm">Links Rápidos</h4>
+          <h4 class="font-bold uppercase mb-4 tracking-wider text-sm">{{ t('footer.quickLinks') }}</h4>
           <ul class="space-y-2 text-sm">
             <li>
               <router-link to="/servicos" class="hover:text-[#3B82F6] transition-all duration-300 hover:pl-1">
-                Serviços
+                {{ t('footer.links.services') }}
               </router-link>
             </li>
             <li>
               <router-link to="/precos" class="hover:text-[#3B82F6] transition-all duration-300 hover:pl-1">
-                Tabela de Preços
+                {{ t('footer.links.prices') }}
               </router-link>
             </li>
-            <!--
-            <li>
-              <router-link to="/portfolio" class="hover:text-[#3B82F6] transition-all duration-300 hover:pl-1">
-                Portfólio
-              </router-link>
-            </li>
-            -->
             <li>
               <router-link to="/agenda" class="text-[#3B82F6] font-bold hover:text-[#06B6D4] transition-all duration-300 hover:pl-1">
-                Agendar Agora →
+                {{ t('footer.links.schedule') }} →
               </router-link>
             </li>
           </ul>
@@ -62,26 +58,26 @@ import { MapPin, Phone, Mail, Instagram, Facebook, Youtube } from 'lucide-vue-ne
 
         <!-- Legal -->
         <div>
-          <h4 class="font-bold uppercase mb-4 tracking-wider text-sm">Legal</h4>
+          <h4 class="font-bold uppercase mb-4 tracking-wider text-sm">{{ t('footer.legal') }}</h4>
           <ul class="space-y-2 text-sm">
             <li>
-              <router-link to="/termos" class=" hover:text-[#3B82F6] transition-all duration-300 hover:pl-1">
-                Termos e Condições
+              <router-link to="/termos" class="hover:text-[#3B82F6] transition-all duration-300 hover:pl-1">
+                {{ t('footer.links.terms') }}
               </router-link>
             </li>
             <li>
-              <router-link to="/privacidade" class=" hover:text-[#3B82F6] transition-all duration-300 hover:pl-1">
-                Política de Privacidade
+              <router-link to="/privacidade" class="hover:text-[#3B82F6] transition-all duration-300 hover:pl-1">
+                {{ t('footer.links.privacy') }}
               </router-link>
             </li>
             <li>
-              <router-link to="/cookies" class=" hover:text-[#3B82F6] transition-all duration-300 hover:pl-1">
-                Política de Cookies
+              <router-link to="/cookies" class="hover:text-[#3B82F6] transition-all duration-300 hover:pl-1">
+                {{ t('footer.links.cookies') }}
               </router-link>
             </li>
             <li>
-              <a href="https://www.livroreclamacoes.pt" target="_blank" rel="noopener noreferrer" class=" hover:text-[#3B82F6] transition-all duration-300 hover:pl-1">
-                Livro de Reclamações
+              <a href="https://www.livroreclamacoes.pt" target="_blank" rel="noopener noreferrer" class="hover:text-[#3B82F6] transition-all duration-300 hover:pl-1">
+                {{ t('footer.links.complaints') }}
               </a>
             </li>          
           </ul>
@@ -89,11 +85,11 @@ import { MapPin, Phone, Mail, Instagram, Facebook, Youtube } from 'lucide-vue-ne
 
         <!-- Contactos -->
         <div>
-          <h4 class="font-bold uppercase mb-4 tracking-wider text-sm">Contactos</h4>
+          <h4 class="font-bold uppercase mb-4 tracking-wider text-sm">{{ t('footer.contacts') }}</h4>
           <ul class="space-y-4 text-sm">
             <li class="flex items-start gap-3 group">
               <MapPin class="h-5 w-5 text-[#06B6D4] shrink-0 transition-transform group-hover:scale-110" />
-              <span class="">Zona Industrial, Leiria, Portugal</span>
+              <span>{{ t('footer.address') }}</span>
             </li>
             <li class="flex items-center gap-3 group">
               <Phone class="h-5 w-5 text-[#06B6D4] shrink-0 transition-transform group-hover:scale-110" />
@@ -113,7 +109,7 @@ import { MapPin, Phone, Mail, Instagram, Facebook, Youtube } from 'lucide-vue-ne
 
       <!-- Bottom Bar -->
       <div class="border-t border-white/30 pt-8 text-center text-xs flex flex-col md:flex-row justify-between items-center gap-4">
-        <p>&copy; 2026 LeiriaDetail. Todos os direitos reservados.</p>
+        <p>{{ t('footer.copyright') }}</p>
       </div>
 
     </div>
@@ -121,12 +117,10 @@ import { MapPin, Phone, Mail, Instagram, Facebook, Youtube } from 'lucide-vue-ne
 </template>
 
 <style scoped>
-/* Animações suaves para os ícones */
 a, button {
   transition: all 0.3s ease;
 }
 
-/* Melhora a legibilidade em dispositivos móveis */
 @media (max-width: 640px) {
   footer {
     text-align: center;

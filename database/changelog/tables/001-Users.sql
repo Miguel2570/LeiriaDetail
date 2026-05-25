@@ -1,7 +1,7 @@
 -- liquibase formatted sql
 -- changeset leiria:001-create-users
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(255),
     last_name VARCHAR(255),

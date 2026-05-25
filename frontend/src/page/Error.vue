@@ -10,7 +10,7 @@
       </div>
 
       <h2 class="text-red-500 font-black tracking-[0.4em] uppercase text-xs mb-4 italic">
-        Erro {{ errorData.layer }} • {{ errorData.statusCode }}
+        {{ t('error.label', { layer: errorData.layer, statusCode: errorData.statusCode }) }}
       </h2>
       
       <h1 class="text-4xl md:text-5xl font-black italic tracking-tighter text-white uppercase leading-none mb-6">
@@ -28,7 +28,7 @@
       <div v-if="errorData.details && errorData.details !== errorData.message" class="mb-10 text-left">
         <details class="group bg-[#050508] border border-white/5 rounded-xl overflow-hidden">
           <summary class="cursor-pointer p-4 text-xs font-bold text-gray-400 uppercase tracking-widest hover:bg-white/5 transition-colors list-none flex items-center justify-between">
-            Ver Detalhes Técnicos
+            {{ t('error.viewDetails') }}
             <ChevronDown class="w-4 h-4 transition-transform group-open:rotate-180" />
           </summary>
           <div class="p-4 border-t border-white/5 bg-black/50">
@@ -39,11 +39,11 @@
 
       <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
         <button @click="goBack" class="w-full sm:w-auto h-14 px-8 rounded-xl border border-white/10 bg-white/5 text-white text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all duration-300 hover:bg-white/10">
-          <RotateCcw class="w-4 h-4" /> Tentar Novamente
+          <RotateCcw class="w-4 h-4" /> {{ t('error.tryAgain') }}
         </button>
         
         <button @click="goHome" class="w-full sm:w-auto h-14 px-8 rounded-xl bg-gradient-to-r from-[#2563EB] to-[#00D8FF] text-white text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] shadow-lg">
-          <Home class="w-4 h-4" /> Voltar ao Início
+          <Home class="w-4 h-4" /> {{ t('error.goHome') }}
         </button>
       </div>
 
@@ -54,11 +54,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { AlertTriangle, Home, RotateCcw, ChevronDown } from 'lucide-vue-next';
 
 const router = useRouter();
+const { t } = useI18n();
 
-// Valores por defeito caso o cliente aceda a /error diretamente sem os dados do router
 const errorData = ref({
   layer: 'SISTEMA',
   title: 'Página Indisponível',
@@ -69,7 +70,6 @@ const errorData = ref({
 });
 
 onMounted(() => {
-  // Lê o histórico de estado injetado pelo router.push({ state: {...} })
   if (history.state && history.state.title) {
     errorData.value = {
       layer: history.state.layer || errorData.value.layer,
@@ -83,7 +83,6 @@ onMounted(() => {
 });
 
 const goBack = () => {
-  // Volta à página anterior no histórico do browser
   router.back();
 };
 

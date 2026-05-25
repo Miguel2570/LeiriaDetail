@@ -1,0 +1,233 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "prices": "Prices",
+    "portfolio": "Portfolio",
+    "materials": "Materials",
+    "faq": "FAQ",
+    "about": "About",
+    "contact": "Contact",
+    "profile": "Profile",
+    "login": "Login",
+    "logout": "Logout",
+    "schedule": "Schedule",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "footer": {
+    "brandDescription": "The premium car detailing studio in Leiria. Because your car deserves more than just a simple wash.",
+    "quickLinks": "Quick Links",
+    "legal": "Legal",
+    "contacts": "Contacts",
+    "address": "Industrial Zone, Leiria, Portugal",
+    "copyright": "© 2026 LeiriaDetail. All rights reserved.",
+    "social": {
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "youtube": "Youtube"
+    },
+    "links": {
+      "services": "Services",
+      "prices": "Price Table",
+      "schedule": "Schedule Now",
+      "terms": "Terms & Conditions",
+      "privacy": "Privacy Policy",
+      "cookies": "Cookie Policy",
+      "complaints": "Complaints Book"
+    }
+  },
+  "terms": {
+    "badge": "Service Agreement",
+    "title1": "TERMS &",
+    "title2": "CONDITIONS",
+    "subtitle": "LeiriaDetail — General Operating Conditions",
+    "watermark": "Terms of Service",
+    "sections": {
+      "01": {
+        "title": "Quotes and Evaluation",
+        "content": "The prices shown on our website are estimates based on vehicles with a standard condition. <span class=\"text-white font-bold\">LeiriaDetail</span> reserves the right to adjust the final quote after on-site inspection, if extreme contamination or undeclared damage is detected."
+      },
+      "02": {
+        "title": "Cancellation Policy",
+        "content": "We work exclusively by appointment to ensure the time and dedication required for each detail. We request that any cancellation or rescheduling be communicated with at least <span class=\"text-[#3B82F6] font-black italic uppercase\">24 Hours</span> notice."
+      },
+      "03": {
+        "title": "Liability",
+        "content": "<span class=\"text-white font-bold\">LeiriaDetail</span> is not responsible for valuables left inside vehicles. We recommend removing all personal belongings before delivering the vehicle to our studio."
+      },
+      "04": {
+        "title": "Dispute Resolution",
+        "content1": "In case of dispute, the consumer may resort to an Alternative Consumer Dispute Resolution Entity (RAL).",
+        "entity": "Entity",
+        "entityName": "CNIACC - National Information Center"
+      }
+    }
+  },
+  "privacy": {
+    "badge": "Security & Trust",
+    "title1": "PRIVACY",
+    "title2": "POLICY",
+    "subtitle": "Technical Standard — Last updated: May 2026",
+    "watermark": "Security Protocol",
+    "sections": {
+      "01": {
+        "title": "Data Controller",
+        "content": "<span class=\"text-white font-bold\">LeiriaDetail</span>, operating under strict technical standards in Leiria, is the entity responsible for collecting and processing your data. We guarantee absolute transparency and certified protection, treating your privacy with the same detail we apply to the vehicles in our studio."
+      },
+      "02": {
+        "title": "Data and Technical Purpose",
+        "description": "We collect exclusively the minimum data necessary to provide excellent services in our studio:",
+        "items": {
+          "scheduling": {
+            "title": "Appointment Management",
+            "description": "Name, phone contact and email for confirmation and technical coordination."
+          },
+          "billing": {
+            "title": "Billing",
+            "description": "Tax data to comply with all legal obligations in force."
+          },
+          "vehicle": {
+            "title": "Vehicle Identification",
+            "description": "Brand, model and license plate for internal organization and process registration."
+          }
+        }
+      },
+      "03": {
+        "title": "User Rights (GDPR)",
+        "content": "In compliance with the General Data Protection Regulation, you have the right to access, rectify, limit or delete your data. We handle all requests with technical priority.",
+        "channel": "Official Inquiries Channel"
+      }
+    }
+  },
+  "cookies": {
+    "badge": "Tracking Protocol",
+    "title1": "COOKIE",
+    "title2": "POLICY",
+    "subtitle": "LeiriaDetail — Data Management & Digital Performance",
+    "watermark": "Cookie Policy",
+    "sections": {
+      "01": {
+        "title": "What are Cookies?",
+        "content": "Cookies are small text files stored in your browser to optimize technical performance and ensure the correct functioning of online booking systems. At <span class=\"text-white font-bold italic\">LeiriaDetail</span>, we use this technology to enhance your experience and ensure browsing security."
+      },
+      "02": {
+        "title": "Cookies Used",
+        "technical": {
+          "title": "Technical Cookies",
+          "description": "Essential to keep your session active during the booking process and ensure the integrity of website security. These cookies do not collect information for marketing."
+        },
+        "analytics": {
+          "title": "Analytical Cookies",
+          "description": "We use anonymous data (Google Analytics) to understand how customers interact with our online studio, allowing us to optimize the booking flow and services."
+        }
+      },
+      "03": {
+        "title": "Cookie Management",
+        "content": "You can configure your browser to refuse cookies at any time. We warn, however, that critical parts of our technical platform may lose functionality or prevent the completion of bookings.",
+        "browserHint": "Check your browser's privacy settings <br> (Chrome, Safari, Firefox) to manage permissions."
+      }
+    }
+  },
+  "error": {
+    "label": "Error {layer} • {statusCode}",
+    "viewDetails": "View Technical Details",
+    "tryAgain": "Try Again",
+    "goHome": "Back to Home"
+  },
+  "clientArea": {
+    "title": "Private Area",
+    "greeting": "Hello",
+    "tabs": {
+      "profile": "Profile",
+      "bookings": "Bookings",
+      "history": "History",
+      "vehicles": "Vehicles"
+    },
+    "profile": {
+      "personalData": "Personal Data",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "changePassword": "Change Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "change": "Change Password",
+      "changing": "Changing...",
+      "account": "Account",
+      "verified": "✅ Verified account",
+      "memberSince": "📅 Member since",
+      "vehiclesCount": "🚗 Vehicles",
+      "bookingsCount": "📅 Bookings"
+    },
+    "vehicles": {
+      "title": "My Vehicles",
+      "add": "Add",
+      "cancel": "Cancel",
+      "plate": "License Plate",
+      "brand": "Brand",
+      "model": "Model",
+      "year": "Year",
+      "fuel": "Fuel",
+      "category": "Category",
+      "select": "Select",
+      "gasoline": "Gasoline",
+      "diesel": "Diesel",
+      "electric": "Electric",
+      "hybrid": "Hybrid",
+      "save": "Save Vehicle",
+      "saving": "Saving...",
+      "primary": "Primary",
+      "setPrimary": "Set Primary",
+      "remove": "Remove",
+      "empty": "No vehicles."
+    },
+    "bookings": {
+      "empty": "No bookings",
+      "scheduleNow": "Schedule now"
+    },
+    "history": {
+      "title": "Service History",
+      "generatePDF": "Generate PDF",
+      "services": "Services",
+      "totalSpent": "Total Spent",
+      "vehicles": "Vehicles",
+      "favorite": "Favorite",
+      "empty": "No history",
+      "emptyDescription": "Completed services will appear here.",
+      "basic": "BASIC"
+    }
+  },
+  "vehicles": {
+    "form": {
+      "plate": "License Plate",
+      "platePlaceholder": "AA-11-BB",
+      "brand": "Brand",
+      "brandPlaceholder": "Ex: BMW",
+      "model": "Model",
+      "modelPlaceholder": "Ex: Series 4",
+      "year": "Year",
+      "yearPlaceholder": "2024",
+      "fuel": "Fuel",
+      "category": "Category",
+      "select": "Select",
+      "gasoline": "Gasoline",
+      "diesel": "Diesel",
+      "electric": "Electric",
+      "hybrid": "Hybrid",
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large",
+      "suv": "SUV",
+      "commercial": "Commercial",
+      "save": "Save Vehicle",
+      "saving": "Saving...",
+      "validPlate": "Valid plate",
+      "estimatedYear": "Estimated year",
+      "error": "Error adding vehicle."
+    }
+  }
+}

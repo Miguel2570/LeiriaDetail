@@ -1,0 +1,23 @@
+type Material {
+  id: ID!
+  name: String!
+  description: String
+  category: String
+  brand: String
+  purchaseUrl: String
+  imageUrl: String
+}
+
+type MaterialOutput {
+  materials: [Material!]
+  categories: [String!]
+  message: String
+  hasError: Boolean!
+}
+
+type MaterialMutationOutput {
+  material: Material
+  message: String
+  hasError: Boolean!
+  error: ErrorField
+}

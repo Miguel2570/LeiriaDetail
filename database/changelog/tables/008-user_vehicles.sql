@@ -1,7 +1,7 @@
 -- liquibase formatted sql
 -- changeset leiria:008-create-user_vehicles
 
-CREATE TABLE user_vehicles (
+CREATE TABLE IF NOT EXISTS user_vehicles (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     license_plate VARCHAR(10) NOT NULL,

@@ -7,9 +7,9 @@
       
       <!-- Cabeçalho -->
       <div class="mb-8 border-b border-white/5 pb-8">
-        <h2 class="text-[#00D8FF] font-black tracking-[0.4em] uppercase text-[10px] mb-2 italic">Área Privada</h2>
+        <h2 class="text-[#00D8FF] font-black tracking-[0.4em] uppercase text-[10px] mb-2 italic">{{ t('clientArea.title') }}</h2>
         <h1 class="text-4xl font-black italic tracking-tighter uppercase text-white">
-          Olá, <span class="bg-gradient-to-r from-[#2563EB] to-[#00D8FF] bg-clip-text text-transparent">{{ customerName }}</span>
+          {{ t('clientArea.greeting') }}, <span class="bg-gradient-to-r from-[#2563EB] to-[#00D8FF] bg-clip-text text-transparent">{{ customerName }}</span>
         </h1>
       </div>
 
@@ -40,7 +40,7 @@
             
             <div class="bg-[#050508] border border-white/10 rounded-2xl p-6">
               <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                <User class="w-5 h-5 text-[#00D8FF]" /> Dados Pessoais
+                <User class="w-5 h-5 text-[#00D8FF]" /> {{ t('clientArea.profile.personalData') }}
               </h3>
 
               <div v-if="profileSuccess" class="mb-4 p-4 bg-green-500/10 border border-green-500/50 rounded-xl text-green-400 text-sm">{{ profileSuccess }}</div>
@@ -49,56 +49,56 @@
               <form @submit.prevent="handleUpdateProfile" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Nome</label>
+                    <label class="block text-xs font-bold text-gray-400 uppercase mb-2">{{ t('clientArea.profile.firstName') }}</label>
                     <input v-model="profile.firstName" type="text" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-[#3B82F6]" />
                   </div>
                   <div>
-                    <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Apelido</label>
+                    <label class="block text-xs font-bold text-gray-400 uppercase mb-2">{{ t('clientArea.profile.lastName') }}</label>
                     <input v-model="profile.lastName" type="text" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-[#3B82F6]" />
                   </div>
                 </div>
                 <div>
-                  <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Email</label>
+                  <label class="block text-xs font-bold text-gray-400 uppercase mb-2">{{ t('clientArea.profile.email') }}</label>
                   <input :value="profile.email" type="email" disabled class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-gray-500 outline-none cursor-not-allowed" />
                 </div>
                 <div>
-                  <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Telemóvel</label>
+                  <label class="block text-xs font-bold text-gray-400 uppercase mb-2">{{ t('clientArea.profile.phone') }}</label>
                   <input v-model="profile.phone" type="tel" placeholder="912 345 678" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-[#3B82F6]" />
                 </div>
                 <button type="submit" :disabled="profileSubmitting" class="px-6 py-3 bg-gradient-to-r from-[#2563EB] to-[#00D8FF] text-white text-xs font-bold uppercase tracking-wider rounded-xl disabled:opacity-50">
-                  {{ profileSubmitting ? 'A guardar...' : 'Guardar Alterações' }}
+                  {{ profileSubmitting ? t('clientArea.profile.saving') : t('clientArea.profile.save') }}
                 </button>
               </form>
             </div>
 
             <div class="bg-[#050508] border border-white/10 rounded-2xl p-6">
               <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                <Lock class="w-5 h-5 text-[#00D8FF]" /> Alterar Password
+                <Lock class="w-5 h-5 text-[#00D8FF]" /> {{ t('clientArea.profile.changePassword') }}
               </h3>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Password Atual</label>
+                  <label class="block text-xs font-bold text-gray-400 uppercase mb-2">{{ t('clientArea.profile.currentPassword') }}</label>
                   <input v-model="passwordForm.currentPassword" type="password" placeholder="••••••••" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-[#3B82F6]" />
                 </div>
                 <div>
-                  <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Nova Password</label>
+                  <label class="block text-xs font-bold text-gray-400 uppercase mb-2">{{ t('clientArea.profile.newPassword') }}</label>
                   <input v-model="passwordForm.newPassword" type="password" placeholder="••••••••" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-[#3B82F6]" />
                 </div>
               </div>
               <button @click="handleChangePassword" :disabled="passwordSubmitting" class="px-6 py-3 bg-[#00D8FF]/10 border border-[#00D8FF]/30 text-[#00D8FF] text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-[#00D8FF]/20 disabled:opacity-50">
-                {{ passwordSubmitting ? 'A alterar...' : 'Alterar Password' }}
+                {{ passwordSubmitting ? t('clientArea.profile.changing') : t('clientArea.profile.change') }}
               </button>
               <p v-if="passwordMessage" class="text-xs mt-2" :class="passwordError ? 'text-red-400' : 'text-green-400'">{{ passwordMessage }}</p>
             </div>
 
             <div class="bg-[#050508] border border-white/10 rounded-2xl p-6">
               <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                <ShieldAlert class="w-5 h-5 text-[#00D8FF]" /> Conta
+                <ShieldAlert class="w-5 h-5 text-[#00D8FF]" /> {{ t('clientArea.profile.account') }}
               </h3>
-              <p class="text-sm text-gray-400">✅ Conta verificada</p>
-              <p class="text-sm text-gray-400">📅 Membro desde {{ profile.createdAt || 'N/D' }}</p>
-              <p class="text-sm text-gray-400">🚗 Veículos: {{ vehicles.length }}</p>
-              <p class="text-sm text-gray-400">📅 Marcações: {{ bookings.length }}</p>
+              <p class="text-sm text-gray-400">{{ t('clientArea.profile.verified') }}</p>
+              <p class="text-sm text-gray-400">{{ t('clientArea.profile.memberSince') }} {{ profile.createdAt || 'N/D' }}</p>
+              <p class="text-sm text-gray-400">{{ t('clientArea.profile.vehiclesCount') }}: {{ vehicles.length }}</p>
+              <p class="text-sm text-gray-400">{{ t('clientArea.profile.bookingsCount') }}: {{ bookings.length }}</p>
             </div>
           </div>
 
@@ -106,10 +106,10 @@
           <div v-if="activeTab === 'vehicles'" class="bg-[#050508] border border-white/10 rounded-2xl p-6">
             <div class="flex justify-between items-center mb-6">
               <h3 class="text-lg font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <Car class="w-5 h-5 text-[#00D8FF]" /> Os Meus Veículos
+                <Car class="w-5 h-5 text-[#00D8FF]" /> {{ t('clientArea.vehicles.title') }}
               </h3>
               <button @click="showAddVehicleForm = !showAddVehicleForm" class="px-4 py-2 bg-gradient-to-r from-[#2563EB] to-[#00D8FF] text-white text-xs font-bold rounded-xl">
-                <Plus class="w-4 h-4 inline mr-1" /> {{ showAddVehicleForm ? 'Cancelar' : 'Adicionar' }}
+                <Plus class="w-4 h-4 inline mr-1" /> {{ showAddVehicleForm ? t('clientArea.vehicles.cancel') : t('clientArea.vehicles.add') }}
               </button>
             </div>
 
@@ -118,32 +118,35 @@
                 <div v-if="vehicleError" class="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-xl text-red-400 text-xs">{{ vehicleError }}</div>
                 <form @submit.prevent="handleAddVehicle" class="space-y-4">
                   <div>
-                    <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Matrícula *</label>
+                    <label class="block text-xs font-bold text-gray-400 uppercase mb-2">{{ t('clientArea.vehicles.plate') }} *</label>
                     <input v-model="newVehicle.license_plate" type="text" placeholder="AA-11-BB" class="w-full px-4 py-3 border rounded-xl text-white outline-none" :class="plateStatus.class" @input="handlePlateInput" maxlength="8" required />
                     <p v-if="plateStatus.message" class="text-xs mt-1" :class="plateStatus.messageClass">{{ plateStatus.message }}</p>
                   </div>
                   <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-xs font-bold text-gray-400 uppercase mb-2">Marca *</label><input v-model="newVehicle.brand" type="text" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none" required /></div>
-                    <div><label class="block text-xs font-bold text-gray-400 uppercase mb-2">Modelo *</label><input v-model="newVehicle.model" type="text" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none" required /></div>
+                    <div><label class="block text-xs font-bold text-gray-400 uppercase mb-2">{{ t('clientArea.vehicles.brand') }} *</label><input v-model="newVehicle.brand" type="text" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none" required /></div>
+                    <div><label class="block text-xs font-bold text-gray-400 uppercase mb-2">{{ t('clientArea.vehicles.model') }} *</label><input v-model="newVehicle.model" type="text" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none" required /></div>
                   </div>
                   <div class="grid grid-cols-3 gap-4">
-                    <div><label class="block text-xs font-bold text-gray-400 uppercase mb-2">Ano</label><input v-model="newVehicle.year" type="number" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none" /></div>
+                    <div><label class="block text-xs font-bold text-gray-400 uppercase mb-2">{{ t('clientArea.vehicles.year') }}</label><input v-model="newVehicle.year" type="number" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none" /></div>
                     <div>
-                      <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Combustível</label>
+                      <label class="block text-xs font-bold text-gray-400 uppercase mb-2">{{ t('clientArea.vehicles.fuel') }}</label>
                       <select v-model="newVehicle.fuel_type" class="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-xl text-white outline-none">
-                        <option value="">Selecionar</option>
-                        <option value="Gasolina">Gasolina</option><option value="Diesel">Diesel</option><option value="Elétrico">Elétrico</option><option value="Híbrido">Híbrido</option>
+                        <option value="">{{ t('clientArea.vehicles.select') }}</option>
+                        <option value="Gasolina">{{ t('clientArea.vehicles.gasoline') }}</option>
+                        <option value="Diesel">{{ t('clientArea.vehicles.diesel') }}</option>
+                        <option value="Elétrico">{{ t('clientArea.vehicles.electric') }}</option>
+                        <option value="Híbrido">{{ t('clientArea.vehicles.hybrid') }}</option>
                       </select>
                     </div>
                     <div>
-                      <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Categoria</label>
+                      <label class="block text-xs font-bold text-gray-400 uppercase mb-2">{{ t('clientArea.vehicles.category') }}</label>
                       <select v-model="newVehicle.size_category" class="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-xl text-white outline-none">
                         <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option>
                       </select>
                     </div>
                   </div>
                   <button type="submit" :disabled="vehicleSubmitting || !plateStatus.isValid" class="w-full py-3 bg-gradient-to-r from-[#2563EB] to-[#00D8FF] text-white font-bold rounded-xl disabled:opacity-50 text-sm uppercase tracking-wider">
-                    {{ vehicleSubmitting ? 'A guardar...' : 'Guardar Veículo' }}
+                    {{ vehicleSubmitting ? t('clientArea.vehicles.saving') : t('clientArea.vehicles.save') }}
                   </button>
                 </form>
               </div>
@@ -155,17 +158,17 @@
                   <div class="w-10 h-10 rounded-lg bg-[#2563EB]/10 flex items-center justify-center"><Car class="w-5 h-5 text-[#00D8FF]" /></div>
                   <div>
                     <span class="text-white font-bold text-sm">{{ v.brand }} {{ v.model }}</span>
-                    <span v-if="v.isPrimary" class="text-[10px] bg-[#00D8FF]/20 text-[#00D8FF] px-2 py-0.5 rounded-full ml-2">Principal</span>
+                    <span v-if="v.isPrimary" class="text-[10px] bg-[#00D8FF]/20 text-[#00D8FF] px-2 py-0.5 rounded-full ml-2">{{ t('clientArea.vehicles.primary') }}</span>
                     <p class="text-xs text-gray-400">{{ v.licensePlate }} • {{ v.year || 'N/D' }}</p>
                   </div>
                 </div>
                 <div class="flex gap-2">
-                  <button v-if="!v.isPrimary" @click="handleSetPrimary(v.id)" class="text-[10px] uppercase font-bold text-gray-400 hover:text-[#00D8FF]">Principal</button>
-                  <button @click="handleDeleteVehicle(v.id)" class="text-[10px] uppercase font-bold text-red-400 hover:text-red-300">Remover</button>
+                  <button v-if="!v.isPrimary" @click="handleSetPrimary(v.id)" class="text-[10px] uppercase font-bold text-gray-400 hover:text-[#00D8FF]">{{ t('clientArea.vehicles.setPrimary') }}</button>
+                  <button @click="handleDeleteVehicle(v.id)" class="text-[10px] uppercase font-bold text-red-400 hover:text-red-300">{{ t('clientArea.vehicles.remove') }}</button>
                 </div>
               </div>
             </div>
-            <div v-else class="text-center py-12"><Car class="w-12 h-12 text-gray-600 mx-auto mb-3" /><p class="text-gray-400 text-sm">Nenhum veículo.</p></div>
+            <div v-else class="text-center py-12"><Car class="w-12 h-12 text-gray-600 mx-auto mb-3" /><p class="text-gray-400 text-sm">{{ t('clientArea.vehicles.empty') }}</p></div>
           </div>
 
           <!-- ============ MARCAÇÕES ============ -->
@@ -173,8 +176,8 @@
             <div v-if="isLoading" class="flex justify-center py-20"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00D8FF]"></div></div>
             <div v-else-if="bookings.length === 0" class="bg-[#050508] border border-white/10 rounded-2xl p-12 text-center">
               <Calendar class="w-12 h-12 text-gray-600 mx-auto mb-4" />
-              <h4 class="text-white font-bold mb-1">Sem agendamentos</h4>
-              <router-link to="/agenda" class="text-[#00D8FF] text-sm font-bold hover:underline">Agendar agora →</router-link>
+              <h4 class="text-white font-bold mb-1">{{ t('clientArea.bookings.empty') }}</h4>
+              <router-link to="/agenda" class="text-[#00D8FF] text-sm font-bold hover:underline">{{ t('clientArea.bookings.scheduleNow') }} →</router-link>
             </div>
             <div v-else class="space-y-4">
               <div v-for="b in bookings" :key="b.id" class="bg-[#050508] border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all">
@@ -200,36 +203,36 @@
           <div v-if="activeTab === 'history'" class="space-y-6">
             <div class="flex justify-between items-center">
               <h3 class="text-lg font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <History class="w-5 h-5 text-[#00D8FF]" /> Histórico de Serviços
+                <History class="w-5 h-5 text-[#00D8FF]" /> {{ t('clientArea.history.title') }}
               </h3>
               <button v-if="history.length > 0" @click="generatePDF" class="px-4 py-2 bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-red-500/20 transition-all flex items-center gap-2">
-                <FileText class="w-4 h-4" /> Gerar PDF
+                <FileText class="w-4 h-4" /> {{ t('clientArea.history.generatePDF') }}
               </button>
             </div>
 
             <div v-if="history.length > 0" class="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div class="bg-[#050508] border border-white/10 rounded-xl p-4 text-center">
                 <p class="text-2xl font-black text-[#00D8FF]">{{ history.length }}</p>
-                <p class="text-[10px] text-gray-400 uppercase tracking-wider mt-1">Serviços</p>
+                <p class="text-[10px] text-gray-400 uppercase tracking-wider mt-1">{{ t('clientArea.history.services') }}</p>
               </div>
               <div class="bg-[#050508] border border-white/10 rounded-xl p-4 text-center">
                 <p class="text-2xl font-black text-[#00D8FF]">{{ totalSpent }}€</p>
-                <p class="text-[10px] text-gray-400 uppercase tracking-wider mt-1">Total Gasto</p>
+                <p class="text-[10px] text-gray-400 uppercase tracking-wider mt-1">{{ t('clientArea.history.totalSpent') }}</p>
               </div>
               <div class="bg-[#050508] border border-white/10 rounded-xl p-4 text-center">
                 <p class="text-2xl font-black text-[#00D8FF]">{{ uniqueVehicles }}</p>
-                <p class="text-[10px] text-gray-400 uppercase tracking-wider mt-1">Veículos</p>
+                <p class="text-[10px] text-gray-400 uppercase tracking-wider mt-1">{{ t('clientArea.history.vehicles') }}</p>
               </div>
               <div class="bg-[#050508] border border-white/10 rounded-xl p-4 text-center">
                 <p class="text-2xl font-black text-[#00D8FF]">{{ favoriteService }}</p>
-                <p class="text-[10px] text-gray-400 uppercase tracking-wider mt-1">Favorito</p>
+                <p class="text-[10px] text-gray-400 uppercase tracking-wider mt-1">{{ t('clientArea.history.favorite') }}</p>
               </div>
             </div>
 
             <div v-if="history.length === 0" class="bg-[#050508] border border-white/10 rounded-2xl p-12 text-center">
               <History class="w-12 h-12 text-gray-600 mx-auto mb-4" />
-              <h4 class="text-white font-bold mb-1">Sem histórico</h4>
-              <p class="text-gray-400 text-sm">Os serviços concluídos aparecerão aqui.</p>
+              <h4 class="text-white font-bold mb-1">{{ t('clientArea.history.empty') }}</h4>
+              <p class="text-gray-400 text-sm">{{ t('clientArea.history.emptyDescription') }}</p>
             </div>
 
             <div v-else class="relative">
@@ -242,7 +245,7 @@
                       <div class="flex items-center gap-2 mb-1">
                         <h4 class="font-bold text-white text-sm">{{ item.serviceName }}</h4>
                         <span class="text-[10px] px-2 py-0.5 rounded-full font-bold" :class="item.serviceName.includes('Premium') ? 'bg-[#00D8FF]/20 text-[#00D8FF]' : 'bg-gray-500/20 text-gray-400'">
-                          {{ item.serviceName.includes('Premium') ? 'PREMIUM' : 'BÁSICO' }}
+                          {{ item.serviceName.includes('Premium') ? 'PREMIUM' : t('clientArea.history.basic') }}
                         </span>
                       </div>
                       <p class="text-xs text-gray-400">🚗 {{ item.vehicleName }} • <span class="font-mono">{{ item.vehiclePlate }}</span></p>
@@ -266,11 +269,14 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Calendar, Clock, Sparkles, CalendarPlus, ShieldCheck, Car, Plus, User, Mail, Phone, Lock, ShieldAlert, History, FileText } from 'lucide-vue-next';
 import { graphql } from '@/graphql';
 import { generateHistoryPDF } from '@/services/pdfGenerator';
 import { Cache } from '@/services/cachemanager';
 import { validateLicensePlate } from '@/services/licensePlateService';
+
+const { t } = useI18n();
 
 interface Booking {
   id: string;
@@ -307,12 +313,12 @@ interface HistoryItem {
 }
 
 // Tabs
-const tabs = [
-  { id: 'profile' as const, label: 'Perfil', icon: User },
-  { id: 'bookings' as const, label: 'Marcações', icon: Clock },
-  { id: 'history' as const, label: 'Histórico', icon: History },
-  { id: 'vehicles' as const, label: 'Veículos', icon: Car },
-];
+const tabs = computed(() => [
+  { id: 'profile' as const, label: t('clientArea.tabs.profile'), icon: User },
+  { id: 'bookings' as const, label: t('clientArea.tabs.bookings'), icon: Clock },
+  { id: 'history' as const, label: t('clientArea.tabs.history'), icon: History },
+  { id: 'vehicles' as const, label: t('clientArea.tabs.vehicles'), icon: Car },
+]);
 const activeTab = ref<'bookings' | 'vehicles' | 'profile' | 'history'>('profile');
 
 // Dados comuns

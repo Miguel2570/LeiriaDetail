@@ -1,7 +1,7 @@
 -- liquibase formatted sql
 -- changeset leiria:002-create-services
 
-CREATE TABLE services (
+CREATE TABLE IF NOT EXISTS services (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,

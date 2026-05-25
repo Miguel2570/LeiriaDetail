@@ -10,6 +10,8 @@ import vehicleRoutes from "./Vehicles/VehicleRoutes";
 import portfolioRoutes from "./Portfolio/PortfolioRoutes";
 import reviewRoutes from "./Reviews/ReviewRoutes";
 import faqRoutes from "./Faqs/FaqRoutes";
+import materialRoutes from "./Materials/MaterialRoutes";
+
 
 dotenv.config();
 
@@ -36,6 +38,11 @@ const publicRoutes = [
     '/Authentication/Resend-Verification',
     '/Authentication/Reset-Password',
     '/Authentication/ValidateToken',
+    '/Materials',
+    '/Services',
+    '/Portfolio',
+    '/Faqs',
+    '/Reviews',
 ];
 
 // Aplicar middleware de autenticação
@@ -50,7 +57,7 @@ app.use("/Vehicles", vehicleRoutes);
 app.use("/Portfolio", portfolioRoutes);
 app.use("/Reviews", reviewRoutes);
 app.use("/Faqs", faqRoutes);
-
+app.use("/Materials", materialRoutes);
 
 app.get("/", (req, res) => {
     res.send(`...`);

@@ -1,7 +1,7 @@
 -- liquibase formatted sql
 -- changeset leiria:004-create-bookings
 
-CREATE TABLE bookings (
+CREATE TABLE IF NOT EXISTS bookings (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
     vehicle_id INTEGER NOT NULL,
