@@ -76,7 +76,7 @@
 
 <script setup lang="ts">
 import { Package, AlertTriangle, Search, Plus, Filter } from 'lucide-vue-next'
-import CircularProgress from './CircularProgress.vue'
+import CircularProgress from '../components/common/CircularProgress.vue'
 
 interface Product {
   name: string

@@ -1,87 +1,110 @@
-// src/router/index.ts
 import { createRouter, createWebHistory } from 'vue-router'
-import type { RouteRecordRaw } from 'vue-router'
+import { Cache } from '@/services/cachemanager'
 
-// Importação dos componentes
-import DashboardLayout from '../page/DashboardLayout.vue'
-import AuthPage from '../page/AuthPage.vue'
-import DashboardOverview from '../page/DashboardOverview.vue'
-import MasterSlotControl from '../page/MasterSlotControl.vue'
-import StaffManagement from '../page/StaffManagement.vue'
-import ServiceManager from '../page/ServiceManager.vue'
-import CrmDashboard from '../page/CrmDashboard.vue'
-import InventoryDashboard from '../page/InventoryDashboard.vue'
-import FinancialOverview from '../page/FinancialOverview.vue'
-
-// Import do composable de autenticação
-import { useAuth } from '../composables/useAuth'
-
-// Função de proteção de rotas
-const requireAuth = (to: any, from: any, next: any) => {
-  const { isAuthenticated } = useAuth()
-  
-  if (!isAuthenticated.value) {
-    next('/login')
-  } else {
-    next()
-  }
-}
-
-const routes: RouteRecordRaw[] = [
-  {
-    path: '/login',
-    name: 'Login',
-    component: AuthPage,
-    // Se já estiver logado, redireciona para dashboard
-    beforeEnter: (to, from, next) => {
-      const { isAuthenticated } = useAuth()
-      if (isAuthenticated.value) {
-        next('/')
-      } else {
-        next()
-      }
-    }
-  },
-  {
-    path: '/',
-    component: DashboardLayout,
-    beforeEnter: requireAuth,
-    children: [
-      { path: '', name: 'Dashboard', component: DashboardOverview },
-      { path: 'agenda', name: 'Agenda', component: MasterSlotControl },
-      { path: 'roles', name: 'Roles', component: StaffManagement },
-      { path: 'services', name: 'Services', component: ServiceManager },
-      { path: 'crm', name: 'CRM', component: CrmDashboard },
-      { path: 'inventory', name: 'Inventory', component: InventoryDashboard },
-      { path: 'finances', name: 'Finances', component: FinancialOverview }
-    ]
-  },
-  // Rota para redirecionar rotas não encontradas
-  {
-    path: '/:pathMatch(.*)*',
-    redirect: '/'
-  }
-]
+// Layout
+import DashboardLayout from '../page/components/layout/DashboardLayout.vue'
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('../page/auth/AuthPage.vue'),
+      meta: { requiresAuth: false }
+    },
+    {
+      path: '/',
+      component: DashboardLayout,
+      meta: { requiresAuth: true },
+      children: [
+        {
+          path: '',
+          redirect: '/dashboard'
+        },
+        {
+          path: 'dashboard',
+          name: 'dashboard',
+          component: () => import('../page/dashboard/DashboardOverview.vue'),
+          meta: { title: 'Dashboard' }
+        },
+        {
+          path: 'crm',
+          name: 'crm',
+          component: () => import('../page/dashboard/CrmDashboard.vue'),
+          meta: { title: 'CRM' }
+        },
+        {
+          path: 'financial',
+          name: 'financial',
+          component: () => import('../page/dashboard/FinancialOverview.vue'),
+          meta: { title: 'Financeiro' }
+        },
+        {
+          path: 'appointments',
+          name: 'appointments',
+          component: () => import('../page/appointments/MasterSlotControl.vue'),
+          meta: { title: 'Agendamentos' }
+        },
+        {
+          path: 'services',
+          name: 'services',
+          component: () => import('../page/services/ServiceManager.vue'),
+          meta: { title: 'Serviços' }
+        },
+        {
+          path: 'staff',
+          name: 'staff',
+          component: () => import('../page/staff/StaffManagement.vue'),
+          meta: { title: 'Funcionários' }
+        },
+        {
+          path: 'inventory',
+          name: 'inventory',
+          component: () => import('../page/inventory/InventoryDashboard.vue'),
+          meta: { title: 'Inventário' }
+        }
+      ]
+    },
+    {
+      path: '/error',
+      name: 'ErrorPage',
+      component: () => import('../../../frontend/src/page/Error.vue'),
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/dashboard'
+    }
+  ]
 })
 
-// Guard global de navegação (opcional, alternativa ao beforeEnter)
-router.beforeEach((to, from, next) => {
-  const { isAuthenticated, checkAuth } = useAuth()
+// Função para verificar autenticação usando o Cache
+const isAuthenticated = (): boolean => {
+  // Verifica se existe sessão no Cache
+  return !!(Cache.Session.value && Cache.Session.value !== '')
+}
+
+// Guard de navegação
+router.beforeEach((to, from) => {
+  const authenticated = isAuthenticated()
   
-  // Verificar autenticação no localStorage ao iniciar
-  checkAuth()
-  
-  if (to.meta.requiresAuth && !isAuthenticated.value) {
-    next('/login')
-  } else if (to.path === '/login' && isAuthenticated.value) {
-    next('/')
+  // Atualizar título da página
+  if (to.meta?.title) {
+    document.title = `LeiriaDetail | ${to.meta.title}`
   } else {
-    next()
+    document.title = 'LeiriaDetail'
   }
+  
+  // Verificar autenticação
+  if (to.meta.requiresAuth && !authenticated) {
+    return '/login'
+  }
+  
+  if (to.path === '/login' && authenticated) {
+    return '/dashboard'
+  }
+  
+  return true
 })
 
 export default router
