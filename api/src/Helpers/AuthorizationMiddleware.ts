@@ -43,3 +43,33 @@ export const LoginValidationMiddleware = (publicRoutes: string[]) => {
         return Authentication(req, res, next);
     };
 };
+
+// ✅ NOVO - Middleware de Admin
+export const AdminMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+    const userId = (req as any).userId;
+    
+    if (!userId) {
+        return res.status(401).json({ 
+            HasError: true, 
+            Error: { Message: "Não autorizado." } 
+        });
+    }
+
+    try {
+        const role = await UserManager.GetUserRole(userId);
+        
+        if (role !== 'admin') {
+            return res.status(403).json({ 
+                HasError: true, 
+                Error: { Message: "Acesso restrito a administradores." } 
+            });
+        }
+        
+        next();
+    } catch (error) {
+        return res.status(500).json({ 
+            HasError: true, 
+            Error: { Message: "Erro ao verificar permissões." } 
+        });
+    }
+};

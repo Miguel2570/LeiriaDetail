@@ -95,18 +95,6 @@ onMounted(fetchFaqs);
           </div>
         </div>
       </div>
-
-      <!-- CTA -->
-      <div class="text-center mt-12 pt-8 border-t border-white/5">
-        <p class="text-gray-400 text-sm mb-4">Não encontraste o que procuravas?</p>
-        <router-link 
-          to="/contacto" 
-          class="inline-flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 text-white text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-white/10 transition-all"
-        >
-          <Mail class="w-4 h-4" /> Fala Connosco
-        </router-link>
-      </div>
-
     </div>
   </section>
 </template>
