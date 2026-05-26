@@ -1,0 +1,4 @@
+extend type Mutation {
+    updateStaffRole(input: UpdateRoleInput!): SimpleResponse!
+    removeStaff(id: ID!): SimpleResponse!
+}

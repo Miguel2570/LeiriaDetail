@@ -11,7 +11,7 @@ async function GetAllServices(request: Request, response: Response) {
 async function GetServiceById(request: Request, response: Response) {
     const id = parseInt(request.params.id);
     
-    if (!id) {
+    if (!id || isNaN(id)) {
         response.status(400).send({ HasError: true, Error: { Field: "id", Message: "ID inválido." } });
         return;
     }
@@ -23,8 +23,8 @@ async function GetServiceById(request: Request, response: Response) {
 async function GetServicesByPack(request: Request, response: Response) {
     const pack = request.query.pack as string;
     
-    if (!pack || (pack !== 'Basico' && pack !== 'Premium')) {
-        response.status(400).send({ HasError: true, Error: { Field: "pack", Message: "Pack inválido. Use 'Basico' ou 'Premium'." } });
+    if (!pack) {
+        response.status(400).send({ HasError: true, Error: { Field: "pack", Message: "Pack não especificado." } });
         return;
     }
     
@@ -32,8 +32,66 @@ async function GetServicesByPack(request: Request, response: Response) {
     response.status(200).send(result);
 }
 
+async function CreateService(request: Request, response: Response) {
+    const { name, description, priceAB, priceC, priceDE, durationMinutes, packType } = request.body;
+    
+    if (!name || priceAB == null || priceC == null || priceDE == null) {
+        response.status(400).send({ HasError: true, Error: { Field: "Input", Message: "Campos obrigatórios: name, priceAB, priceC, priceDE" } });
+        return;
+    }
+    
+    const result = await ServiceManager.CreateService({
+        name,
+        description,
+        price_ab: priceAB,
+        price_c: priceC,
+        price_de: priceDE,
+        duration_minutes: durationMinutes,
+        pack_type: packType
+    });
+    
+    response.status(201).send(result);
+}
+
+async function UpdateService(request: Request, response: Response) {
+    const id = parseInt(request.params.id);
+    const { name, description, priceAB, priceC, priceDE, durationMinutes, packType } = request.body;
+    
+    if (!id || isNaN(id)) {
+        response.status(400).send({ HasError: true, Error: { Field: "id", Message: "ID inválido." } });
+        return;
+    }
+    
+    const result = await ServiceManager.UpdateService(id, {
+        name,
+        description,
+        price_ab: priceAB,
+        price_c: priceC,
+        price_de: priceDE,
+        duration_minutes: durationMinutes,
+        pack_type: packType
+    });
+    
+    response.status(200).send(result);
+}
+
+async function DeleteService(request: Request, response: Response) {
+    const id = parseInt(request.params.id);
+    
+    if (!id || isNaN(id)) {
+        response.status(400).send({ HasError: true, Error: { Field: "id", Message: "ID inválido." } });
+        return;
+    }
+    
+    const result = await ServiceManager.DeleteService(id);
+    response.status(200).send(result);
+}
+
 router.get("/", GetAllServices);
 router.get("/:id", GetServiceById);
-router.get("/pack/:pack", GetServicesByPack);
+router.get("/pack/query", GetServicesByPack);
+router.post("/", CreateService);
+router.put("/:id", UpdateService);
+router.delete("/:id", DeleteService);
 
 export default router;

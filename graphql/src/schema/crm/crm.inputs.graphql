@@ -1,0 +1,15 @@
+input AddClientInput {
+    firstName: String!
+    lastName: String!
+    email: String!
+    phone: String
+}
+
+input AddVehicleInput {
+    userId: Int!
+    plate: String!
+    brand: String!
+    model: String!
+    year: Int!
+    sizeCategory: String!
+}

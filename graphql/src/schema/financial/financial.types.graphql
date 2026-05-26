@@ -1,0 +1,33 @@
+type FinancialSummary {
+    weeklyRevenue: Float!
+    expectedIncome: Float!
+    pendingPayments: Float!
+    pendingCount: Int!
+}
+
+type RevenuePoint {
+    date: String!
+    revenue: Float!
+}
+
+type Transaction {
+    id: ID!
+    bookingId: Int
+    userId: Int
+    clientName: String
+    amount: Float!
+    type: String!
+    category: String
+    description: String
+    paymentMethod: String
+    transactionDate: String!
+}
+
+type FinancialOutput {
+    summary: FinancialSummary
+    revenue: [RevenuePoint!]
+    transactions: [Transaction!]
+    message: String
+    hasError: Boolean!
+    error: ErrorField
+}

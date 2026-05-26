@@ -1,0 +1,22 @@
+input CreateProductInput {
+    name: String!
+    category: String!
+    stockQuantity: Int
+    minStock: Int
+    unit: String
+    supplier: String
+}
+
+input UpdateProductInput {
+    name: String
+    category: String
+    stockQuantity: Int
+    minStock: Int
+    unit: String
+    supplier: String
+}
+
+input UpdateStockInput {
+    id: Int!
+    quantity: Int!
+}

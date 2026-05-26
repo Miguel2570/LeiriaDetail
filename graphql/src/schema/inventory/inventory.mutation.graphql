@@ -1,0 +1,6 @@
+extend type Mutation {
+    createProduct(input: CreateProductInput!): InventoryOutput!
+    updateProduct(id: ID!, input: UpdateProductInput!): InventoryOutput!
+    updateStock(input: UpdateStockInput!): SimpleResponse!
+    deleteProduct(id: ID!): SimpleResponse!
+}

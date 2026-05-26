@@ -1,0 +1,4 @@
+extend type Mutation {
+    addClient(input: AddClientInput!): CRMData!
+    addVehicle(input: AddVehicleInput!): SimpleResponse!
+}

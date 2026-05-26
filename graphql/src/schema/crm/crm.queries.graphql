@@ -1,0 +1,4 @@
+extend type Query {
+    crmClients: CRMData!
+    crmClient(id: Int!): CRMData!
+}

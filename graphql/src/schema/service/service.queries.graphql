@@ -1,5 +1,5 @@
 extend type Query {
-  services: ServiceOutput!
-  service(id: ID!): ServiceOutput!
-  servicesByPack(pack: String!): ServiceOutput!
+    services: ServiceOutput!
+    service(id: ID!): ServiceOutput!
+    servicesByPack(pack: String!): ServiceOutput!
 }

@@ -31,13 +31,13 @@ const router = createRouter({
         {
           path: 'crm',
           name: 'crm',
-          component: () => import('../page/dashboard/CrmDashboard.vue'),
+          component: () => import('../page/crm/CRMManager.vue'),
           meta: { title: 'CRM' }
         },
         {
           path: 'financial',
           name: 'financial',
-          component: () => import('../page/dashboard/FinancialOverview.vue'),
+          component: () => import('../page/financial/Financial.vue'),
           meta: { title: 'Financeiro' }
         },
         {

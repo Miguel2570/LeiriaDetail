@@ -1,0 +1,10 @@
+input CreateTransactionInput {
+    bookingId: Int
+    userId: Int
+    amount: Float!
+    type: String!
+    category: String
+    description: String
+    paymentMethod: String
+    transactionDate: String
+}

@@ -1,0 +1,32 @@
+# src/schema/dashboard/dashboard.types.graphql
+
+type DashboardMetrics {
+  faturacaoHoje: Float!
+  marcacoesPendentes: Int!
+  carrosConcluidos: Int!
+  staffAtivo: StaffStatus!
+}
+
+type StaffStatus {
+  ativo: Int!
+  total: Int!
+}
+
+type RevenueDataPoint {
+  date: String!
+  revenue: Float!
+  expenses: Float!
+}
+
+type ActivityLog {
+  time: String!
+  text: String!
+  type: String!
+}
+
+type DashboardData {
+  metrics: DashboardMetrics!
+  revenue: [RevenueDataPoint!]!
+  activityLogs: [ActivityLog!]!
+  errors: [Error!]!
+}

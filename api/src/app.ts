@@ -11,7 +11,12 @@ import portfolioRoutes from "./Portfolio/PortfolioRoutes";
 import reviewRoutes from "./Reviews/ReviewRoutes";
 import faqRoutes from "./Faqs/FaqRoutes";
 import materialRoutes from "./Materials/MaterialRoutes";
-
+import dashboardRoutes from "./Dashboard/DashboardRoutes";
+import crmRoutes from "./CRM/CRMRoutes";
+import appointmentRoutes from "./Appointments/AppointmentRoutes";
+import staffRoutes from "./Staff/StaffRoutes";
+import inventoryRoutes from "./Inventory/InventoryRoutes";
+import financialRoutes from "./Financial/FinancialRoutes";
 
 dotenv.config();
 
@@ -58,6 +63,12 @@ app.use("/Portfolio", portfolioRoutes);
 app.use("/Reviews", reviewRoutes);
 app.use("/Faqs", faqRoutes);
 app.use("/Materials", materialRoutes);
+app.use("/Dashboard", dashboardRoutes);
+app.use("/CRM", crmRoutes);
+app.use("/Appointments", appointmentRoutes);
+app.use("/Staff", staffRoutes);
+app.use("/Inventory", inventoryRoutes);
+app.use("/Financial", financialRoutes);
 
 app.get("/", (req, res) => {
     res.send(`...`);

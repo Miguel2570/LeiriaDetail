@@ -1,0 +1,19 @@
+type Product {
+    id: ID!
+    name: String!
+    category: String!
+    stockQuantity: Int!
+    minStock: Int!
+    unit: String!
+    supplier: String
+    lastOrdered: String
+    isActive: Boolean!
+}
+
+type InventoryOutput {
+    products: [Product!]
+    product: Product
+    message: String
+    hasError: Boolean!
+    error: ErrorField
+}

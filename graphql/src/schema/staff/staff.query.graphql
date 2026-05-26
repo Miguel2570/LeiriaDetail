@@ -1,0 +1,4 @@
+extend type Query {
+    staffList: StaffOutput!
+    staffById(id: ID!): StaffOutput!
+}

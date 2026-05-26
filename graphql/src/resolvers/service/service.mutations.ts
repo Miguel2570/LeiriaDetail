@@ -1,39 +1,92 @@
-import { pool } from "../../db";
+import { API } from '../../proxy/serviceproxy/api';
 
 export const serviceMutations = {
-  createService: async (_: any, { input }: { input: any }) => {
-    const { name, description, priceAB, priceC, priceDE, durationMinutes, packType } = input;
-    
-    const res = await pool.query(
-      `INSERT INTO services (name, description, price_ab, price_c, price_de, duration_minutes, pack_type) 
-       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-      [name, description, priceAB, priceC, priceDE, durationMinutes, packType || 'Básico']
-    );
-    
-    return res.rows[0];
-  },
+    createService: async (_: any, { input }: any, context: any) => {
+        try {
+            const data: any = await API.POST<any>(context, "/Services/", {
+                name: input.name,
+                description: input.description,
+                priceAB: input.priceAB,
+                priceC: input.priceC,
+                priceDE: input.priceDE,
+                durationMinutes: input.durationMinutes,
+                packType: input.packType
+            });
 
-  updateService: async (_: any, { id, input }: { id: string; input: any }) => {
-    const { name, description, priceAB, priceC, priceDE, durationMinutes, packType } = input;
-    
-    const res = await pool.query(
-      `UPDATE services 
-       SET name = COALESCE($1, name),
-           description = COALESCE($2, description),
-           price_ab = COALESCE($3, price_ab),
-           price_c = COALESCE($4, price_c),
-           price_de = COALESCE($5, price_de),
-           duration_minutes = COALESCE($6, duration_minutes),
-           pack_type = COALESCE($7, pack_type)
-       WHERE id = $8 RETURNING *`,
-      [name, description, priceAB, priceC, priceDE, durationMinutes, packType, id]
-    );
-    
-    return res.rows[0];
-  },
+            return {
+                services: data.Services?.map(mapService) || [],
+                message: data.Message,
+                hasError: data.HasError || false,
+                error: data.Error || null
+            };
+        } catch (error: any) {
+            return {
+                services: [],
+                message: null,
+                hasError: true,
+                error: { field: "server", message: error.message }
+            };
+        }
+    },
 
-  deleteService: async (_: any, { id }: { id: string }) => {
-    await pool.query("DELETE FROM services WHERE id = $1", [id]);
-    return { success: true };
-  }
+    updateService: async (_: any, { id, input }: any, context: any) => {
+        try {
+            const data: any = await API.PUT<any>(context, `/Services/${id}`, {
+                name: input.name,
+                description: input.description,
+                priceAB: input.priceAB,
+                priceC: input.priceC,
+                priceDE: input.priceDE,
+                durationMinutes: input.durationMinutes,
+                packType: input.packType
+            });
+
+            return {
+                services: data.Services?.map(mapService) || [],
+                message: data.Message,
+                hasError: data.HasError || false,
+                error: data.Error || null
+            };
+        } catch (error: any) {
+            return {
+                services: [],
+                message: null,
+                hasError: true,
+                error: { field: "server", message: error.message }
+            };
+        }
+    },
+
+    deleteService: async (_: any, { id }: any, context: any) => {
+        try {
+            const data: any = await API.DELETE<any>(context, `/Services/${id}`);
+
+            return {
+                services: [],
+                message: data.Message,
+                hasError: data.HasError || false,
+                error: data.Error || null
+            };
+        } catch (error: any) {
+            return {
+                services: [],
+                message: null,
+                hasError: true,
+                error: { field: "server", message: error.message }
+            };
+        }
+    }
 };
+
+function mapService(s: any) {
+    return {
+        id: s.id?.toString(),
+        name: s.name,
+        description: s.description,
+        priceAB: parseFloat(s.price_ab) || 0,
+        priceC: parseFloat(s.price_c) || 0,
+        priceDE: parseFloat(s.price_de) || 0,
+        durationMinutes: s.duration_minutes,
+        packType: s.pack_type || 'Básico'
+    };
+}

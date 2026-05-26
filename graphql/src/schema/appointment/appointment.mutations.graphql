@@ -1,0 +1,18 @@
+# src/schema/appointment/appointment.mutation.graphql
+
+extend type Mutation {
+    """
+    Cria nova marcação (frontend cliente)
+    """
+    createBooking(input: CreateBookingInput!): SimpleResponse!
+
+    """
+    Move marcação para um bay (drag & drop)
+    """
+    moveBooking(input: MoveBookingInput!): SimpleResponse!
+
+    """
+    Atualiza status da marcação
+    """
+    updateBookingStatus(input: UpdateStatusInput!): SimpleResponse!
+}

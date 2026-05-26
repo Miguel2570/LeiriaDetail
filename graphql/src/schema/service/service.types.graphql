@@ -1,17 +1,22 @@
 type Service {
-  id: ID!
-  name: String!
-  description: String
-  priceAB: Float!
-  priceC: Float!
-  priceDE: Float!
-  durationMinutes: Int
-  packType: String
+    id: ID!
+    name: String!
+    description: String
+    priceAB: Float!
+    priceC: Float!
+    priceDE: Float!
+    durationMinutes: Int
+    packType: String
+}
+
+type ErrorField {
+    field: String
+    message: String
 }
 
 type ServiceOutput {
-  services: [Service!]
-  message: String
-  hasError: Boolean!
-  error: ErrorField
+    services: [Service!]
+    message: String
+    hasError: Boolean!
+    error: ErrorField
 }

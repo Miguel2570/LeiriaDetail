@@ -1,5 +1,5 @@
 extend type Mutation {
-  createService(input: CreateServiceInput!): Service!
-  updateService(id: ID!, input: UpdateServiceInput!): Service!
-  deleteService(id: ID!): SimpleResponse!
+    createService(input: CreateServiceInput!): ServiceOutput!
+    updateService(id: ID!, input: UpdateServiceInput!): ServiceOutput!
+    deleteService(id: ID!): ServiceOutput!
 }

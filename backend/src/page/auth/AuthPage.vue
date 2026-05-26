@@ -141,7 +141,7 @@ const toggleMode = (isLoginMode: boolean) => {
           <div class="w-16 h-16 bg-gradient-to-br from-[#3B82F6] to-[#06B6D4] rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-[#06B6D4]/20">
             <Shield class="w-8 h-8 text-white" />
           </div>
-          <h1 class="font-[Poppins] text-3xl font-bold text-white tracking-tight">LeiriaDetail</h1>
+          <h1 class="text-3xl font-bold text-white tracking-tight">LeiriaDetail</h1>
           <p class="text-[#94A3B8] font-medium mt-2 text-center">
             Super Admin Portal
           </p>

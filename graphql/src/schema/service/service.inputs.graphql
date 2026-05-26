@@ -1,19 +1,19 @@
 input CreateServiceInput {
-  name: String!
-  description: String
-  priceAB: Float!
-  priceC: Float!
-  priceDE: Float!
-  durationMinutes: Int
-  packType: String
+    name: String!
+    description: String
+    priceAB: Float!
+    priceC: Float!
+    priceDE: Float!
+    durationMinutes: Int
+    packType: String
 }
 
 input UpdateServiceInput {
-  name: String
-  description: String
-  priceAB: Float
-  priceC: Float
-  priceDE: Float
-  durationMinutes: Int
-  packType: String
+    name: String
+    description: String
+    priceAB: Float
+    priceC: Float
+    priceDE: Float
+    durationMinutes: Int
+    packType: String
 }

@@ -1,0 +1,29 @@
+type Booking {
+    id: Int!
+    clientName: String!
+    clientPhone: String!
+    service: String!
+    vehicle: String!
+    vehiclePlate: String!
+    date: String!
+    time: String!
+    duration: String!
+    status: String!
+    bay: String
+}
+
+type Bay {
+    id: String!
+    name: String!
+    bookings: [Booking!]!
+}
+
+type AppointmentsData {
+    pending: [Booking!]!
+    bays: [Bay!]!
+}
+
+type AppointmentsPayload {
+    data: AppointmentsData
+    errors: [Error!]!
+}

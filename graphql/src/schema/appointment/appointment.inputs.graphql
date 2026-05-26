@@ -1,0 +1,18 @@
+input CreateBookingInput {
+    userId: Int!
+    vehicleId: Int!
+    serviceId: Int!
+    bookingDate: String!
+    bookingTime: String!
+}
+
+input MoveBookingInput {
+    bookingId: Int!
+    toBayId: String!
+    status: String
+}
+
+input UpdateStatusInput {
+    bookingId: Int!
+    status: String!
+}

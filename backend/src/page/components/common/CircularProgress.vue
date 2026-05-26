@@ -16,7 +16,7 @@
       />
     </svg>
     <div class="absolute flex flex-col items-center justify-center">
-      <span class="font-[Poppins] font-bold text-lg leading-none" :style="{ color }">{{ percentage }}%</span>
+      <span class="font-bold text-lg leading-none" :style="{ color }">{{ percentage }}%</span>
     </div>
   </div>
 </template>

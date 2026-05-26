@@ -1,0 +1,15 @@
+type Staff {
+    id: ID!
+    name: String!
+    email: String!
+    role: String!
+    status: String!
+    tasks: Int!
+}
+
+type StaffOutput {
+    staff: [Staff!]
+    message: String
+    hasError: Boolean!
+    error: ErrorField
+}

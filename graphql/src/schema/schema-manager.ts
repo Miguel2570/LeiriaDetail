@@ -60,6 +60,18 @@ const materialsQueries = loadGraphQL("./materials/materials.queries.graphql");
 const materialsMutations = loadGraphQL("./materials/materials.mutations.graphql");
 const materialsInputs = loadGraphQL("./materials/materials.inputs.graphql");
 
+const dashboardTypes = loadGraphQL("./dashboard/dashboard.types.graphql");
+const dashboardQueries = loadGraphQL("./dashboard/dashboard.queries.graphql");
+
+const crmTypes = loadGraphQL("./crm/crm.types.graphql");
+const crmQueries = loadGraphQL("./crm/crm.queries.graphql");
+const crmMutations = loadGraphQL("./crm/crm.mutations.graphql");
+const crmInputs = loadGraphQL("./crm/crm.inputs.graphql");
+
+const appointmentTypes = loadGraphQL("./appointment/appointment.types.graphql");
+const appointmentQueries = loadGraphQL("./appointment/appointment.queries.graphql");
+const appointmentMutations = loadGraphQL("./appointment/appointment.mutations.graphql");
+const appointmentInputs = loadGraphQL("./appointment/appointment.inputs.graphql");
 /**
  * Interpolação e combinação de todos os módulos de schemas.
  * O Apollo Server irá compilar esta string final e validar todas as relações.
@@ -113,6 +125,19 @@ const typeDefs = `
   ${materialsQueries}
   ${materialsMutations}
   ${materialsInputs}
+
+  ${dashboardTypes}
+  ${dashboardQueries}
+
+  ${crmTypes}
+  ${crmQueries}
+  ${crmMutations}
+  ${crmInputs}
+
+  ${appointmentTypes}
+  ${appointmentQueries}
+  ${appointmentMutations}
+  ${appointmentInputs}
 `;
 
 export default typeDefs;

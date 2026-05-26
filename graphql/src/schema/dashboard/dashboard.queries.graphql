@@ -1,0 +1,5 @@
+# src/schema/dashboard/dashboard.query.graphql
+
+extend type Query {
+  dashboard: DashboardData!
+}

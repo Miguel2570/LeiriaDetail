@@ -1,0 +1,36 @@
+# src/schema/crm/crm.types.graphql
+type Vehicle {
+    id: Int!
+    plate: String!
+    model: String!
+    brand: String!
+    year: Int!
+    color: String!
+    size_category: String!
+}
+
+type HistoryRecord {
+    id: Int!
+    vehicleId: Int!
+    date: String!
+    service: String!
+    status: String!
+    price: Float!
+}
+
+type Client {
+    id: Int!
+    name: String!
+    phone: String!
+    email: String!
+    ltv: String!
+    avatar: String!
+    vehicles: [Vehicle!]!
+    history: [HistoryRecord!]!
+}
+
+type CRMData {
+    clients: [Client!]
+    client: Client
+    errors: [Error!]!
+}
