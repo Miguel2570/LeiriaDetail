@@ -17,6 +17,7 @@ import staffRoutes from "./Staff/StaffRoutes";
 import inventoryRoutes from "./Inventory/InventoryRoutes";
 import financialRoutes from "./Financial/FinancialRoutes";
 import { LoginValidationMiddleware, requireRole, Authentication } from "./Helpers/AuthorizationMiddleware";
+import paymentRoutes from "./Payment/PaymentRoutes";
 
 
 dotenv.config();
@@ -65,12 +66,14 @@ app.use("/Portfolio", portfolioRoutes);
 app.use("/Reviews", reviewRoutes);
 app.use("/Faqs", faqRoutes);
 app.use("/Materials", materialRoutes);
+app.use("/Payment", paymentRoutes);
 app.use("/Dashboard", Authentication, requireRole('admin'), dashboardRoutes);
 app.use("/CRM", Authentication, requireRole('manager'), crmRoutes);
 app.use("/Appointments", Authentication, requireRole('operator'), appointmentRoutes);
 app.use("/Staff", Authentication, requireRole('admin'), staffRoutes);
 app.use("/Inventory", Authentication, requireRole('manager'), inventoryRoutes);
 app.use("/Financial", Authentication, requireRole('admin'), financialRoutes);
+
 
 app.get("/", (req, res) => {
     res.send(`...`);

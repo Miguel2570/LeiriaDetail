@@ -93,17 +93,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { Edit, Trash2, Plus, X } from 'lucide-vue-next'
-import { apiFetch } from '@/services/api'
+import { graphql } from '@/graphql'
 
 interface Service {
-  id: number
-  name: string
-  description: string
-  price_ab: number
-  price_c: number
-  price_de: number
-  duration_minutes: number
-  pack_type: string
+  id: number; name: string; description: string; price_ab: number; price_c: number; price_de: number; duration_minutes: number; pack_type: string
 }
 
 const services = ref<Service[]>([])
@@ -115,15 +108,22 @@ const form = ref({ name: '', description: '', priceAB: 0, priceC: 0, priceDE: 0,
 
 const fetchServices = async () => {
   try {
-    const data = await apiFetch('/Services')
-    if (!data.HasError && data.Services) {
-      services.value = data.Services
+    const query = `query { services { services { id name description priceAB priceC priceDE durationMinutes packType } } }`
+    const data = await graphql<{ services: { services: any[] } }>(query)
+    if (data.services?.services) {
+      services.value = data.services.services.map((s: any) => ({
+        id: s.id,
+        name: s.name,
+        description: s.description,
+        price_ab: s.priceAB,
+        price_c: s.priceC,
+        price_de: s.priceDE,
+        duration_minutes: s.durationMinutes,
+        pack_type: s.packType
+      }))
     }
-  } catch (error) {
-    console.error('Erro ao carregar serviços:', error)
-  } finally {
-    isLoading.value = false
-  }
+  } catch (error) { console.error('Erro ao carregar serviços:', error) }
+  finally { isLoading.value = false }
 }
 
 const openCreateModal = () => {
@@ -134,54 +134,33 @@ const openCreateModal = () => {
 
 const openEditModal = (service: Service) => {
   editingService.value = service
-  form.value = {
-    name: service.name,
-    description: service.description || '',
-    priceAB: service.price_ab,
-    priceC: service.price_c,
-    priceDE: service.price_de,
-    durationMinutes: service.duration_minutes,
-    packType: service.pack_type
-  }
+  form.value = { name: service.name, description: service.description || '', priceAB: service.price_ab, priceC: service.price_c, priceDE: service.price_de, durationMinutes: service.duration_minutes, packType: service.pack_type }
   isModalOpen.value = true
 }
 
-const closeModal = () => {
-  isModalOpen.value = false
-  editingService.value = null
-}
+const closeModal = () => { isModalOpen.value = false; editingService.value = null }
 
 const handleSubmit = async () => {
   isSubmitting.value = true
   try {
-    const url = editingService.value ? `/Services/${editingService.value.id}` : '/Services'
-    const method = editingService.value ? 'PUT' : 'POST'
-    
-    const data = await apiFetch(url, { method, body: JSON.stringify(form.value) })
-    if (!data.HasError) {
-      await fetchServices()
-      closeModal()
+    if (editingService.value) {
+      await graphql(`mutation { updateService(id: "${editingService.value.id}", input: { name: "${form.value.name}", description: "${form.value.description}", priceAB: ${form.value.priceAB}, priceC: ${form.value.priceC}, priceDE: ${form.value.priceDE}, durationMinutes: ${form.value.durationMinutes}, packType: "${form.value.packType}" }) { hasError } }`)
+    } else {
+      await graphql(`mutation { createService(input: { name: "${form.value.name}", description: "${form.value.description}", priceAB: ${form.value.priceAB}, priceC: ${form.value.priceC}, priceDE: ${form.value.priceDE}, durationMinutes: ${form.value.durationMinutes}, packType: "${form.value.packType}" }) { hasError } }`)
     }
-  } catch (error) {
-    console.error('Erro ao guardar serviço:', error)
-  } finally {
-    isSubmitting.value = false
-  }
+    await fetchServices()
+    closeModal()
+  } catch (error) { console.error('Erro ao guardar serviço:', error) }
+  finally { isSubmitting.value = false }
 }
 
 const deleteService = async (id: number) => {
   if (!confirm('Eliminar este serviço?')) return
   try {
-    const data = await apiFetch(`/Services/${id}`, { method: 'DELETE' })
-    if (!data.HasError) {
-      services.value = services.value.filter(s => s.id !== id)
-    }
-  } catch (error) {
-    console.error('Erro ao eliminar serviço:', error)
-  }
+    await graphql(`mutation { deleteService(id: "${id}") { hasError } }`)
+    services.value = services.value.filter(s => s.id !== id)
+  } catch (error) { console.error('Erro ao eliminar serviço:', error) }
 }
 
-onMounted(() => {
-  fetchServices()
-})
+onMounted(() => { fetchServices() })
 </script>

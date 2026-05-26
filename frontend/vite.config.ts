@@ -21,14 +21,7 @@ export default defineConfig({
     strictPort: true,
     proxy: {
         '/Authentication': { target: 'http://localhost:3001', changeOrigin: true },
-        '/Dashboard': { target: 'http://localhost:3001', changeOrigin: true },
-        '/CRM': { target: 'http://localhost:3001', changeOrigin: true },
-        '/Appointments': { target: 'http://localhost:3001', changeOrigin: true },
-        '/Services': { target: 'http://localhost:3001', changeOrigin: true },
-        '/Staff': { target: 'http://localhost:3001', changeOrigin: true },
-        '/Inventory': { target: 'http://localhost:3001', changeOrigin: true },
-        '/Financial': { target: 'http://localhost:3001', changeOrigin: true },
-        '/Profile': { target: 'http://localhost:3001', changeOrigin: true }
+        '/Profile': { target: 'http://localhost:3001', changeOrigin: true },
     }
   }
 })

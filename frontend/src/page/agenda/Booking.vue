@@ -164,9 +164,8 @@ const submitBooking = async () => {
     const mutation = `
       mutation CreateBooking($input: CreateBookingInput!) {
         createBooking(input: $input) {
-          booking { id status }
           hasError
-          error { message }
+          message
         }
       }
     `;
@@ -181,15 +180,26 @@ const submitBooking = async () => {
       }
     };
 
-    const data = await graphql<{ createBooking: any }>(mutation, variables);
-    
+    const data = await graphql<{ createBooking: { hasError: boolean; message: string } }>(mutation, variables);
+
     if (data.createBooking.hasError) {
-      alert(data.createBooking.error?.message || "Erro ao criar marcação.");
+      alert(data.createBooking.message || "Erro ao criar marcação.");
       return;
     }
 
-    alert("Agendamento concluído com sucesso!");
-    router.push('/client-area');
+    // Guardar dados para a página de pagamento
+    const basePrice = bookingData.value.service?.price || 120;
+    const total = basePrice * 1.23;
+    
+    localStorage.setItem('last_service', bookingData.value.service?.name || '');
+    localStorage.setItem('last_vehicle', `${bookingData.value.vehicle?.brand || ''} ${bookingData.value.vehicle?.model || ''}`);
+    localStorage.setItem('last_plate', bookingData.value.vehicle?.plate || '');
+    localStorage.setItem('last_date', bookingData.value.date?.toString() || '');
+    localStorage.setItem('last_time', bookingData.value.time);
+    localStorage.setItem('last_price', total.toFixed(2));
+
+    // Redirecionar para pagamento (usa ID temporário até teres o ID real)
+    router.push(`/pagamento/${Date.now()}`);
     
   } catch (error) {
     console.error("Erro ao gravar reserva:", error);

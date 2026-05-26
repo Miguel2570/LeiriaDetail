@@ -143,37 +143,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { Search, Car, History, Phone, Mail, Plus, Shield, ChevronRight, X } from 'lucide-vue-next'
-import { apiFetch } from '@/services/api'
+import { graphql } from '@/graphql'
 
-interface Vehicle {
-  id: number
-  plate: string
-  brand: string
-  model: string
-  year: number
-  color: string
-  size_category: string
-}
-
-interface HistoryRecord {
-  id: number
-  vehicleId: number
-  date: string
-  service: string
-  status: string
-  price: number
-}
-
-interface Client {
-  id: number
-  name: string
-  phone: string
-  email: string
-  ltv: string
-  avatar: string
-  vehicles: Vehicle[]
-  history: HistoryRecord[]
-}
+interface Vehicle { id: number; plate: string; brand: string; model: string; year: number; color: string; size_category: string }
+interface HistoryRecord { id: number; vehicleId: number; date: string; service: string; status: string; price: number }
+interface Client { id: number; name: string; phone: string; email: string; ltv: string; avatar: string; vehicles: Vehicle[]; history: HistoryRecord[] }
 
 const clients = ref<Client[]>([])
 const selectedClientId = ref<number | null>(null)
@@ -189,30 +163,23 @@ const newVehicle = ref({ plate: '', brand: '', model: '', year: new Date().getFu
 const filteredClients = computed(() => {
   if (!searchQuery.value) return clients.value
   const q = searchQuery.value.toLowerCase()
-  return clients.value.filter(c => 
-    c.name.toLowerCase().includes(q) ||
-    c.vehicles?.some(v => v.plate.toLowerCase().includes(q) || v.model.toLowerCase().includes(q))
-  )
+  return clients.value.filter(c => c.name.toLowerCase().includes(q) || c.vehicles?.some(v => v.plate.toLowerCase().includes(q) || v.model.toLowerCase().includes(q)))
 })
 
-const selectedClient = computed(() => 
-  clients.value.find(c => c.id === selectedClientId.value) || null
-)
+const selectedClient = computed(() => clients.value.find(c => c.id === selectedClientId.value) || null)
 
 const fetchClients = async () => {
   try {
-    const data = await apiFetch('/CRM')
-    if (!data.HasError && data.Clients) {
-      clients.value = data.Clients
-      if (data.Clients.length > 0 && !selectedClientId.value) {
-        selectedClientId.value = data.Clients[0].id
+    const query = `query { crmClients { clients { id name phone email ltv avatar vehicles { id plate brand model year color size_category } history { id vehicleId date service status price } } errors { field message } } }`
+    const data = await graphql<{ crmClients: { clients: Client[]; errors: any[] } }>(query)
+    if (data.crmClients?.clients) {
+      clients.value = data.crmClients.clients
+      if (data.crmClients.clients.length > 0 && !selectedClientId.value) {
+        selectedClientId.value = data.crmClients.clients[0].id
       }
     }
-  } catch (error) {
-    console.error('Erro ao carregar clientes:', error)
-  } finally {
-    isLoading.value = false
-  }
+  } catch (error) { console.error('Erro ao carregar clientes:', error) }
+  finally { isLoading.value = false }
 }
 
 const selectClient = (id: number) => { selectedClientId.value = id }
@@ -222,37 +189,30 @@ const setIsAddVehicleOpen = (value: boolean) => { isAddVehicleOpen.value = value
 const handleAddClient = async () => {
   isSubmitting.value = true
   try {
-    const data = await apiFetch('/CRM', { method: 'POST', body: JSON.stringify(newClient.value) })
-    if (!data.HasError) {
+    const mutation = `mutation AddClient($input: AddClientInput!) { addClient(input: $input) { client { id name } errors { field message } } }`
+    const data = await graphql<{ addClient: any }>(mutation, { input: newClient.value })
+    if (!data.addClient?.errors?.length) {
       await fetchClients()
       setIsAddClientOpen(false)
       newClient.value = { firstName: '', lastName: '', email: '', phone: '' }
     }
-  } catch (error) {
-    console.error('Erro ao criar cliente:', error)
-  } finally {
-    isSubmitting.value = false
-  }
+  } catch (error) { console.error('Erro ao criar cliente:', error) }
+  finally { isSubmitting.value = false }
 }
 
 const handleAddVehicle = async () => {
   if (!selectedClientId.value) return
   isSubmitting.value = true
   try {
-    const data = await apiFetch('/CRM/Vehicle', {
-      method: 'POST',
-      body: JSON.stringify({ userId: selectedClientId.value, ...newVehicle.value })
-    })
-    if (!data.HasError) {
+    const mutation = `mutation AddVehicle($input: AddVehicleInput!) { addVehicle(input: $input) { hasError message } }`
+    const data = await graphql<{ addVehicle: any }>(mutation, { input: { userId: selectedClientId.value, ...newVehicle.value } })
+    if (!data.addVehicle?.hasError) {
       await fetchClients()
       setIsAddVehicleOpen(false)
       newVehicle.value = { plate: '', brand: '', model: '', year: new Date().getFullYear(), sizeCategory: 'M' }
     }
-  } catch (error) {
-    console.error('Erro ao adicionar veículo:', error)
-  } finally {
-    isSubmitting.value = false
-  }
+  } catch (error) { console.error('Erro ao adicionar veículo:', error) }
+  finally { isSubmitting.value = false }
 }
 
 onMounted(() => { fetchClients() })

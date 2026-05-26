@@ -14,7 +14,10 @@ const router = createRouter({
     // Auth - Clientes
     { path: '/login', name: 'login', component: () => import('@/page/auth/Login.vue') },
     { path: '/registar', name: 'register', component: () => import('@/page/auth/Register.vue') },
-    
+
+    // Pagamento
+    { path: '/pagamento/:bookingId', name: 'payment', component: () => import('@/page/payment/PaymentPage.vue') },
+
     // Agendamento
     { path: '/agenda', alias: ['/booking', '/marcacao'], name: 'booking', component: () => import('@/page/agenda/Booking.vue') },
     

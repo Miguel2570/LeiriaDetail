@@ -1,0 +1,5 @@
+extend type Mutation {
+    createPayment(input: CreatePaymentInput!): PaymentOutput!
+    confirmPayment(paymentId: ID!): SimpleResponse!
+    generateMultibanco(amount: Float!): MultibancoData!
+}

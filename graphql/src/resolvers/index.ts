@@ -42,6 +42,9 @@ import { staffMutations } from './staff/staff.mutations';
 import { inventoryQueries } from './inventory/inventory.queries';
 import { inventoryMutations } from './inventory/inventory.mutations';
 
+import { paymentQueries } from './payment/payment.queries';
+import { paymentMutations } from './payment/payment.mutations';
+
 
 const resolvers = {
     Query: {
@@ -59,7 +62,8 @@ const resolvers = {
         ...appointmentQueries,
         ...financialQueries,
         ...staffQueries,
-        ...inventoryQueries
+        ...inventoryQueries,
+        ...paymentQueries
     },
     Mutation: {
         ...authMutations,
@@ -75,7 +79,8 @@ const resolvers = {
         ...appointmentMutations,
         ...financialMutations,
         ...staffMutations,
-        ...inventoryMutations
+        ...inventoryMutations,
+        ...paymentMutations
     }
 };
 

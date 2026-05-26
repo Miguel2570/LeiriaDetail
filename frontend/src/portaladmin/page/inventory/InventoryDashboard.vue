@@ -128,17 +128,10 @@
 import { ref, computed, onMounted } from 'vue'
 import { Package, AlertTriangle, Search, Plus, Pencil, Trash2, X } from 'lucide-vue-next'
 import CircularProgress from '../components/common/CircularProgress.vue'
-import { apiFetch } from '@/services/api'
+import { graphql } from '@/graphql'
 
 interface Product {
-  id: number
-  name: string
-  category: string
-  stock_quantity: number
-  min_stock: number
-  unit: string
-  supplier: string
-  is_active: boolean
+  id: number; name: string; category: string; stock_quantity: number; min_stock: number; unit: string; supplier: string; is_active: boolean
 }
 
 const products = ref<Product[]>([])
@@ -149,51 +142,30 @@ const isModalOpen = ref(false)
 const editingProduct = ref<Product | null>(null)
 const searchQuery = ref('')
 
-const form = ref({
-  name: '',
-  category: '',
-  stockQuantity: 0,
-  minStock: 10,
-  unit: 'un',
-  supplier: ''
-})
+const form = ref({ name: '', category: '', stockQuantity: 0, minStock: 10, unit: 'un', supplier: '' })
 
 const filteredProducts = computed(() => {
   if (!searchQuery.value) return products.value
   const q = searchQuery.value.toLowerCase()
-  return products.value.filter(p =>
-    p.name.toLowerCase().includes(q) ||
-    p.category.toLowerCase().includes(q)
-  )
+  return products.value.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q))
 })
 
 const fetchProducts = async () => {
   try {
-    const [productsData, alertsData] = await Promise.all([
-      apiFetch('/Inventory'),
-      apiFetch('/Inventory/alerts')
+    const [listQuery, alertsQuery] = await Promise.all([
+      graphql<{ inventoryList: any }>(`query { inventoryList { products { id name category stockQuantity minStock unit supplier isActive } } }`),
+      graphql<{ inventoryAlerts: any }>(`query { inventoryAlerts { products { id name category stockQuantity minStock unit supplier isActive } } }`)
     ])
-    
-    if (!productsData.HasError) products.value = productsData.Products || []
-    if (!alertsData.HasError) alerts.value = alertsData.Products || []
-  } catch (error) {
-    console.error('Erro ao carregar inventário:', error)
-  } finally {
-    isLoading.value = false
-  }
+    if (listQuery.inventoryList?.products) products.value = listQuery.inventoryList.products.map((p: any) => ({ ...p, stock_quantity: p.stockQuantity, min_stock: p.minStock, is_active: p.isActive }))
+    if (alertsQuery.inventoryAlerts?.products) alerts.value = alertsQuery.inventoryAlerts.products.map((p: any) => ({ ...p, stock_quantity: p.stockQuantity, min_stock: p.minStock }))
+  } catch (error) { console.error('Erro ao carregar inventário:', error) }
+  finally { isLoading.value = false }
 }
 
 const openModal = (product?: Product) => {
   if (product) {
     editingProduct.value = product
-    form.value = {
-      name: product.name,
-      category: product.category,
-      stockQuantity: product.stock_quantity,
-      minStock: product.min_stock,
-      unit: product.unit,
-      supplier: product.supplier || ''
-    }
+    form.value = { name: product.name, category: product.category, stockQuantity: product.stock_quantity, minStock: product.min_stock, unit: product.unit, supplier: product.supplier || '' }
   } else {
     editingProduct.value = null
     form.value = { name: '', category: '', stockQuantity: 0, minStock: 10, unit: 'un', supplier: '' }
@@ -201,49 +173,32 @@ const openModal = (product?: Product) => {
   isModalOpen.value = true
 }
 
-const closeModal = () => {
-  isModalOpen.value = false
-  editingProduct.value = null
-}
+const closeModal = () => { isModalOpen.value = false; editingProduct.value = null }
 
 const handleSubmit = async () => {
   isSubmitting.value = true
   try {
-    const url = editingProduct.value ? `/Inventory/${editingProduct.value.id}` : '/Inventory'
-    const method = editingProduct.value ? 'PUT' : 'POST'
-    
-    await apiFetch(url, { method, body: JSON.stringify(form.value) })
+    if (editingProduct.value) {
+      await graphql(`mutation { updateProduct(id: "${editingProduct.value.id}", input: { name: "${form.value.name}", category: "${form.value.category}", stockQuantity: ${form.value.stockQuantity}, minStock: ${form.value.minStock}, unit: "${form.value.unit}", supplier: "${form.value.supplier}" }) { hasError } }`)
+    } else {
+      await graphql(`mutation { createProduct(input: { name: "${form.value.name}", category: "${form.value.category}", stockQuantity: ${form.value.stockQuantity}, minStock: ${form.value.minStock}, unit: "${form.value.unit}", supplier: "${form.value.supplier}" }) { hasError } }`)
+    }
     await fetchProducts()
     closeModal()
-  } catch (error) {
-    console.error('Erro ao guardar produto:', error)
-  } finally {
-    isSubmitting.value = false
-  }
+  } catch (error) { console.error('Erro ao guardar produto:', error) }
+  finally { isSubmitting.value = false }
 }
 
 const handleDelete = async (id: number) => {
   if (!confirm('Remover este produto?')) return
   try {
-    await apiFetch(`/Inventory/${id}`, { method: 'DELETE' })
+    await graphql(`mutation { deleteProduct(id: "${id}") { hasError } }`)
     products.value = products.value.filter(p => p.id !== id)
-  } catch (error) {
-    console.error('Erro ao remover produto:', error)
-  }
+  } catch (error) { console.error('Erro ao remover produto:', error) }
 }
 
-const getStockPercentage = (current: number, min: number): number => {
-  const max = min * 3
-  return Math.min(Math.round((current / max) * 100), 100)
-}
+const getStockPercentage = (current: number, min: number): number => Math.min(Math.round((current / (min * 3)) * 100), 100)
+const getStockColor = (current: number, min: number): string => current <= min ? '#EF4444' : current <= min * 2 ? '#F59E0B' : '#06B6D4'
 
-const getStockColor = (current: number, min: number): string => {
-  if (current <= min) return '#EF4444'
-  if (current <= min * 2) return '#F59E0B'
-  return '#06B6D4'
-}
-
-onMounted(() => {
-  fetchProducts()
-})
+onMounted(() => { fetchProducts() })
 </script>

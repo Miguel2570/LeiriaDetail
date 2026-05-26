@@ -76,131 +76,42 @@
 import { ref, computed, onMounted } from 'vue'
 import { TrendingUp, Clock, CalendarDays, Wallet } from 'lucide-vue-next'
 import { Line } from 'vue-chartjs'
-import { apiFetch } from '@/services/api'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Filler,
-  Legend
-} from 'chart.js'
+import { graphql } from '@/graphql'
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Filler, Legend } from 'chart.js'
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Filler,
-  Legend
-)
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Filler, Legend)
 
-interface Summary {
-  weeklyRevenue: number
-  expectedIncome: number
-  pendingPayments: number
-  pendingCount: number
-}
-
-interface RevenuePoint {
-  date: string
-  revenue: number
-}
-
-const summary = ref<Summary>({ weeklyRevenue: 0, expectedIncome: 0, pendingPayments: 0, pendingCount: 0 })
-const revenueData = ref<RevenuePoint[]>([])
+const summary = ref({ weeklyRevenue: 0, expectedIncome: 0, pendingPayments: 0, pendingCount: 0 })
+const revenueData = ref<{ date: string; revenue: number }[]>([])
 const isLoading = ref(true)
 
 const chartData = computed(() => ({
-  labels: revenueData.value.map(r => {
-    const d = new Date(r.date)
-    return ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][d.getDay()]
-  }),
-  datasets: [
-    {
-      label: 'Revenue',
-      data: revenueData.value.map(r => r.revenue),
-      fill: true,
-      backgroundColor: (context: any) => {
-        const ctx = context.chart.ctx
-        const gradient = ctx.createLinearGradient(0, 0, 0, 400)
-        gradient.addColorStop(0, 'rgba(6, 182, 212, 0.4)')
-        gradient.addColorStop(1, 'rgba(59, 130, 246, 0)')
-        return gradient
-      },
-      borderColor: (context: any) => {
-        const ctx = context.chart.ctx
-        const gradient = ctx.createLinearGradient(0, 0, 1000, 0)
-        gradient.addColorStop(0, '#3B82F6')
-        gradient.addColorStop(1, '#06B6D4')
-        return gradient
-      },
-      borderWidth: 4,
-      pointBackgroundColor: '#06B6D4',
-      pointBorderColor: '#FFFFFF',
-      pointBorderWidth: 2,
-      pointRadius: 6,
-      pointHoverRadius: 8,
-      tension: 0.4,
-    },
-  ],
+  labels: revenueData.value.map(r => ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][new Date(r.date).getDay()]),
+  datasets: [{
+    label: 'Revenue', data: revenueData.value.map(r => r.revenue), fill: true,
+    backgroundColor: (ctx: any) => { const g = ctx.chart.ctx.createLinearGradient(0,0,0,400); g.addColorStop(0,'rgba(6,182,212,0.4)'); g.addColorStop(1,'rgba(59,130,246,0)'); return g },
+    borderColor: (ctx: any) => { const g = ctx.chart.ctx.createLinearGradient(0,0,1000,0); g.addColorStop(0,'#3B82F6'); g.addColorStop(1,'#06B6D4'); return g },
+    borderWidth: 4, pointBackgroundColor: '#06B6D4', pointBorderColor: '#FFFFFF', pointBorderWidth: 2, pointRadius: 6, pointHoverRadius: 8, tension: 0.4,
+  }],
 }))
 
 const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: { display: false },
-    tooltip: {
-      backgroundColor: 'rgba(255, 255, 255, 0.9)',
-      titleColor: '#000000',
-      bodyColor: '#000000',
-      borderColor: 'rgba(0, 0, 0, 0.1)',
-      borderWidth: 1,
-      borderRadius: 12,
-      padding: 12,
-      callbacks: {
-        label: (context: any) => `€${context.parsed.y}`,
-      },
-    },
-  },
-  scales: {
-    x: {
-      grid: { display: false },
-      ticks: { color: '#334155', font: { weight: 600 as const, size: 12 } },
-      border: { display: false },
-    },
-    y: {
-      grid: { color: 'rgba(0, 0, 0, 0.1)' },
-      ticks: { color: '#334155', font: { weight: 600 as const, size: 12 }, callback: (value: any) => `€${value}` },
-      border: { display: false },
-    },
-  },
+  responsive: true, maintainAspectRatio: false,
+  plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(255,255,255,0.9)', titleColor: '#000', bodyColor: '#000', borderColor: 'rgba(0,0,0,0.1)', borderWidth: 1, borderRadius: 12, padding: 12, callbacks: { label: (ctx: any) => `€${ctx.parsed.y}` } } },
+  scales: { x: { grid: { display: false }, ticks: { color: '#334155', font: { weight: 600 as const, size: 12 } }, border: { display: false } }, y: { grid: { color: 'rgba(0,0,0,0.1)' }, ticks: { color: '#334155', font: { weight: 600 as const, size: 12 }, callback: (v: any) => `€${v}` }, border: { display: false } } },
 }
 
-const formatPrice = (value: number) => value.toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const formatPrice = (value: number) => value.toLocaleString('pt-PT', { minimumFractionDigits: 2 })
 
 const fetchFinancialData = async () => {
   try {
-    const data = await apiFetch('/Financial')
-    
-    if (!data.HasError) {
-      if (data.Summary) summary.value = data.Summary
-      if (data.Revenue) revenueData.value = data.Revenue
-    }
-  } catch (error) {
-    console.error('Erro ao carregar dados financeiros:', error)
-  } finally {
-    isLoading.value = false
-  }
+    const query = `query { financialData { summary { weeklyRevenue expectedIncome pendingPayments pendingCount } revenue { date revenue } } }`
+    const data = await graphql<{ financialData: any }>(query)
+    if (data.financialData?.summary) summary.value = data.financialData.summary
+    if (data.financialData?.revenue) revenueData.value = data.financialData.revenue
+  } catch (error) { console.error('Erro ao carregar dados financeiros:', error) }
+  finally { isLoading.value = false }
 }
 
-onMounted(() => {
-  fetchFinancialData()
-})
+onMounted(() => { fetchFinancialData() })
 </script>

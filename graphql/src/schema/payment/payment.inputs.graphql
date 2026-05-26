@@ -1,0 +1,9 @@
+input CreatePaymentInput {
+    bookingId: Int!
+    amount: Float!
+    method: String!
+    mbwayPhone: String
+    invoiceNIF: String
+    invoiceName: String
+    invoiceAddress: String
+}

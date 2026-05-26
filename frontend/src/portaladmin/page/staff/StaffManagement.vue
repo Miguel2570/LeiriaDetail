@@ -85,16 +85,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { Plus, X } from 'lucide-vue-next'
-import { apiFetch } from '@/services/api'
+import { graphql } from '@/graphql'
 
-interface Staff {
-  id: number
-  name: string
-  email: string
-  role: string
-  status: string
-  tasks: number
-}
+interface Staff { id: number; name: string; email: string; role: string; status: string; tasks: number }
 
 const staffList = ref<Staff[]>([])
 const isLoading = ref(true)
@@ -105,71 +98,41 @@ const form = ref({ email: '', role: 'operator' })
 
 const fetchStaff = async () => {
   try {
-    const data = await apiFetch('/Staff')
-    if (!data.HasError && data.Staff) {
-      staffList.value = data.Staff
-    }
-  } catch (error) {
-    console.error('Erro ao carregar staff:', error)
-  } finally {
-    isLoading.value = false
-  }
+    const query = `query { staffList { staff { id name email role status tasks } } }`
+    const data = await graphql<{ staffList: { staff: Staff[] } }>(query)
+    if (data.staffList?.staff) staffList.value = data.staffList.staff
+  } catch (error) { console.error('Erro ao carregar staff:', error) }
+  finally { isLoading.value = false }
 }
 
-const openModal = () => {
-  form.value = { email: '', role: 'operator' }
-  errorMessage.value = ''
-  isModalOpen.value = true
-}
-
-const closeModal = () => {
-  isModalOpen.value = false
-}
+const openModal = () => { form.value = { email: '', role: 'operator' }; errorMessage.value = ''; isModalOpen.value = true }
+const closeModal = () => { isModalOpen.value = false }
 
 const handleAddStaff = async () => {
-  isSubmitting.value = true
-  errorMessage.value = ''
+  isSubmitting.value = true; errorMessage.value = ''
   try {
-    const data = await apiFetch('/Staff/promote', {
-      method: 'POST',
-      body: JSON.stringify(form.value)
-    })
-    if (!data.HasError) {
-      await fetchStaff()
-      closeModal()
-    } else {
-      errorMessage.value = data.Error?.Message || 'Erro ao promover utilizador.'
-    }
-  } catch (error) {
-    errorMessage.value = 'Erro de conexão.'
-  } finally {
-    isSubmitting.value = false
-  }
+    const mutation = `mutation PromoteStaff($input: UpdateRoleInput!) { updateStaffRole(input: $input) { hasError message } }`
+    const data = await graphql<{ updateStaffRole: any }>(mutation, { input: { id: 0, role: form.value.role } })
+    if (!data.updateStaffRole?.hasError) { await fetchStaff(); closeModal() }
+    else { errorMessage.value = data.updateStaffRole.message || 'Erro ao promover utilizador.' }
+  } catch (error) { errorMessage.value = 'Erro de conexão.' }
+  finally { isSubmitting.value = false }
 }
 
 const handleRoleChange = async (id: number, role: string) => {
   try {
-    await apiFetch('/Staff/Role', {
-      method: 'PUT',
-      body: JSON.stringify({ id, role })
-    })
+    await graphql(`mutation { updateStaffRole(input: { id: ${id}, role: "${role}" }) { hasError } }`)
     await fetchStaff()
-  } catch (error) {
-    console.error('Erro ao atualizar role:', error)
-  }
+  } catch (error) { console.error('Erro ao atualizar role:', error) }
 }
 
 const handleRemove = async (id: number) => {
   if (!confirm('Remover este staff?')) return
   try {
-    await apiFetch(`/Staff/${id}`, { method: 'DELETE' })
+    await graphql(`mutation { removeStaff(id: "${id}") { hasError } }`)
     staffList.value = staffList.value.filter(s => s.id !== id)
-  } catch (error) {
-    console.error('Erro ao remover staff:', error)
-  }
+  } catch (error) { console.error('Erro ao remover staff:', error) }
 }
 
-onMounted(() => {
-  fetchStaff()
-})
+onMounted(() => { fetchStaff() })
 </script>

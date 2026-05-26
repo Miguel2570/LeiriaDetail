@@ -88,6 +88,10 @@ const financialQueries = loadGraphQL("./financial/financial.queries.graphql");
 const financialMutations = loadGraphQL("./financial/financial.mutations.graphql");
 const financialInputs = loadGraphQL("./financial/financial.inputs.graphql");
 
+const paymentTypes = loadGraphQL("./payment/payment.types.graphql");
+const paymentQueries = loadGraphQL("./payment/payment.queries.graphql");
+const paymentMutations = loadGraphQL("./payment/payment.mutations.graphql");
+const paymentInputs = loadGraphQL("./payment/payment.inputs.graphql");
 /**
  * Interpolação e combinação de todos os módulos de schemas.
  * O Apollo Server irá compilar esta string final e validar todas as relações.
@@ -169,6 +173,11 @@ const typeDefs = `
   ${financialQueries}
   ${financialMutations}
   ${financialInputs}
+
+  ${paymentTypes}
+  ${paymentQueries}
+  ${paymentMutations}
+  ${paymentInputs}
 `;
 
 export default typeDefs;

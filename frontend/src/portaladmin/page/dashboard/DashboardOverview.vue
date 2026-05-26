@@ -70,7 +70,7 @@
 import { ref, onMounted } from 'vue'
 import { TrendingUp, Clock, CalendarCheck, Users } from 'lucide-vue-next'
 import { Line } from 'vue-chartjs'
-import { apiFetch } from '@/services/api'
+import { graphql } from '@/graphql'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -82,19 +82,6 @@ import {
   Legend,
   Filler
 } from 'chart.js'
-
-interface DashboardData {
-    HasError: boolean
-    Error?: { Message: string }
-    Metrics?: {
-        faturacaoHoje: number
-        marcacoesPendentes: number
-        carrosConcluidos: number
-        staffAtivo: { ativo: number; total: number }
-    }
-    Revenue?: Array<{ date: string; revenue: number; expenses: number }>
-    ActivityLogs?: Array<{ time: string; text: string; type: string }>
-}
 
 ChartJS.register(
   CategoryScale,
@@ -114,122 +101,75 @@ const metricCards = ref([
   { title: "Staff Ativo", value: "0/0", trend: "A carregar...", icon: Users, color: "from-[#8B5CF6] to-[#EC4899]" },
 ])
 
-const activityLogs = ref([
-  { time: '--:--', text: 'A carregar logs...', type: 'system' }
-])
+const activityLogs = ref([{ time: '--:--', text: 'A carregar logs...', type: 'system' }])
 
 const chartData = ref({
   labels: [] as string[],
   datasets: [
-    {
-      label: 'Faturação (€)',
-      data: [] as number[],
-      borderColor: '#3B82F6',
-      backgroundColor: 'rgba(59, 130, 246, 0.1)',
-      borderWidth: 2,
-      fill: true,
-      tension: 0.4,
-      pointBackgroundColor: '#3B82F6',
-      pointBorderColor: '#FFFFFF',
-      pointBorderWidth: 2,
-      pointRadius: 4,
-      pointHoverRadius: 6,
-    },
-    {
-      label: 'Despesas (€)',
-      data: [] as number[],
-      borderColor: '#EF4444',
-      backgroundColor: 'rgba(239, 68, 68, 0.05)',
-      borderWidth: 2,
-      fill: true,
-      tension: 0.4,
-      pointBackgroundColor: '#EF4444',
-      pointBorderColor: '#FFFFFF',
-      pointBorderWidth: 2,
-      pointRadius: 4,
-      pointHoverRadius: 6,
-    },
+    { label: 'Faturação (€)', data: [] as number[], borderColor: '#3B82F6', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderWidth: 2, fill: true, tension: 0.4, pointBackgroundColor: '#3B82F6', pointBorderColor: '#FFFFFF', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6 },
+    { label: 'Despesas (€)', data: [] as number[], borderColor: '#EF4444', backgroundColor: 'rgba(239, 68, 68, 0.05)', borderWidth: 2, fill: true, tension: 0.4, pointBackgroundColor: '#EF4444', pointBorderColor: '#FFFFFF', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6 },
   ],
 })
 
 const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
+  responsive: true, maintainAspectRatio: false,
   plugins: {
-    legend: {
-      position: 'bottom' as const,
-      labels: {
-        usePointStyle: true,
-        padding: 20,
-        font: { size: 12, weight: 'bold' as const },
-      },
-    },
-    tooltip: {
-      backgroundColor: '#0A0A0F',
-      titleColor: '#FFFFFF',
-      bodyColor: '#94A3B8',
-      borderColor: 'rgba(255, 255, 255, 0.1)',
-      borderWidth: 1,
-      padding: 12,
-      cornerRadius: 8,
-    },
+    legend: { position: 'bottom' as const, labels: { usePointStyle: true, padding: 20, font: { size: 12, weight: 'bold' as const } } },
+    tooltip: { backgroundColor: '#0A0A0F', titleColor: '#FFFFFF', bodyColor: '#94A3B8', borderColor: 'rgba(255, 255, 255, 0.1)', borderWidth: 1, padding: 12, cornerRadius: 8 },
   },
   scales: {
-    y: {
-      beginAtZero: true,
-      grid: { color: 'rgba(0, 0, 0, 0.06)' },
-      ticks: {
-        callback: (value: any) => `€${value}`,
-        font: { size: 11 },
-      },
-    },
-    x: {
-      grid: { display: false },
-      ticks: { font: { size: 11 } },
-    },
+    y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.06)' }, ticks: { callback: (value: any) => `€${value}`, font: { size: 11 } } },
+    x: { grid: { display: false }, ticks: { font: { size: 11 } } },
   },
 }
 
 const fetchDashboardData = async () => {
   try {
-    const data: DashboardData = await apiFetch('/Dashboard')
+    const query = `
+      query {
+        dashboard {
+          metrics { faturacaoHoje marcacoesPendentes carrosConcluidos staffAtivo { ativo total } }
+          revenue { date revenue expenses }
+          activityLogs { time text type }
+          errors { field message }
+        }
+      }
+    `
+    const data = await graphql<{ dashboard: any }>(query)
     
-    if (data.HasError || !data.Metrics) {
-      console.error('Dashboard error:', data.Error?.Message)
+    if (data.dashboard?.errors?.length) {
+      console.error('Dashboard error:', data.dashboard.errors)
       return
     }
+
+    const d = data.dashboard
+    if (!d?.metrics) return
     
     const cards = metricCards.value
     if (!cards[0] || !cards[1] || !cards[2] || !cards[3]) return
     
-    cards[0].value = `€${data.Metrics.faturacaoHoje.toFixed(0)}`
-    cards[0].trend = data.Metrics.faturacaoHoje > 0 ? 'Hoje' : 'Sem dados'
-    cards[1].value = String(data.Metrics.marcacoesPendentes)
-    cards[1].trend = data.Metrics.marcacoesPendentes > 0 ? `${data.Metrics.marcacoesPendentes} pendentes` : 'Nenhuma'
-    cards[2].value = String(data.Metrics.carrosConcluidos)
-    cards[3].value = `${data.Metrics.staffAtivo.ativo}/${data.Metrics.staffAtivo.total}`
-    cards[3].trend = data.Metrics.staffAtivo.total - data.Metrics.staffAtivo.ativo > 0 
-      ? `${data.Metrics.staffAtivo.total - data.Metrics.staffAtivo.ativo} ausente(s)` 
-      : 'Todos ativos'
+    cards[0].value = `€${d.metrics.faturacaoHoje.toFixed(0)}`
+    cards[0].trend = d.metrics.faturacaoHoje > 0 ? 'Hoje' : 'Sem dados'
+    cards[1].value = String(d.metrics.marcacoesPendentes)
+    cards[1].trend = d.metrics.marcacoesPendentes > 0 ? `${d.metrics.marcacoesPendentes} pendentes` : 'Nenhuma'
+    cards[2].value = String(d.metrics.carrosConcluidos)
+    cards[3].value = `${d.metrics.staffAtivo.ativo}/${d.metrics.staffAtivo.total}`
+    cards[3].trend = d.metrics.staffAtivo.total - d.metrics.staffAtivo.ativo > 0 ? `${d.metrics.staffAtivo.total - d.metrics.staffAtivo.ativo} ausente(s)` : 'Todos ativos'
     
-    if (data.Revenue && data.Revenue.length > 0) {
+    if (d.revenue && d.revenue.length > 0) {
       const chart = chartData.value
       const ds0 = chart.datasets[0]
       const ds1 = chart.datasets[1]
-      
       if (ds0 && ds1) {
         const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
-        chart.labels = data.Revenue.map((r) => {
-          const d = new Date(r.date)
-          return diasSemana[d.getDay()] || r.date
-        })
-        ds0.data = data.Revenue.map((r) => r.revenue)
-        ds1.data = data.Revenue.map((r) => r.expenses)
+        chart.labels = d.revenue.map((r: any) => diasSemana[new Date(r.date).getDay()] || r.date)
+        ds0.data = d.revenue.map((r: any) => r.revenue)
+        ds1.data = d.revenue.map((r: any) => r.expenses)
       }
     }
     
-    if (data.ActivityLogs && data.ActivityLogs.length > 0) {
-      activityLogs.value = data.ActivityLogs
+    if (d.activityLogs && d.activityLogs.length > 0) {
+      activityLogs.value = d.activityLogs
     }
     
   } catch (error) {

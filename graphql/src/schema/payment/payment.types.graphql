@@ -1,0 +1,25 @@
+type PaymentData {
+    id: ID!
+    bookingId: Int!
+    amount: Float!
+    method: String!
+    status: String!
+    entity: String
+    reference: String
+    mbwayPhone: String
+    createdAt: String
+}
+
+type PaymentOutput {
+    payment: PaymentData
+    message: String
+    hasError: Boolean!
+    error: ErrorField
+}
+
+type MultibancoData {
+    entity: String!
+    reference: String!
+    amount: String!
+    validUntil: String!
+}

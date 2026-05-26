@@ -56,18 +56,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { Camera } from 'lucide-vue-next'
-import { apiFetch } from '@/services/api'
+import { graphql } from '@/graphql'
 
 interface Profile {
-  id: number
-  firstName: string
-  lastName: string
-  email: string
-  phone: string
-  avatarUrl?: string
-  isVerified: boolean
-  createdAt: string
-  updatedAt: string
+  id: number; firstName: string; lastName: string; email: string; phone: string; avatarUrl?: string; isVerified: boolean; createdAt: string; updatedAt: string
 }
 
 const profile = ref<Profile | null>(null)
@@ -82,42 +74,28 @@ const avatarUrl = ref('')
 const avatar = computed(() => {
   if (!profile.value) return '?'
   const parts = `${profile.value.firstName} ${profile.value.lastName}`.trim().split(' ')
-  return parts.length >= 2 
-    ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
-    : (parts[0]?.[0] || '?').toUpperCase()
+  return parts.length >= 2 ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() : (parts[0]?.[0] || '?').toUpperCase()
 })
 
-const formatDate = (date: string) => {
-  if (!date) return '-'
-  return new Date(date).toLocaleDateString('pt-PT', { year: 'numeric', month: 'long', day: 'numeric' })
-}
+const formatDate = (date: string) => date ? new Date(date).toLocaleDateString('pt-PT', { year: 'numeric', month: 'long', day: 'numeric' }) : '-'
 
-const triggerUpload = () => {
-  fileInput.value?.click()
-}
+const triggerUpload = () => fileInput.value?.click()
 
 const handleFileUpload = async (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0]
   if (!file) return
-
-  // Redimensionar para no máximo 200px
   const reader = new FileReader()
   reader.onload = async (e) => {
     const img = new Image()
     img.onload = async () => {
       const canvas = document.createElement('canvas')
       const size = Math.min(img.width, img.height, 200)
-      canvas.width = size
-      canvas.height = size
+      canvas.width = size; canvas.height = size
       const ctx = canvas.getContext('2d')
       ctx?.drawImage(img, 0, 0, size, size)
-      const base64 = canvas.toDataURL('image/jpeg', 0.7) // JPEG, 70% qualidade
-      
+      const base64 = canvas.toDataURL('image/jpeg', 0.7)
       avatarUrl.value = base64
-      await apiFetch('/Profile/Avatar', {
-        method: 'PUT',
-        body: JSON.stringify({ avatarUrl: base64 })
-      })
+      await graphql(`mutation { updateAvatar(avatarUrl: "${base64}") { hasError } }`)
     }
     img.src = e.target?.result as string
   }
@@ -126,57 +104,32 @@ const handleFileUpload = async (event: Event) => {
 
 const fetchProfile = async () => {
   try {
-    const data = await apiFetch('/Profile')
-    if (!data.HasError && data.Profile) {
-      profile.value = data.Profile
-      avatarUrl.value = data.Profile.avatarUrl || ''
+    const query = `query { profile { profile { id firstName lastName email phone avatarUrl isVerified createdAt } } }`
+    const data = await graphql<{ profile: { profile: Profile } }>(query)
+    if (data.profile?.profile) {
+      profile.value = data.profile.profile
+      avatarUrl.value = data.profile.profile.avatarUrl || ''
     }
-  } catch (error) {
-    console.error('Erro ao carregar perfil:', error)
-  } finally {
-    isLoading.value = false
-  }
+  } catch (error) { console.error('Erro ao carregar perfil:', error) }
+  finally { isLoading.value = false }
 }
 
 const handleChangePassword = async () => {
-  if (passwordForm.value.newPass !== passwordForm.value.confirm) {
-    passwordMessage.value = 'As passwords não coincidem.'
-    passwordError.value = true
-    return
-  }
-  if (passwordForm.value.newPass.length < 6) {
-    passwordMessage.value = 'A password deve ter pelo menos 6 caracteres.'
-    passwordError.value = true
-    return
-  }
-
-  isSubmitting.value = true
-  passwordMessage.value = ''
+  if (passwordForm.value.newPass !== passwordForm.value.confirm) { passwordMessage.value = 'As passwords não coincidem.'; passwordError.value = true; return }
+  if (passwordForm.value.newPass.length < 6) { passwordMessage.value = 'A password deve ter pelo menos 6 caracteres.'; passwordError.value = true; return }
+  isSubmitting.value = true; passwordMessage.value = ''
   try {
-    const data = await apiFetch('/Profile/ChangePassword', {
-      method: 'PUT',
-      body: JSON.stringify({
-        currentPassword: passwordForm.value.current,
-        newPassword: passwordForm.value.newPass
-      })
-    })
-    if (data.HasError) {
-      passwordMessage.value = data.Error?.Message || 'Erro ao alterar password.'
-      passwordError.value = true
+    const mutation = `mutation ChangePassword($input: ChangePasswordInput!) { changeProfilePassword(input: $input) { message hasError } }`
+    const data = await graphql<{ changeProfilePassword: any }>(mutation, { input: { currentPassword: passwordForm.value.current, newPassword: passwordForm.value.newPass } })
+    if (data.changeProfilePassword?.hasError) {
+      passwordMessage.value = data.changeProfilePassword.message || 'Erro ao alterar password.'; passwordError.value = true
     } else {
-      passwordMessage.value = 'Password alterada com sucesso!'
-      passwordError.value = false
+      passwordMessage.value = 'Password alterada com sucesso!'; passwordError.value = false
       passwordForm.value = { current: '', newPass: '', confirm: '' }
     }
-  } catch (error) {
-    passwordMessage.value = 'Erro de conexão.'
-    passwordError.value = true
-  } finally {
-    isSubmitting.value = false
-  }
+  } catch (error) { passwordMessage.value = 'Erro de conexão.'; passwordError.value = true }
+  finally { isSubmitting.value = false }
 }
 
-onMounted(() => {
-  fetchProfile()
-})
+onMounted(() => { fetchProfile() })
 </script>
