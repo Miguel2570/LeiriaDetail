@@ -72,6 +72,22 @@ const appointmentTypes = loadGraphQL("./appointment/appointment.types.graphql");
 const appointmentQueries = loadGraphQL("./appointment/appointment.queries.graphql");
 const appointmentMutations = loadGraphQL("./appointment/appointment.mutations.graphql");
 const appointmentInputs = loadGraphQL("./appointment/appointment.inputs.graphql");
+
+const inventoryTypes = loadGraphQL("./inventory/inventory.types.graphql");
+const inventoryQueries = loadGraphQL("./inventory/inventory.queries.graphql");
+const inventoryMutations = loadGraphQL("./inventory/inventory.mutations.graphql");
+const inventoryInputs = loadGraphQL("./inventory/inventory.inputs.graphql");
+
+const staffTypes = loadGraphQL("./staff/staff.types.graphql");
+const staffQueries = loadGraphQL("./staff/staff.queries.graphql");
+const staffMutations = loadGraphQL("./staff/staff.mutations.graphql");
+const staffInputs = loadGraphQL("./staff/staff.inputs.graphql");
+
+const financialTypes = loadGraphQL("./financial/financial.types.graphql");
+const financialQueries = loadGraphQL("./financial/financial.queries.graphql");
+const financialMutations = loadGraphQL("./financial/financial.mutations.graphql");
+const financialInputs = loadGraphQL("./financial/financial.inputs.graphql");
+
 /**
  * Interpolação e combinação de todos os módulos de schemas.
  * O Apollo Server irá compilar esta string final e validar todas as relações.
@@ -138,6 +154,21 @@ const typeDefs = `
   ${appointmentQueries}
   ${appointmentMutations}
   ${appointmentInputs}
+
+  ${inventoryTypes}
+  ${inventoryQueries}
+  ${inventoryMutations}
+  ${inventoryInputs}
+
+  ${staffTypes}
+  ${staffQueries}
+  ${staffMutations}
+  ${staffInputs}
+
+  ${financialTypes}
+  ${financialQueries}
+  ${financialMutations}
+  ${financialInputs}
 `;
 
 export default typeDefs;

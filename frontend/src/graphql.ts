@@ -4,6 +4,9 @@ import router from "@/router";
 // Vai buscar o URL da API ao ficheiro .env (ex: http://localhost:4001/graphql)
 const GRAPHQL_URL = import.meta.env.VITE_GRAPHQL_URL || "http://localhost:4001/graphql";
 
+// Nome da rota de erro (igual ao definido no router)
+const ERROR_ROUTE_NAME = "ErrorPage";
+
 export const graphql = async <T>(
     query: string,
     variables?: Record<string, any>
@@ -15,7 +18,6 @@ export const graphql = async <T>(
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                // Passa a chave de sessão se existir, senão passa um valor default (podes ajustar futuramente)
                 ...(Cache.Session?.value && Cache.Session.value !== '1234' && { "Session-Key": Cache.Session.value })
             },
             body: JSON.stringify({ query, variables })
@@ -23,10 +25,8 @@ export const graphql = async <T>(
 
         console.log("Raw GraphQL response:", response.status);
 
-        // Trata erros 400, 401, 500, etc.
         if (response.status >= 300) {
             let errorBody: any = null;
-
             try {
                 errorBody = await response.json();
             } catch {
@@ -41,13 +41,10 @@ export const graphql = async <T>(
             const error: any = new Error(errorMessage);
             error.code = response.status;
             error.output = errorBody;
-
             throw error;
         }
 
         let output: any;
-
-        // Mesmo com HTTP 200, a resposta pode não ser JSON válido
         try {
             output = await response.json();
         } catch {
@@ -58,53 +55,43 @@ export const graphql = async <T>(
 
         console.log("GraphQL response:", output);
 
-        // Trata erros específicos do GraphQL
         if (output.errors?.length) {
             const graphQLError = output.errors[0];
-
             const error: any = new Error(graphQLError.message);
             error.code = graphQLError.extensions?.code || "GRAPHQL";
             error.output = output;
             error.errors = output.errors;
-
             throw error;
         }
 
-        // Se a resposta não tiver data, considera erro técnico
         if (!output.data) {
             const error: any = new Error("GraphQL returned no data.");
             error.code = "GRAPHQL";
             error.output = output;
-
             throw error;
         }
 
         const responseData = Object.values(output.data)[0] as any;
 
-        // Se o primeiro campo da data vier null, considera falha na BD
         if (responseData == null && !query.includes('Mutation')) {
             const error: any = new Error("Database unavailable or no response data.");
             error.code = "DATABASE";
             error.output = output;
-
             throw error;
         }
 
         const apiErrors = getApiErrors(responseData);
         const technicalError = apiErrors.find((err: any) => isTechnicalError(err));
 
-        // Só envia para a página de erro se for erro técnico
         if (technicalError) {
             const error: any = new Error(
                 technicalError.message ||
                 technicalError.Message ||
                 "Error returned by the API."
             );
-
             error.code = technicalError.code || technicalError.Code || "API_ERROR";
             error.output = output;
             error.errors = apiErrors;
-
             throw error;
         }
 
@@ -115,7 +102,6 @@ export const graphql = async <T>(
 
         const errorMessage = String(error?.message || "").toLowerCase();
 
-        // Deteta erros de rede (ex: servidor do backend desligado)
         const isNetworkError =
             error instanceof TypeError ||
             errorMessage.includes("failed to fetch") ||
@@ -124,7 +110,7 @@ export const graphql = async <T>(
 
         if (isNetworkError) {
             await router.push({
-                name: "error",
+                name: ERROR_ROUTE_NAME,  // ← CORRIGIDO
                 state: {
                     layer: "NETWORK",
                     title: "NETWORK",
@@ -135,11 +121,9 @@ export const graphql = async <T>(
                     statusCode: "NETWORK"
                 }
             });
-
             throw error;
         }
 
-        // Deteta erros de autenticação (ex: sessão expirada)
         const isAuthError =
             error?.code === 401 &&
             (
@@ -157,9 +141,8 @@ export const graphql = async <T>(
             throw error;
         }
 
-        // Qualquer outro erro técnico vai para a página de erro global
         await router.push({
-            name: "error",
+            name: ERROR_ROUTE_NAME,  // ← CORRIGIDO
             state: {
                 layer: "GRAPHQL",
                 title: error?.code || "GRAPHQL",
@@ -175,7 +158,7 @@ export const graphql = async <T>(
     }
 };
 
-// Funções utilitárias de tratamento de erros
+// Funções utilitárias
 function getApiErrors(responseData: any): any[] {
     if (Array.isArray(responseData?.errors)) return responseData.errors;
     if (responseData?.HasError && responseData?.Error) return [responseData.Error];

@@ -11,6 +11,32 @@
 
       <div class="bg-[#050508] backdrop-blur-xl border border-white/10 p-8 md:p-10 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
         
+        <div class="flex flex-col gap-3 mb-6">
+          <button @click="registerWithGoogle" type="button" class="w-full py-3.5 px-4 bg-white/5 border border-white/10 text-white font-bold rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-3">
+            <svg class="w-5 h-5" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+            </svg>
+            Registar com o Google
+          </button>
+          
+          <!--<button @click="registerWithApple" type="button" class="w-full py-3.5 px-4 bg-white/5 border border-white/10 text-white font-bold rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-3">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 21.99 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 21.99C7.79 22.03 6.8 20.68 5.96 19.47C4.25 16.97 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/>
+            </svg>
+            Registar com a Apple
+          </button>
+          -->
+        </div>
+
+        <div class="flex items-center gap-4 mb-6">
+          <div class="h-px bg-white/10 flex-1"></div>
+          <span class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Ou com email</span>
+          <div class="h-px bg-white/10 flex-1"></div>
+        </div>
+
         <div v-if="errorMessage" class="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/50 flex items-center text-red-500 text-sm font-bold">
           {{ errorMessage }}
         </div>
@@ -68,7 +94,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { User, Mail, Lock, Phone, UserPlus, ArrowRight } from 'lucide-vue-next'; // Adicionei o Phone!
+import { User, Mail, Lock, Phone, UserPlus, ArrowRight } from 'lucide-vue-next';
+import { Cache } from '@/services/cachemanager';
 
 const router = useRouter();
 
@@ -95,24 +122,27 @@ const handleRegister = async () => {
     isLoading.value = true;
 
     try {
-        const response = await fetch('http://localhost:3001/Authentication/register', {
+        const nameParts = formData.value.name.trim().split(' ');
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
+
+        const response = await fetch('/Authentication/Register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                name: formData.value.name,
-                phone: formData.value.phone,
                 email: formData.value.email,
-                password: formData.value.password
+                password: formData.value.password,
+                firstName: firstName,
+                lastName: lastName
             })
         });
 
         const data = await response.json();
 
-        if (!response.ok) {
-            throw new Error(data.error || 'Erro ao criar conta.');
+        if (data.HasError) {
+            throw new Error(data.Error?.Message || 'Erro ao criar conta.');
         }
 
-        // Se o registo tiver sucesso, redireciona para o Login
         router.push('/login');
         
     } catch (error: any) {
@@ -122,6 +152,58 @@ const handleRegister = async () => {
     }
 };
 
-const loginWithGoogle = () => console.log('A implementar Google...');
-const loginWithApple = () => console.log('A implementar Apple...');
+const registerWithGoogle = async () => {
+  try {
+    if (!(window as any).google?.accounts?.oauth2) {
+      await new Promise<void>((resolve) => {
+        const script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.onload = () => resolve();
+        document.head.appendChild(script);
+      });
+    }
+
+    const client = (window as any).google.accounts.oauth2.initCodeClient({
+      client_id: '433691700860-nuutndflkr2iosttdc0ij269igarlua7.apps.googleusercontent.com',
+      scope: 'email profile',
+      ux_mode: 'popup',
+      callback: async (response: any) => {
+        if (response.code) {
+          isLoading.value = true;
+          
+          const res = await fetch('/Authentication/GoogleLogin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: response.code })
+          });
+          
+          const data = await res.json();
+          
+          if (data.HasError) {
+            errorMessage.value = data.Error?.Message || 'Erro no registo com Google.';
+            isLoading.value = false;
+            return;
+          }
+          
+          Cache.setAuth(data.SessionKey, data.CredencialKey?.toString(), '');
+          router.push('/');
+        }
+      }
+    });
+
+    client.requestCode();
+  } catch (error: any) {
+    errorMessage.value = error.message;
+  }
+};
+/*
+const registerWithApple = async () => {
+  try {
+    // Apple Sign-In - a implementar quando tiveres Apple Developer configurado
+    alert('Registo com Apple será disponibilizado em breve!');
+  } catch (error: any) {
+    errorMessage.value = error.message;
+  }
+};
+*/
 </script>

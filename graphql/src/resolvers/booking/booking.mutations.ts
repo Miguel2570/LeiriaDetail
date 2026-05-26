@@ -1,7 +1,7 @@
 import { API } from '../../proxy/serviceproxy/api';
 
 export const bookingsMutations = {
-    createBooking: async (_: any, { input }: any, context: any) => {
+    createClientBooking: async (_: any, { input }: any, context: any) => {
         try {
             const data: any = await API.POST<any>(context, "/Bookings/", input);
             return {

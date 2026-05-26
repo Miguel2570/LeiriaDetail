@@ -1,7 +1,7 @@
 import { API } from '../../proxy/serviceproxy/api';
 
 export const vehicleMutations = {
-    addVehicle: async (_: any, { input }: any, context: any) => {
+    addUserVehicle: async (_: any, { input }: any, context: any) => {
         try {
             // Obter o user_id da sessão
             const sessionKey = context?.req?.headers?.['session-key'] || 

@@ -10,6 +10,7 @@ import {
     ValidateTokenOutputModel,
     CheckEmailOutputModel
 } from "./AuthenticationModel";
+import UserManager from "./AuthenticationManager";
 
 const router = Router();
 
@@ -257,6 +258,24 @@ async function AppleLogin(request: Request, response: Response) {
     response.status(200).send(result);
 }
 
+async function GetRole(request: Request, response: Response) {
+    const sessionKey = request.headers['session-key'] as string;
+    
+    if (!sessionKey) {
+        response.status(200).json({ role: 'customer' });
+        return;
+    }
+    
+    const tokenResult = await UserManager.ValidateToken(sessionKey);
+    if (!tokenResult.isValid || !tokenResult.userId) {
+        response.status(200).json({ role: 'customer' });
+        return;
+    }
+    
+    const role = await UserManager.GetUserRole(tokenResult.userId);
+    response.status(200).json({ role });
+}
+
 router.post("/Register", Register);
 router.post("/Login", Login);
 router.post("/Logout/:SecurityToken", Logout);
@@ -270,5 +289,5 @@ router.get("/ValidateToken", ValidateToken);
 router.get("/CheckEmail", CheckEmail);
 router.post("/GoogleLogin", GoogleLogin);
 router.post("/AppleLogin", AppleLogin);
-
+router.get("/Role", GetRole);
 export default router;

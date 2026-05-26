@@ -37,7 +37,8 @@ export const crmMutations = {
     }
   },
 
-  addVehicle: async (_: any, { input }: any, context: any) => {
+  // ✅ Renomeado para addClientVehicle
+  addClientVehicle: async (_: any, { input }: any, context: any) => {
     try {
       const data: any = await API.POST<any>(context, "/CRM/Vehicle", input);
       

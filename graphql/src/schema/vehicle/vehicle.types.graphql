@@ -1,16 +1,19 @@
 type Vehicle {
-  id: ID!
-  userId: Int!
-  licensePlate: String
-  brand: String!
-  model: String!
-  year: Int
-  fuelType: String
-  sizeCategory: String
-  vin: String
-  isPrimary: Boolean!
-  createdAt: String!
-  updatedAt: String
+    id: ID!
+    userId: Int
+    plate: String
+    licensePlate: String
+    brand: String!
+    model: String!
+    year: Int
+    color: String
+    size_category: String
+    sizeCategory: String
+    fuelType: String
+    vin: String
+    isPrimary: Boolean
+    createdAt: String
+    updatedAt: String
 }
 
 type VehicleOutput {

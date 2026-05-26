@@ -12,5 +12,6 @@ CREATE TABLE IF NOT EXISTS users (
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    role VARCHAR(50) DEFAULT 'customer'
+    role VARCHAR(50) DEFAULT 'customer',
+    avatar_url VARCHAR(500)
 );

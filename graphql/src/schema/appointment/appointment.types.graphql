@@ -1,4 +1,4 @@
-type Booking {
+type DispatchBooking {
     id: Int!
     clientName: String!
     clientPhone: String!

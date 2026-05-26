@@ -149,14 +149,6 @@ onMounted(fetchStats);
           <p class="text-gray-400 text-sm mb-8 max-w-md mx-auto">
             Veja todos os nossos serviços e preços, ou agende já a sua visita.
           </p>
-          
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <router-link 
-              to="/precos" 
-              class="px-8 py-4 border border-white/10 bg-white/5 text-white text-sm font-black uppercase tracking-widest rounded-xl hover:bg-white/10 transition-all duration-300"
-            >
-              Ver Tabela de Preços
-            </router-link>
             <router-link 
               to="/agenda" 
               class="px-8 py-4 bg-gradient-to-r from-[#2563EB] to-[#00D8FF] text-white text-sm font-black uppercase tracking-widest rounded-xl hover:shadow-[0_10px_30px_rgba(37,99,235,0.4)] transition-all duration-300 flex items-center justify-center gap-2"
@@ -166,7 +158,5 @@ onMounted(fetchStats);
           </div>
         </div>
       </div>
-
-    </div>
   </section>
 </template>

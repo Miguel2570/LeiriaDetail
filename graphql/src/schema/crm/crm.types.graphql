@@ -1,17 +1,6 @@
-# src/schema/crm/crm.types.graphql
-type Vehicle {
-    id: Int!
-    plate: String!
-    model: String!
-    brand: String!
-    year: Int!
-    color: String!
-    size_category: String!
-}
-
 type HistoryRecord {
-    id: Int!
-    vehicleId: Int!
+    id: ID!
+    vehicleId: ID!
     date: String!
     service: String!
     status: String!
@@ -19,7 +8,7 @@ type HistoryRecord {
 }
 
 type Client {
-    id: Int!
+    id: ID!
     name: String!
     phone: String!
     email: String!

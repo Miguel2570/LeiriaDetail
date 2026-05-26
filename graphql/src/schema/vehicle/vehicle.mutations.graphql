@@ -1,6 +1,6 @@
 extend type Mutation {
-  addVehicle(input: AddVehicleInput!): VehicleOutput!
-  setPrimaryVehicle(vehicleId: ID!): VehicleOutput!
-  updateVehicle(input: UpdateVehicleInput!): VehicleOutput!
-  deleteVehicle(vehicleId: ID!): DeleteVehicleOutput!
+    addUserVehicle(input: AddVehicleInput!): VehicleOutput!
+    setPrimaryVehicle(vehicleId: ID!): VehicleOutput!
+    updateVehicle(input: UpdateVehicleInput!): VehicleOutput!
+    deleteVehicle(vehicleId: ID!): DeleteVehicleOutput!
 }

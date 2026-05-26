@@ -49,19 +49,39 @@ import { graphql } from '@/graphql';
 const props = defineProps<{ selectedDate: any; selectedTime: string }>();
 const emit = defineEmits(['update:date', 'update:time']);
 
-const localDate = ref(props.selectedDate || undefined);
+const localDate = ref(props.selectedDate || today(getLocalTimeZone()));
 const minDate = today(getLocalTimeZone());
 const timeSlots = ref<{ time: string; available: boolean }[]>([]);
 const isLoadingSlots = ref(false);
 
 watch(localDate, (newValue) => {
   emit('update:date', newValue);
-  if (newValue) fetchSlots(newValue.toString());
+  if (newValue) fetchSlots(newValue);
 });
 
-const fetchSlots = async (date: string) => {
+onMounted(() => {
+  if (!localDate.value) {
+    localDate.value = today(getLocalTimeZone());
+  }
+  if (localDate.value) {
+    fetchSlots(localDate.value);
+  }
+});
+
+const fetchSlots = async (date: any) => {
   isLoadingSlots.value = true;
   try {
+    let dateStr: string;
+    if (typeof date === 'string') {
+      dateStr = date;
+    } else if (date?.year && date?.month && date?.day) {
+      dateStr = `${date.year}-${String(date.month).padStart(2, '0')}-${String(date.day).padStart(2, '0')}`;
+    } else {
+      dateStr = new Date().toISOString().split('T')[0];
+    }
+    
+    console.log('📅 Fetching slots for:', dateStr);
+    
     const query = `
       query($date: String!) {
         availableSlots(date: $date) {
@@ -70,7 +90,7 @@ const fetchSlots = async (date: string) => {
         }
       }
     `;
-    const data = await graphql<{ availableSlots: { availableSlots: string[], occupiedSlots: string[] } }>(query, { date });
+    const data = await graphql<{ availableSlots: { availableSlots: string[], occupiedSlots: string[] } }>(query, { date: dateStr });
     
     const allSlots = [
       '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30',

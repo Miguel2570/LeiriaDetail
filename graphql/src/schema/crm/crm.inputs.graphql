@@ -5,7 +5,7 @@ input AddClientInput {
     phone: String
 }
 
-input AddVehicleInput {
+input AddClientVehicleInput {
     userId: Int!
     plate: String!
     brand: String!

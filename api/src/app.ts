@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import authenticationRouters from "./Authentication/AuthenticationRoutes";
-import { LoginValidationMiddleware } from "./Helpers/AuthorizationMiddleware";
 import profileRoutes from "./Profile/ProfileRoutes";
 import serviceRoutes from "./Services/ServiceRoutes";
 import bookingRoutes from "./Bookings/BookingRoutes";
@@ -17,6 +16,8 @@ import appointmentRoutes from "./Appointments/AppointmentRoutes";
 import staffRoutes from "./Staff/StaffRoutes";
 import inventoryRoutes from "./Inventory/InventoryRoutes";
 import financialRoutes from "./Financial/FinancialRoutes";
+import { LoginValidationMiddleware, requireRole, Authentication } from "./Helpers/AuthorizationMiddleware";
+
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use(cors({
 const publicRoutes = [
     '/Authentication/Login',
     '/Authentication/Register',
+    '/Authentication/register',
     '/Authentication/CheckEmail',
     '/Authentication/Verify',
     '/Authentication/Resend-Verification',
@@ -63,12 +65,12 @@ app.use("/Portfolio", portfolioRoutes);
 app.use("/Reviews", reviewRoutes);
 app.use("/Faqs", faqRoutes);
 app.use("/Materials", materialRoutes);
-app.use("/Dashboard", dashboardRoutes);
-app.use("/CRM", crmRoutes);
-app.use("/Appointments", appointmentRoutes);
-app.use("/Staff", staffRoutes);
-app.use("/Inventory", inventoryRoutes);
-app.use("/Financial", financialRoutes);
+app.use("/Dashboard", Authentication, requireRole('admin'), dashboardRoutes);
+app.use("/CRM", Authentication, requireRole('manager'), crmRoutes);
+app.use("/Appointments", Authentication, requireRole('operator'), appointmentRoutes);
+app.use("/Staff", Authentication, requireRole('admin'), staffRoutes);
+app.use("/Inventory", Authentication, requireRole('manager'), inventoryRoutes);
+app.use("/Financial", Authentication, requireRole('admin'), financialRoutes);
 
 app.get("/", (req, res) => {
     res.send(`...`);

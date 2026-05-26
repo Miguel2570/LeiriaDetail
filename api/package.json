@@ -8,6 +8,7 @@
     "start": "node dist/server.js"
   },
   "dependencies": {
+    "@popperjs/core": "^2.11.8",
     "@tailwindcss/vite": "^4.3.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",

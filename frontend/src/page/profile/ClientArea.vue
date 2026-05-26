@@ -30,6 +30,17 @@
             <component :is="tab.icon" class="w-5 h-5" />
             <span class="text-sm font-bold uppercase tracking-wider">{{ tab.label }}</span>
           </button>
+
+          <!-- ✅ Botão Admin Portal -->
+          <div v-if="isAdmin" class="pt-4 border-t border-white/10">
+            <router-link 
+              to="/admin/dashboard"
+              class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all text-[#00D8FF] hover:bg-[#00D8FF]/10 border border-[#00D8FF]/20"
+            >
+              <Shield class="w-5 h-5" />
+              <span class="text-sm font-bold uppercase tracking-wider">Admin Portal</span>
+            </router-link>
+          </div>
         </div>
 
         <!-- Conteúdo -->
@@ -270,7 +281,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Calendar, Clock, Sparkles, CalendarPlus, ShieldCheck, Car, Plus, User, Mail, Phone, Lock, ShieldAlert, History, FileText } from 'lucide-vue-next';
+import { Calendar, Clock, Sparkles, CalendarPlus, ShieldCheck, Car, Plus, User, Mail, Phone, Lock, ShieldAlert, History, FileText, Shield } from 'lucide-vue-next';
 import { graphql } from '@/graphql';
 import { generateHistoryPDF } from '@/services/pdfGenerator';
 import { Cache } from '@/services/cachemanager';
@@ -339,6 +350,20 @@ const profile = reactive({
 const profileSubmitting = ref(false);
 const profileSuccess = ref('');
 const profileError = ref('');
+const isAdmin = ref(false);
+
+const checkAdminRole = async () => {
+  const sessionKey = Cache.Session?.value;
+  if (!sessionKey) return;
+  
+  try {
+    const res = await fetch('/Authentication/Role', {
+      headers: { 'Session-Key': sessionKey }
+    });
+    const data = await res.json();
+    isAdmin.value = ['superadmin', 'admin', 'manager', 'operator'].includes(data.role);
+  } catch {}
+};
 
 // Password
 const passwordForm = reactive({
@@ -647,9 +672,27 @@ const handleAddVehicle = async () => {
   vehicleError.value = '';
   vehicleSubmitting.value = true;
   try {
-    const mutation = `mutation AddVehicle($input: AddVehicleInput!) { addVehicle(input: $input) { vehicle { id } hasError error { message } } }`;
-    const data = await graphql<{ addVehicle: any }>(mutation, { input: { licensePlate: newVehicle.value.license_plate, brand: newVehicle.value.brand, model: newVehicle.value.model, year: newVehicle.value.year, fuelType: newVehicle.value.fuel_type || null, sizeCategory: newVehicle.value.size_category } });
-    if (data.addVehicle.hasError) { vehicleError.value = data.addVehicle.error?.message || 'Erro.'; return; }
+    const mutation = `mutation AddVehicle($input: AddVehicleInput!) { 
+      addUserVehicle(input: $input) { 
+        vehicle { id } 
+        hasError 
+        error { field message } 
+      } 
+    }`;
+    const data = await graphql<{ addUserVehicle: any }>(mutation, {
+      input: { 
+        licensePlate: newVehicle.value.license_plate, 
+        brand: newVehicle.value.brand, 
+        model: newVehicle.value.model, 
+        year: newVehicle.value.year, 
+        fuelType: newVehicle.value.fuel_type || null, 
+        sizeCategory: newVehicle.value.size_category 
+      } 
+    });
+    if (data.addUserVehicle.hasError) {
+      vehicleError.value = data.addUserVehicle.error?.message || 'Erro.'; 
+      return; 
+    }
     newVehicle.value = { license_plate: '', brand: '', model: '', year: null, fuel_type: '', size_category: 'C' };
     plateStatus.isValid = false;
     plateStatus.class = 'bg-white/5 border-white/10 focus:border-[#3B82F6]';
@@ -674,6 +717,7 @@ onMounted(() => {
   loadBookings();
   loadVehicles();
   loadHistory();
+  checkAdminRole();
 });
 </script>
 

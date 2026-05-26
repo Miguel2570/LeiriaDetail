@@ -1,11 +1,11 @@
 input AddVehicleInput {
-  licensePlate: String!
-  brand: String!
-  model: String!
-  year: Int
-  fuelType: String
-  sizeCategory: String
-  vin: String
+    licensePlate: String!
+    brand: String!
+    model: String!
+    year: Int
+    fuelType: String
+    sizeCategory: String
+    vin: String
 }
 
 input UpdateVehicleInput {

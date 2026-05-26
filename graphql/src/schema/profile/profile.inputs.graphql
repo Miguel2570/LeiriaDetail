@@ -1,10 +1,19 @@
 input UpdateProfileInput {
-  firstName: String
-  lastName: String
-  phone: String
+    firstName: String
+    lastName: String
+    phone: String
 }
 
 input ChangePasswordInput {
-  currentPassword: String!
-  newPassword: String!
+    currentPassword: String!
+    newPassword: String!
+}
+
+input CreateStaffInput {
+    firstName: String!
+    lastName: String!
+    email: String!
+    password: String!
+    phone: String
+    role: String
 }

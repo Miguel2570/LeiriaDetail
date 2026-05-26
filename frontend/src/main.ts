@@ -1,18 +1,20 @@
+// src/main.ts (unificado)
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import i18n from './i18n'  // ← Adiciona esta linha
-import './style.css'
+import i18n from './i18n'
+import './assets/css/style.css'
+import './assets/css//admin.css'
 
 const app = createApp(App)
 
-// Tratamento global de erros da aplicação Vue
+// Tratamento global de erros
 app.config.errorHandler = (err, instance, info) => {
     const error = err as Error
-    console.error("Vue Error Handler apanhou um erro:", err)
+    console.error("Vue Error Handler:", err)
     
     router.push({
-        name: "error",
+        name: "ErrorPage",
         state: {
             layer: "FRONTEND",
             title: "Exception",

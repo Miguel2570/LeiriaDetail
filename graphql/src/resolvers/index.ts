@@ -1,7 +1,7 @@
 import { authMutations } from './auth/auth.mutation';
 import { authQueries } from './auth/auth.queries';
 
-import { servicesQueries } from './service/service.queries';
+import { serviceQueries } from './service/service.queries';
 import { serviceMutations } from "./service/service.mutations";
 
 import { bookingsQueries } from './booking/booking.queries';
@@ -25,9 +25,27 @@ import { faqsMutations } from './faqs/faqs.mutations';
 import { materialsQueries } from './materials/materials.queries';
 import { materialsMutations } from './materials/materials.mutations';
 
+import { dashboardQueries } from './dashboard/dashboard.queries';
+
+import { crmQueries } from './crm/crm.queries';
+import { crmMutations } from './crm/crm.mutations';
+
+import { appointmentQueries } from './appointment/appointment.queries';
+import { appointmentMutations } from './appointment/appointment.mutations';
+
+import { financialQueries } from './financial/financial.queries';
+import { financialMutations } from './financial/financial.mutations';
+
+import { staffQueries } from './staff/staff.queries';
+import { staffMutations } from './staff/staff.mutations';
+
+import { inventoryQueries } from './inventory/inventory.queries';
+import { inventoryMutations } from './inventory/inventory.mutations';
+
+
 const resolvers = {
     Query: {
-        ...servicesQueries,
+        ...serviceQueries,
         ...bookingsQueries,
         ...vehicleQueries,
         ...authQueries,
@@ -35,7 +53,13 @@ const resolvers = {
         ...portfolioQueries,
         ...reviewsQueries,
         ...faqsQueries,
-        ...materialsQueries
+        ...materialsQueries,
+        ...dashboardQueries,
+        ...crmQueries,
+        ...appointmentQueries,
+        ...financialQueries,
+        ...staffQueries,
+        ...inventoryQueries
     },
     Mutation: {
         ...authMutations,
@@ -46,7 +70,12 @@ const resolvers = {
         ...portfolioMutations,
         ...reviewsMutations,
         ...faqsMutations,
-        ...materialsMutations
+        ...materialsMutations,
+        ...crmMutations,
+        ...appointmentMutations,
+        ...financialMutations,
+        ...staffMutations,
+        ...inventoryMutations
     }
 };
 

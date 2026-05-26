@@ -38,8 +38,8 @@ class UserManager {
         
         try {
             const insertQuery = `
-                INSERT INTO users (first_name, last_name, email, password_hash, is_verified)
-                VALUES ($1, $2, $3, $4, true)
+                INSERT INTO users (first_name, last_name, email, password_hash, is_verified, role)
+                VALUES ($1, $2, $3, $4, true, 'customer')
                 RETURNING id, first_name, last_name, email
             `;
             
@@ -92,16 +92,18 @@ class UserManager {
         }
         
         const sessionKey = this.generateUUID();
-        const expirationDateTime = new Date();
-        expirationDateTime.setDate(expirationDateTime.getDate() + 1);
-        
-        const insertSession = `
-            INSERT INTO user_sessions (session_key, user_id, expirationdatetime)
-            VALUES ($1, $2, $3)
-        `;
-        await server.query(insertSession, [sessionKey, user.id, expirationDateTime]);
-        
-        return new LoginOutputModel(sessionKey, user.id, undefined);
+            const expirationDateTime = new Date();
+            expirationDateTime.setDate(expirationDateTime.getDate() + 1);
+            
+            const insertSession = `
+                INSERT INTO user_sessions (session_key, user_id, expirationdatetime)
+                VALUES ($1::uuid, $2, $3)
+            `;
+            await server.query(insertSession, [sessionKey, user.id, expirationDateTime]);
+            
+            console.log('✅ Sessão criada:', sessionKey);
+            
+            return new LoginOutputModel(sessionKey, user.id, undefined);
     }
     
     static async VerifyAccount(token: string): Promise<any> {
@@ -372,10 +374,9 @@ class UserManager {
             let userId: number;
 
             if (result.rows.length === 0) {
-                // Criar novo utilizador
                 const insertQuery = `
-                    INSERT INTO users (first_name, last_name, email, password_hash, is_verified, is_active)
-                    VALUES ($1, $2, $3, $4, true, true)
+                    INSERT INTO users (first_name, last_name, email, password_hash, is_verified, is_active, role)
+                    VALUES ($1, $2, $3, $4, true, true, 'customer')
                     RETURNING id
                 `;
                 const insertResult = await server.query(insertQuery, [
@@ -432,8 +433,8 @@ class UserManager {
 
             if (result.rows.length === 0) {
                 const insertQuery = `
-                    INSERT INTO users (first_name, last_name, email, password_hash, is_verified, is_active)
-                    VALUES ($1, $2, $3, $4, true, true)
+                    INSERT INTO users (first_name, last_name, email, password_hash, is_verified, is_active, role)
+                    VALUES ($1, $2, $3, $4, true, true, 'customer')
                     RETURNING id
                 `;
                 const insertResult = await server.query(insertQuery, [
@@ -478,4 +479,4 @@ class UserManager {
     }
 }
 
-export default UserManager;
+export default UserManager; 

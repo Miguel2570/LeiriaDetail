@@ -165,6 +165,26 @@ class ProfileManager {
                 new ErrorModel("Server", error?.message ?? "Erro interno."));
         }
     }
+    static async UpdateAvatar(sessionKey: string, avatarUrl: string): Promise<ProfileOutputModel> {
+        const tokenQuery = `
+            SELECT user_id FROM user_sessions 
+            WHERE session_key = $1 AND expirationdatetime > NOW()
+        `;
+        const tokenResult = await server.query(tokenQuery, [sessionKey]);
+        
+        if (tokenResult.rows.length === 0) {
+            return new ProfileOutputModel(undefined, undefined, new ErrorModel("Session", "Sessão inválida."));
+        }
+        
+        const userId = tokenResult.rows[0].user_id;
+        
+        await server.query(
+            'UPDATE users SET avatar_url = $1, updated_at = NOW() WHERE id = $2',
+            [avatarUrl, userId]
+        );
+        
+        return new ProfileOutputModel({ ...tokenResult.rows[0], avatar_url: avatarUrl }, "Avatar atualizado.");
+    }
 }
 
 export default ProfileManager;

@@ -6,27 +6,30 @@ class StaffManager {
     
     static async getAllStaff(): Promise<Staff[]> {
         const query = `
-            SELECT 
+            SELECT DISTINCT ON (u.id)
                 u.id,
                 u.first_name || ' ' || u.last_name as name,
                 u.email,
                 COALESCE(u.role, 'staff') as role,
                 CASE 
-                    WHEN us.session_key IS NOT NULL THEN 'active'
+                    WHEN us_latest.session_key IS NOT NULL THEN 'active'
                     ELSE 'offline'
                 END as status,
-                COALESCE(b.task_count, 0) as tasks,
-                u.created_at::text
+                COALESCE(task_counts.count, 0) as tasks
             FROM users u
-            LEFT JOIN user_sessions us ON u.id = us.user_id AND us.expirationdatetime > NOW()
-            LEFT JOIN (
-                SELECT user_id, COUNT(*) as task_count
+            LEFT JOIN LATERAL (
+                SELECT session_key 
+                FROM user_sessions 
+                WHERE user_id = u.id AND expirationdatetime > NOW()
+                LIMIT 1
+            ) us_latest ON true
+            LEFT JOIN LATERAL (
+                SELECT COUNT(*) as count
                 FROM bookings
-                WHERE status IN ('EM_PROGRESSO', 'PENDENTE')
-                GROUP BY user_id
-            ) b ON u.id = b.user_id
+                WHERE user_id = u.id AND status IN ('EM_PROGRESSO', 'PENDENTE')
+            ) task_counts ON true
             WHERE u.role IN ('staff', 'admin', 'superadmin', 'operator', 'manager')
-            ORDER BY u.role DESC, u.first_name ASC
+            ORDER BY u.id, u.role DESC, u.first_name ASC
         `;
         
         const result = await server.query(query);

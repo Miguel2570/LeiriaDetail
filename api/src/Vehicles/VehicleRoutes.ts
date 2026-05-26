@@ -105,10 +105,28 @@ async function SetPrimaryVehicle(request: Request, response: Response) {
 
 async function DeleteVehicle(request: Request, response: Response) {
     const vehicleId = parseInt(request.params.id);
-    const userId = parseInt(request.headers['user-id'] as string);
+    const sessionKey = request.headers['session-key'] as string;
 
-    if (!userId || !vehicleId) {
-        response.status(400).json({ success: false, error: "Parâmetros inválidos." });
+    if (!sessionKey) {
+        response.status(400).json({ success: false, error: "Sessão não fornecida." });
+        return;
+    }
+
+    const sessionQuery = `
+        SELECT user_id FROM user_sessions 
+        WHERE session_key = $1 AND expirationdatetime > NOW()
+    `;
+    const sessionResult = await server.query(sessionQuery, [sessionKey]);
+    
+    if (sessionResult.rows.length === 0) {
+        response.status(400).json({ success: false, error: "Sessão inválida." });
+        return;
+    }
+
+    const userId = sessionResult.rows[0].user_id;
+
+    if (!vehicleId) {
+        response.status(400).json({ success: false, error: "ID do veículo inválido." });
         return;
     }
 
