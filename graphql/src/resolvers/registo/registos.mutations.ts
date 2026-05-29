@@ -2,7 +2,7 @@
 import { API } from '../../proxy/serviceproxy/api';
 
 export const registosMutations = {
-  createService: async (_: any, { input }: any, context: any) => {
+  createWorkshopService: async (_: any, { input }: any, context: any) => {
     try {
       const data: any = await API.POST<any>(context, "/Registos", input);
       
@@ -40,7 +40,7 @@ export const registosMutations = {
     }
   },
 
-  startService: async (_: any, { serviceId }: { serviceId: number }, context: any) => {
+  startWorkshopService: async (_: any, { serviceId }: { serviceId: number }, context: any) => {
     try {
       const data: any = await API.POST<any>(context, `/Registos/${serviceId}/Start`, {});
       
@@ -78,7 +78,7 @@ export const registosMutations = {
     }
   },
 
-  updateServiceChecklist: async (_: any, { input }: any, context: any) => {
+  updateWorkshopChecklist: async (_: any, { input }: any, context: any) => {
     try {
       const data: any = await API.PUT<any>(context, `/Registos/${input.serviceId}/Checklist`, {
         checklist: input.checklist,
@@ -120,7 +120,7 @@ export const registosMutations = {
     }
   },
 
-  completeService: async (_: any, { input }: any, context: any) => {
+  completeWorkshopService: async (_: any, { input }: any, context: any) => {
     try {
       const data: any = await API.POST<any>(context, `/Registos/${input.serviceId}/Complete`, {
         totalValue: input.totalValue

@@ -1,3 +1,5 @@
+// src/Material/MaterialModel.ts
+
 export interface Material {
     id?: number;
     name: string;
@@ -5,7 +7,9 @@ export interface Material {
     category?: string;
     brand?: string;
     purchase_url?: string;
-    image_url?: string;
+    image_file_id?: string;      // UUID do File
+    image_data?: string;          // base64 (preenchido ao carregar)
+    image_extension?: string;     // extensão do ficheiro
     order_index?: number;
 }
 

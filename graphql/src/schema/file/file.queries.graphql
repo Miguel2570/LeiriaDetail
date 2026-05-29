@@ -1,0 +1,7 @@
+# src/graphql/file/file.queries.graphql
+
+extend type Query {
+    getFile(id: ID!): GetFilePayload!
+    listFiles(limit: Int, offset: Int, entityType: String, entityId: Int): ListFilesPayload!
+    getFilesByEntity(entityType: String!, entityId: Int!): ListFilesPayload!
+}

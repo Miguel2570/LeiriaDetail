@@ -51,7 +51,7 @@ class RegistosManager {
         return this.mapServiceEntry(result.rows[0]);
     }
     
-    static async getAllServices(status?: string, clientId?: number): Promise<ServiceEntry[]> {
+    static async getAllServices(status?: string, clientId?: number, date?: string): Promise<ServiceEntry[]> {
         let query = `
             SELECT 
                 ws.*,
@@ -75,6 +75,13 @@ class RegistosManager {
             paramCount++;
             query += ` AND ws.client_id = $${paramCount}`;
             params.push(clientId);
+        }
+        
+        // ✅ NOVO
+        if (date) {
+            paramCount++;
+            query += ` AND ws.entry_date::date = $${paramCount}::date`;
+            params.push(date);
         }
         
         query += ` ORDER BY ws.entry_date DESC`;

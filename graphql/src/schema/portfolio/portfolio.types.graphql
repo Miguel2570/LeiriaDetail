@@ -1,26 +1,44 @@
+# src/graphql/portfolio/portfolio.types.graphql
+
 type PortfolioItem {
     id: ID!
     title: String!
     description: String
     category: String!
-    imageUrl: String!
-    beforeImageUrl: String
-    afterImageUrl: String
-    galleryImages: String
+    mainImageFileId: String
+    mainImageData: String        # base64 da imagem principal
+    mainImageExtension: String
+    beforeImageFileId: String
+    beforeImageData: String      # base64 da imagem antes
+    beforeImageExtension: String
+    afterImageFileId: String
+    afterImageData: String       # base64 da imagem depois
+    afterImageExtension: String
+    galleryImages: [GalleryImage!]
     isFeatured: Boolean!
     createdAt: String
 }
 
+type GalleryImage {
+    id: ID
+    fileId: String!
+    fileData: String             # base64
+    fileName: String
+    fileExtension: String
+    type: String!
+    sortOrder: Int
+}
+
 type PortfolioOutput {
-  items: [PortfolioItem!]
-  categories: [String!]
-  message: String
-  hasError: Boolean!
+    items: [PortfolioItem!]
+    categories: [String!]
+    message: String
+    hasError: Boolean!
 }
 
 type PortfolioMutationOutput {
-  item: PortfolioItem
-  message: String
-  hasError: Boolean!
-  error: ErrorField
+    item: PortfolioItem
+    message: String
+    hasError: Boolean!
+    error: ErrorField
 }

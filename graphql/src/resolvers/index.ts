@@ -50,6 +50,9 @@ import { auditQueries } from './audit/audit.queries';
 import { holidayMutations } from './holiday/holiday.mutations';
 import { holidayQueries } from './holiday/holiday.queries';
 
+import { registosMutations } from './registo/registos.mutations';
+import { registosQueries } from './registo/registos.queries';
+
 const resolvers = {
     Query: {
         ...serviceQueries,
@@ -69,7 +72,8 @@ const resolvers = {
         ...inventoryQueries,
         ...paymentQueries,
         ...auditQueries,
-        ...holidayQueries
+        ...holidayQueries,
+        ...registosQueries
     },
     Mutation: {
         ...authMutations,
@@ -87,7 +91,8 @@ const resolvers = {
         ...staffMutations,
         ...inventoryMutations,
         ...paymentMutations,
-        ...holidayMutations
+        ...holidayMutations,
+        ...registosMutations
     }
 };
 

@@ -1,19 +1,42 @@
+# src/graphql/portfolio/portfolio.inputs.graphql
+
 input AddPortfolioInput {
-  title: String!
-  description: String
-  category: String!
-  imageUrl: String!
-  beforeImageUrl: String
-  afterImageUrl: String
-  isFeatured: Boolean
+    title: String!
+    description: String
+    category: String!
+    mainImageData: String!           # base64
+    mainImageSize: Int
+    mainImageExtension: String
+    beforeImageData: String          # base64 (opcional)
+    beforeImageSize: Int
+    beforeImageExtension: String
+    afterImageData: String           # base64 (opcional)
+    afterImageSize: Int
+    afterImageExtension: String
+    galleryImages: [GalleryImageInput!]
+    isFeatured: Boolean
+}
+
+input GalleryImageInput {
+    fileData: String!                # base64
+    fileSize: Int
+    fileExtension: String
+    type: String
 }
 
 input UpdatePortfolioInput {
-  title: String
-  description: String
-  category: String
-  imageUrl: String
-  beforeImageUrl: String
-  afterImageUrl: String
-  isFeatured: Boolean
+    title: String
+    description: String
+    category: String
+    mainImageData: String            # base64 (opcional, só se mudar)
+    mainImageSize: Int
+    mainImageExtension: String
+    beforeImageData: String
+    beforeImageSize: Int
+    beforeImageExtension: String
+    afterImageData: String
+    afterImageSize: Int
+    afterImageExtension: String
+    galleryImages: [GalleryImageInput!]
+    isFeatured: Boolean
 }

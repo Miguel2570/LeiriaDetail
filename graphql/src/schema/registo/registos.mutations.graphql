@@ -1,6 +1,6 @@
 extend type Mutation {
-    createService(input: CreateServiceInput!): RegistosData!
-    startService(serviceId: Int!): RegistosData!
-    updateServiceChecklist(input: UpdateChecklistInput!): RegistosData!
-    completeService(input: CompleteServiceInput!): RegistosData!
+    createWorkshopService(input: CreateServiceInput!): RegistosData!
+    startWorkshopService(serviceId: Int!): RegistosData!
+    updateWorkshopChecklist(input: UpdateChecklistInput!): RegistosData!
+    completeWorkshopService(input: CompleteServiceInput!): RegistosData!
 }

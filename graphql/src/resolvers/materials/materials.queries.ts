@@ -12,7 +12,9 @@ export const materialsQueries = {
                     category: m.category,
                     brand: m.brand,
                     purchaseUrl: m.purchase_url,
-                    imageUrl: m.image_url
+                    imageFileId: m.image_file_id,
+                    imageData: m.image_data || null,       // ✅ base64
+                    imageExtension: m.image_extension || 'jpg'
                 })),
                 categories: data.Categories || [],
                 message: data.Message,

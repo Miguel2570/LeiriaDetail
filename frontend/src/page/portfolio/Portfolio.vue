@@ -1,11 +1,9 @@
 <!-- src/page/portfolio/Portfolio.vue -->
 <template>
   <section class="py-24 bg-[#050505] relative overflow-hidden min-h-screen">
-    
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-[#2563EB]/10 blur-[120px] rounded-full pointer-events-none"></div>
 
     <div class="container mx-auto px-4 relative z-10">
-      
       <div class="text-center mb-16 border-b border-white/5 pb-12">
         <div class="inline-flex items-center gap-3 mb-6">
           <Camera class="h-4 w-4 text-[#2563EB]" />
@@ -29,28 +27,29 @@
       <template v-else>
         <div class="flex flex-wrap justify-center gap-3 mb-16">
           <button 
-            v-for="c in categories" 
-            :key="c" 
-            @click="activeCategory = c"
+            v-for="c in categories" :key="c" @click="activeCategory = c"
             :class="[
               'px-6 py-3 rounded-xl font-black uppercase text-[10px] tracking-[0.2em] italic transition-all duration-300 border',
               activeCategory === c 
                 ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-[0_0_20px_rgba(37,99,235,0.3)]' 
                 : 'bg-white/5 border-white/5 text-white/40 hover:border-white/20 hover:text-white'
-            ]"
-          >
+            ]">
             {{ c }}
           </button>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           <router-link 
-            v-for="p in filtered" 
-            :key="p.id" 
-            :to="`/portfolio/${p.id}`"
-            class="group relative overflow-hidden rounded-[2.5rem] bg-[#0A0A0F] aspect-[4/3] border border-white/5 cursor-pointer block"
-          >
-            <img :src="p.imageUrl" :alt="p.title" class="w-full h-full object-cover group-hover:opacity-90 group-hover:scale-110 transition-all duration-700" />
+            v-for="p in filtered" :key="p.id" :to="`/portfolio/${p.id}`"
+            class="group relative overflow-hidden rounded-[2.5rem] bg-[#0A0A0F] aspect-[4/3] border border-white/5 cursor-pointer block">
+            
+            <!-- ✅ Imagem sem perda de qualidade -->
+            <img 
+              :src="getImageUrl(p.mainImageData, p.mainImageExtension)" 
+              :alt="p.title" 
+              class="w-full h-full object-cover group-hover:opacity-90 group-hover:scale-110 transition-all duration-700" 
+            />
+            
             <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-90"></div>
             <div class="absolute bottom-0 left-0 p-10 w-full transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
               <div class="flex items-center gap-3 mb-3">
@@ -62,15 +61,15 @@
           </router-link>
         </div>
       </template>
-
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { Search, ExternalLink, Camera } from 'lucide-vue-next';
+import { Search, Camera } from 'lucide-vue-next';
 import { graphql } from '@/graphql';
+import { base64ToDataUrl } from '@/Helpers/FileHelper';
 import { useHead } from '@vueuse/head'
 
 useHead({
@@ -79,12 +78,14 @@ useHead({
     { name: 'description', content: 'Veja os nossos trabalhos de detalhe automóvel. Antes e depois de lavagens básicas e lavagens premium entre outros serviços.' },
   ]
 })
+
 interface PortfolioItem {
   id: string;
   title: string;
   description: string;
   category: string;
-  imageUrl: string;
+  mainImageData?: string;
+  mainImageExtension?: string;
   isFeatured: boolean;
 }
 
@@ -93,6 +94,12 @@ const categories = ref<string[]>([]);
 const isLoading = ref(true);
 const activeCategory = ref('Todos');
 const searchTerm = ref('');
+
+// ✅ Converte base64 para URL visível
+const getImageUrl = (base64?: string, extension?: string) => {
+  if (!base64) return '';
+  return base64ToDataUrl(base64, extension || 'jpg');
+};
 
 const filtered = computed(() => items.value.filter(p => 
   (activeCategory.value === 'Todos' || p.category === activeCategory.value) &&
@@ -104,12 +111,14 @@ const fetchPortfolio = async () => {
     const query = `
       query {
         portfolio {
-          items { id title description category imageUrl isFeatured }
+          items { 
+            id title description category 
+            mainImageData mainImageExtension 
+            isFeatured 
+          }
           categories
         }
-        services {
-          services { name packType }
-        }
+        services { services { name packType } }
       }
     `;
     const data = await graphql<{ 
@@ -119,7 +128,6 @@ const fetchPortfolio = async () => {
     
     items.value = data.portfolio.items;
     
-    // Categorias únicas: "Todos" + categorias do portfólio + serviços
     const serviceNames = data.services.services.map(s => s.name);
     const allCategories = ['Todos', ...new Set([...data.portfolio.categories, ...serviceNames])];
     categories.value = allCategories;

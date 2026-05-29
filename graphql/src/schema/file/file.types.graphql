@@ -1,0 +1,43 @@
+# src/graphql/file/file.types.graphql
+
+type File {
+    Id: ID!
+    FileName: String!
+    FileData: String!
+    FileSize: Int!
+    FileExtension: String!
+    RelatedEntityType: String
+    RelatedEntityId: Int
+    Tags: [String!]
+}
+
+type GetFilePayload {
+    file: File
+    errors: [FileError!]
+}
+
+type ListFilesPayload {
+    files: [File!]!
+    errors: [FileError!]
+}
+
+type CreateFilePayload {
+    file: File
+    errors: [FileError!]
+}
+
+type UpdateFilePayload {
+    file: File
+    errors: [FileError!]
+}
+
+type DeleteFilePayload {
+    success: Boolean!
+    errors: [FileError!]
+}
+
+type FileError {
+    field: String
+    message: String!
+    code: String
+}

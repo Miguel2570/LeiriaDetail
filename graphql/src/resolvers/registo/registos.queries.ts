@@ -2,11 +2,12 @@
 import { API } from '../../proxy/serviceproxy/api';
 
 export const registosQueries = {
-  registosServices: async (_: any, { status, clientId }: any, context: any) => {
+  registosServices: async (_: any, { status, clientId, date }: any, context: any) => {
     try {
       const params = new URLSearchParams();
       if (status) params.append('status', status);
       if (clientId) params.append('clientId', clientId.toString());
+      if (date) params.append('date', date);
       
       const data: any = await API.GET<any>(context, `/Registos?${params.toString()}`);
       

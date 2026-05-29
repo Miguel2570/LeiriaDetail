@@ -1,0 +1,7 @@
+# src/graphql/file/file.mutations.graphql
+
+extend type Mutation {
+    createFile(input: CreateFileInput!): CreateFilePayload!
+    updateFile(input: UpdateFileInput!): UpdateFilePayload!
+    deleteFile(id: ID!): DeleteFilePayload!
+}

@@ -277,10 +277,10 @@ const fetchAppointments = async () => {
   try {
     const date = format(selectedDate.value, 'yyyy-MM-dd')
     
-    // Query GraphQL para buscar marcações do dia
+    // ✅ Query corrigida - $date passado para registosServices
     const query = `
       query($date: String!) {
-        registosServices {
+        registosServices(date: $date) {
           services {
             id
             clientId
@@ -294,10 +294,10 @@ const fetchAppointments = async () => {
         }
       }
     `
-    const data = await graphql<{ registosServices: any }>(query)
+    // ✅ Passar a variável date
+    const data = await graphql<{ registosServices: any }>(query, { date })
     
     if (data.registosServices?.services) {
-      // Mapear serviços para o formato de booking
       const allBookings: Booking[] = data.registosServices.services
         .filter((s: any) => s.entryDate?.startsWith(date))
         .map((s: any) => ({
@@ -312,13 +312,11 @@ const fetchAppointments = async () => {
           time: format(new Date(s.entryDate), 'HH:mm'),
           duration: '60min',
           status: s.status,
-          bay: null // TODO: Adicionar lógica de bay
+          bay: null
         }))
       
-      // Separar pendentes e alocados
       pending.value = allBookings.filter(b => b.status === 'EM_ABERTO')
       
-      // Distribuir pelos bays (mock por enquanto)
       bays.value.forEach(bay => {
         bay.bookings = allBookings.filter(b => b.status !== 'EM_ABERTO').slice(0, 2)
       })
@@ -437,9 +435,10 @@ const handleRemoveFromBay = async (booking: Booking) => {
 const handleAddBooking = async () => {
   isSubmitting.value = true
   try {
+    // ✅ Nome corrigido: createWorkshopService
     const mutation = `
-      mutation CreateService($input: CreateServiceInput!) {
-        createService(input: $input) {
+      mutation CreateWorkshopService($input: CreateServiceInput!) {
+        createWorkshopService(input: $input) {
           service { id }
           errors { field message }
         }

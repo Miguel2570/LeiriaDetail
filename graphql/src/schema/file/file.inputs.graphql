@@ -1,0 +1,20 @@
+# src/graphql/file/file.inputs.graphql
+
+input CreateFileInput {
+    fileName: String!
+    fileSize: Int!
+    fileData: String!
+    fileExtension: String!
+    relatedEntityType: String
+    relatedEntityId: Int
+    tags: [String!]
+}
+
+input UpdateFileInput {
+    id: ID!
+    fileName: String
+    fileSize: Int
+    fileData: String
+    fileExtension: String
+    tags: [String!]
+}

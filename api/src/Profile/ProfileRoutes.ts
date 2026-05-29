@@ -39,8 +39,27 @@ async function ChangePassword(request: Request, response: Response) {
 
 async function UpdateAvatar(request: Request, response: Response) {
     const sessionKey = request.headers['session-key'] as string;
-    if (!sessionKey) { response.status(401).send(new ProfileOutputModel(undefined, undefined, new ErrorModel("Session", "Sessão não fornecida."))); return; }
-    const result = await ProfileManager.UpdateAvatar(sessionKey, request.body.avatarUrl);
+    if (!sessionKey) { 
+        response.status(401).send(new ProfileOutputModel(undefined, undefined, 
+            new ErrorModel("Session", "Sessão não fornecida."))); 
+        return; 
+    }
+    
+    // ✅ Novos campos: imageData (base64), imageExtension, imageSize
+    const { imageData, imageExtension, imageSize } = request.body;
+    
+    if (!imageData) {
+        response.status(400).send(new ProfileOutputModel(undefined, undefined,
+            new ErrorModel("Image", "Imagem não fornecida.")));
+        return;
+    }
+    
+    const result = await ProfileManager.UpdateAvatar(
+        sessionKey, 
+        imageData, 
+        imageExtension || 'jpg', 
+        imageSize || 0
+    );
     response.status(200).send(result);
 }
 

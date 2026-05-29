@@ -1,10 +1,14 @@
+# src/graphql/profile/profile.types.graphql
+
 type Profile {
   id: ID!
   firstName: String!
   lastName: String!
   email: String!
   phone: String
-  avatarUrl: String
+  avatarFileId: String        # ✅ UUID do File
+  avatarData: String          # ✅ base64
+  avatarExtension: String     # ✅ extensão (jpg, png, etc.)
   isVerified: Boolean!
   createdAt: String!
   updatedAt: String

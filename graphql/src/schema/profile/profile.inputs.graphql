@@ -1,3 +1,5 @@
+# src/graphql/profile/profile.inputs.graphql
+
 input UpdateProfileInput {
     firstName: String
     lastName: String
@@ -7,6 +9,13 @@ input UpdateProfileInput {
 input ChangePasswordInput {
     currentPassword: String!
     newPassword: String!
+}
+
+# ✅ NOVO - Input para upload de avatar
+input UpdateAvatarInput {
+    imageData: String!         # base64 puro (sem prefixo data:)
+    imageExtension: String!    # jpg, png, webp, etc.
+    imageSize: Int!           # tamanho em bytes
 }
 
 input CreateStaffInput {

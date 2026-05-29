@@ -1,5 +1,6 @@
 extend type Mutation {
     updateProfile(input: UpdateProfileInput!): UpdateProfileOutput!
     changeProfilePassword(input: ChangePasswordInput!): UpdatePasswordOutput!
+    updateProfileAvatar(input: UpdateAvatarInput!): ProfileOutput!   # ✅ NOVO
     createStaffProfile(input: CreateStaffInput!): ProfileOutput!
 }

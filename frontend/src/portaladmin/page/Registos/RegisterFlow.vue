@@ -681,10 +681,6 @@ const filteredServices = computed(() => {
   return filtered
 })
 
-// ============================================
-// GRAPHQL CALLS
-// ============================================
-
 const fetchServices = async () => {
   try {
     const query = `
@@ -780,16 +776,12 @@ const fetchData = async () => {
   isLoading.value = false
 }
 
-// ============================================
-// MUTATIONS
-// ============================================
-
 const handleNewService = async () => {
   isSubmitting.value = true
   try {
     const mutation = `
-      mutation CreateService($input: CreateServiceInput!) {
-        createService(input: $input) {
+      mutation CreateWorkshopService($input: CreateServiceInput!) {
+        createWorkshopService(input: $input) {
           service { id serviceType status entryDate }
           errors { field message }
         }
@@ -818,8 +810,8 @@ const handleNewService = async () => {
 const handleStartService = async (serviceId: number) => {
   try {
     const mutation = `
-      mutation StartService($serviceId: Int!) {
-        startService(serviceId: $serviceId) {
+      mutation StartWorkshopService($serviceId: Int!) {
+        startWorkshopService(serviceId: $serviceId) {
           service { id status progress startedAt }
           errors { field message }
         }
@@ -838,8 +830,8 @@ const handleSaveChecklist = async () => {
   isSubmitting.value = true
   try {
     const mutation = `
-      mutation UpdateChecklist($input: UpdateChecklistInput!) {
-        updateServiceChecklist(input: $input) {
+      mutation UpdateWorkshopChecklist($input: UpdateChecklistInput!) {
+        updateWorkshopChecklist(input: $input) {
           service { id progress checklistItems serviceNotes }
           errors { field message }
         }
@@ -866,8 +858,8 @@ const handleSaveChecklist = async () => {
 const handleCompleteService = async (serviceId: number) => {
   try {
     const mutation = `
-      mutation CompleteService($input: CompleteServiceInput!) {
-        completeService(input: $input) {
+      mutation CompleteWorkshopService($input: CompleteServiceInput!) {
+        completeWorkshopService(input: $input) {
           service { id status progress completedAt totalValue }
           errors { field message }
         }
@@ -884,9 +876,7 @@ const handleCompleteService = async (serviceId: number) => {
   }
 }
 
-// ============================================
 // HELPERS
-// ============================================
 
 const getClientName = (clientId: number) => {
   return clients.value.find(c => c.id === clientId)?.name || `Cliente #${clientId}`

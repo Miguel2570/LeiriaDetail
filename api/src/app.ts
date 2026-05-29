@@ -26,6 +26,8 @@ import auditRoutes from "./Audit/AuditRoutes";
 import { httpLogger } from './Helpers/HttpLogger';
 import logger from './Helpers/Logger';
 import holidayRoutes from "./Holiday/HolidayRoutes";
+import registosRoutes from "./Registos/RegistosRoutes";
+
 
 dotenv.config();
 
@@ -75,14 +77,31 @@ app.use("/Reviews", reviewRoutes);
 app.use("/Faqs", faqRoutes);
 app.use("/Materials", materialRoutes);
 app.use("/Payment", paymentRoutes);
-app.use("/Dashboard", Authentication, requireRole('admin'), dashboardRoutes);
-app.use("/CRM", Authentication, requireRole('manager'), crmRoutes);
-app.use("/Appointments", Authentication, requireRole('operator'), appointmentRoutes);
-app.use("/Staff", Authentication, requireRole('admin'), staffRoutes);
-app.use("/Inventory", Authentication, requireRole('manager'), inventoryRoutes);
-app.use("/Financial", Authentication, requireRole('admin'), financialRoutes);
-app.use("/Audit", Authentication, requireRole('admin'), auditRoutes);
-app.use("/Holiday", Authentication, requireRole('admin'), holidayRoutes);
+// Todos podem aceder
+app.use('/Agenda', Authentication, registosRoutes);  // ou agendaRoutes
+
+// Operator+
+app.use('/Registos', Authentication, requireRole('operator', 'manager', 'admin', 'superadmin'), registosRoutes);
+app.use('/Agenda', Authentication, requireRole('operator', 'manager', 'admin', 'superadmin'), appointmentRoutes);
+
+// Manager+
+app.use('/CRM', Authentication, requireRole('manager', 'admin', 'superadmin'), crmRoutes);
+app.use('/Services', Authentication, requireRole('manager', 'admin', 'superadmin'), serviceRoutes);
+app.use('/Portfolio', Authentication, requireRole('manager', 'admin', 'superadmin'), portfolioRoutes);
+app.use('/Materials', Authentication, requireRole('manager', 'admin', 'superadmin'), materialRoutes);
+app.use('/Inventory', Authentication, requireRole('manager', 'admin', 'superadmin'), inventoryRoutes);
+app.use('/Holiday', Authentication, requireRole('manager', 'admin', 'superadmin'), holidayRoutes);
+
+// Admin+
+app.use('/Dashboard', Authentication, requireRole('admin', 'superadmin'), dashboardRoutes);
+app.use('/Financial', Authentication, requireRole('admin', 'superadmin'), financialRoutes);
+app.use('/Staff', Authentication, requireRole('admin', 'superadmin'), staffRoutes);
+
+// Superadmin only
+app.use('/Audit', Authentication, requireRole('superadmin'), auditRoutes);
+
+// Todos autenticados
+app.use("/Profile", profileRoutes);
 
 app.get("/", (req, res) => {
     res.send(`LeiriaDetail API - ${process.env.NODE_ENV || 'development'}`);

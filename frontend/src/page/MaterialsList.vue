@@ -32,16 +32,16 @@
           :key="material.id"
           class="group bg-[#050508] border border-white/5 rounded-2xl overflow-hidden hover:border-[#00D8FF]/20 transition-all duration-500"
         >
-          <!-- Imagem -->
+          <!-- Imagem (sem perda de qualidade) -->
           <div class="aspect-square bg-gradient-to-br from-[#050508] to-[#0a0a0f] overflow-hidden flex items-center justify-center relative">
             <img 
-              :src="material.imageUrl" 
+              v-if="material.imageData"
+              :src="getImageUrl(material.imageData, material.imageExtension)"
               :alt="material.name"
               class="w-full h-full object-contain p-8 group-hover:scale-110 transition-transform duration-700"
-              @error="($event.target as HTMLImageElement).style.display = 'none'"
             />
-            <!-- Fallback -->
-            <div class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-gray-700 opacity-0 group-hover:opacity-0">
+            <!-- Fallback se não tiver imagem -->
+            <div v-else class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-gray-700">
               <Package class="w-12 h-12" />
             </div>
           </div>
@@ -87,24 +87,39 @@
 import { ref, onMounted } from 'vue';
 import { Package } from 'lucide-vue-next';
 import { graphql } from '@/graphql';
+import { base64ToDataUrl } from '@/Helpers/FileHelper';
 
 interface Material {
   id: string;
   name: string;
   description: string;
   category: string;
-  imageUrl: string;
+  imageData?: string;        // base64
+  imageExtension?: string;   // extensão
 }
 
 const materials = ref<Material[]>([]);
 const isLoading = ref(true);
+
+// ✅ Converte base64 para Data URL
+const getImageUrl = (base64?: string, extension?: string) => {
+  if (!base64) return '';
+  return base64ToDataUrl(base64, extension || 'jpg');
+};
 
 const fetchMaterials = async () => {
   try {
     const query = `
       query {
         materials {
-          materials { id name description category imageUrl }
+          materials { 
+            id 
+            name 
+            description 
+            category 
+            imageData 
+            imageExtension 
+          }
         }
       }
     `;

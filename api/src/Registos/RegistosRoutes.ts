@@ -8,10 +8,11 @@ const router = Router();
 // GET - Todos os serviços com filtros opcionais
 async function GetServices(request: Request, response: Response) {
     try {
-        const { status, clientId } = request.query;
+        const { status, clientId, date } = request.query;
         const services = await RegistosManager.getAllServices(
             status as string | undefined,
-            clientId ? parseInt(clientId as string) : undefined
+            clientId ? parseInt(clientId as string) : undefined,
+            date as string | undefined  // ✅ NOVO
         );
         
         response.status(200).json(
@@ -27,6 +28,7 @@ async function GetServices(request: Request, response: Response) {
         );
     }
 }
+
 
 // GET - Serviços ativos
 async function GetActiveServices(request: Request, response: Response) {

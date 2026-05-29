@@ -97,7 +97,8 @@
               <h2 class="text-lg font-black uppercase tracking-wider mb-3">Descrição</h2>
               <p class="text-gray-400 leading-relaxed text-sm">{{ item.description }}</p>
               
-              <div v-if="item.beforeImageUrl && item.afterImageUrl" class="mt-4 flex items-center gap-3 p-4 bg-[#0A0A0F] border border-white/10 rounded-xl">
+              <!-- ✅ Verifica se tem imagens antes/depois -->
+              <div v-if="hasBeforeAfter" class="mt-4 flex items-center gap-3 p-4 bg-[#0A0A0F] border border-white/10 rounded-xl">
                 <div class="w-10 h-10 rounded-full bg-[#2563EB]/20 flex items-center justify-center flex-shrink-0">
                   <Camera class="w-5 h-5 text-[#2563EB]" />
                 </div>
@@ -168,18 +169,37 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { ArrowRight, ArrowLeft, Camera, Check, ChevronLeft, ChevronRight, X } from 'lucide-vue-next'
+import { ArrowLeft, Camera, Check, ChevronLeft, ChevronRight, X } from 'lucide-vue-next'
 import { graphql } from '@/graphql'
+import { base64ToDataUrl } from '@/Helpers/FileHelper'
 import { useHead } from '@vueuse/head'
 
+// ✅ Interface atualizada para o novo sistema de ficheiros
 interface PortfolioItem {
-  id: string; title: string; description: string; category: string;
-  imageUrl: string; beforeImageUrl?: string; afterImageUrl?: string;
-  galleryImages?: string;
+  id: string
+  title: string
+  description: string
+  category: string
+  mainImageData?: string          // base64
+  mainImageExtension?: string
+  beforeImageData?: string        // base64
+  beforeImageExtension?: string
+  afterImageData?: string         // base64
+  afterImageExtension?: string
+  galleryImages?: GalleryImageData[]  // Array de objetos, não JSON string
+}
+
+interface GalleryImageData {
+  fileId: string
+  fileData: string       // base64
+  fileName: string
+  fileExtension: string
+  type: 'gallery' | 'before' | 'after'
+  sortOrder?: number
 }
 
 interface GalleryImage {
-  url: string
+  url: string            // Data URL completo para <img src>
   type: 'main' | 'before' | 'after' | 'gallery'
 }
 
@@ -198,23 +218,56 @@ const features = [
   'Acabamento Espelhado',
 ]
 
+// ✅ Converte base64 + extensão para Data URL
+const getImageUrl = (base64?: string, extension?: string) => {
+  if (!base64) return ''
+  return base64ToDataUrl(base64, extension || 'jpg')
+}
+
+// ✅ Verifica se tem imagens antes/depois
+const hasBeforeAfter = computed(() => {
+  return !!(item.value?.beforeImageData || item.value?.afterImageData)
+})
+
+// ✅ Galeria construída a partir dos dados reais (base64)
 const gallery = computed<GalleryImage[]>(() => {
   if (!item.value) return []
   const images: GalleryImage[] = []
   
-  if (item.value.imageUrl) images.push({ url: item.value.imageUrl, type: 'main' })
+  // Imagem principal
+  if (item.value.mainImageData) {
+    images.push({ 
+      url: getImageUrl(item.value.mainImageData, item.value.mainImageExtension), 
+      type: 'main' 
+    })
+  }
   
-  if (item.value.galleryImages) {
-    try {
-      const galleryImgs = JSON.parse(item.value.galleryImages)
-      if (Array.isArray(galleryImgs)) {
-        galleryImgs.forEach((img: any) => {
-          images.push({ url: img.url, type: img.type || 'gallery' })
+  // Imagem antes
+  if (item.value.beforeImageData) {
+    images.push({ 
+      url: getImageUrl(item.value.beforeImageData, item.value.beforeImageExtension), 
+      type: 'before' 
+    })
+  }
+  
+  // Imagem depois
+  if (item.value.afterImageData) {
+    images.push({ 
+      url: getImageUrl(item.value.afterImageData, item.value.afterImageExtension), 
+      type: 'after' 
+    })
+  }
+  
+  // Galeria extra (já vem como array de objetos, não JSON string)
+  if (item.value.galleryImages && Array.isArray(item.value.galleryImages)) {
+    item.value.galleryImages.forEach((img) => {
+      if (img.fileData) {
+        images.push({ 
+          url: getImageUrl(img.fileData, img.fileExtension), 
+          type: img.type || 'gallery' 
         })
       }
-    } catch (e) {
-      // Se falhar o parse, ignora
-    }
+    })
   }
   
   return images
@@ -239,7 +292,33 @@ useHead({
 
 const fetchItem = async () => {
   try {
-    const query = `query { portfolio { items { id title description category imageUrl beforeImageUrl afterImageUrl galleryImages } } }`
+    // ✅ Query atualizada para buscar os novos campos
+    const query = `
+      query {
+        portfolio {
+          items {
+            id
+            title
+            description
+            category
+            mainImageData
+            mainImageExtension
+            beforeImageData
+            beforeImageExtension
+            afterImageData
+            afterImageExtension
+            galleryImages {
+              fileId
+              fileData
+              fileName
+              fileExtension
+              type
+              sortOrder
+            }
+          }
+        }
+      }
+    `
     const data = await graphql<{ portfolio: { items: PortfolioItem[] } }>(query)
     if (data.portfolio?.items) {
       const found = data.portfolio.items.find((i: PortfolioItem) => i.id === route.params.id)

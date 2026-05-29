@@ -6,9 +6,10 @@ CREATE TABLE IF NOT EXISTS portfolio (
     title VARCHAR(255) NOT NULL,
     description TEXT,
     category VARCHAR(100) NOT NULL,
-    image_url TEXT NOT NULL,
-    before_image_url TEXT,
-    after_image_url TEXT,
+    main_image_file_id UUID REFERENCES File(Id) ON DELETE SET NULL,
+    before_image_file_id UUID REFERENCES File(Id) ON DELETE SET NULL,
+    after_image_file_id UUID REFERENCES File(Id) ON DELETE SET NULL,
     is_featured BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

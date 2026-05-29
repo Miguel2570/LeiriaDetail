@@ -14,5 +14,6 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     role VARCHAR(50) DEFAULT 'customer',
     avatar_url TEXT,
+    avatar_file_id UUID REFERENCES File(Id) ON DELETE SET NULL,
     provider VARCHAR(20) DEFAULT 'local'
 );

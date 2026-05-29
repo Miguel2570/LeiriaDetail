@@ -1,9 +1,12 @@
+# inputs
 input AddMaterialInput {
   name: String!
   description: String
   category: String
   brand: String
   purchaseUrl: String
-  imageUrl: String
+  imageData: String         # base64 (substitui imageUrl)
+  imageSize: Int
+  imageExtension: String
   orderIndex: Int
 }

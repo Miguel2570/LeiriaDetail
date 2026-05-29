@@ -1,3 +1,4 @@
+// src/resolvers/profile/profile.queries.ts
 import { API } from '../../proxy/serviceproxy/api';
 
 export const profileQueries = {
@@ -21,7 +22,10 @@ export const profileQueries = {
                     lastName: data.Profile.lastName,
                     email: data.Profile.email,
                     phone: data.Profile.phone || '',
-                    avatarUrl: data.Profile.avatar_url || data.Profile.avatarUrl || null,
+                    // ✅ NOVOS CAMPOS
+                    avatarFileId: data.Profile.avatar_file_id || null,
+                    avatarData: data.Profile.avatar_data || null,
+                    avatarExtension: data.Profile.avatar_extension || 'jpg',
                     isVerified: data.Profile.isVerified || false,
                     createdAt: data.Profile.createdAt || data.Profile.created_at || '',
                     updatedAt: data.Profile.updatedAt || data.Profile.updated_at || null,

@@ -101,6 +101,11 @@ const holidayQueries = loadGraphQL("./holiday/holiday.queries.graphql");
 const holidayMutations = loadGraphQL("./holiday/holiday.mutations.graphql");
 const holidayInputs = loadGraphQL("./holiday/holiday.inputs.graphql");
 
+const registoTypes = loadGraphQL("./registo/registos.types.graphql");
+const registoQueries = loadGraphQL("./registo/registos.queries.graphql");
+const registoMutations = loadGraphQL("./registo/registos.mutations.graphql");
+const registoInputs = loadGraphQL("./registo/registos.inputs.graphql");
+
 
 /**
  * Interpolação e combinação de todos os módulos de schemas.
@@ -196,6 +201,11 @@ const typeDefs = `
   ${holidayQueries}
   ${holidayMutations}
   ${holidayInputs}
+
+  ${registoTypes}
+  ${registoQueries}
+  ${registoMutations}
+  ${registoInputs}
 
 `;
 

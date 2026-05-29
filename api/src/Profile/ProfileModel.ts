@@ -36,7 +36,9 @@ export class ProfileOutputModel {
         isVerified: boolean;
         createdAt: Date;
         updatedAt: Date;
-        avatar_url?: string;
+        avatar_file_id?: string;       // ✅ UUID do File
+        avatar_data?: string | null;    // ✅ base64
+        avatar_extension?: string | null;
     };
 
     constructor(profile?: any, message?: string, error?: ErrorModel) {
@@ -50,7 +52,9 @@ export class ProfileOutputModel {
                 isVerified: profile.is_verified,
                 createdAt: profile.created_at,
                 updatedAt: profile.updated_at,
-                avatar_url: profile.avatar_url,
+                avatar_file_id: profile.avatar_file_id,
+                avatar_data: profile.avatar_data || null,
+                avatar_extension: profile.avatar_extension || null,
             };
         }
         this.Message = message;
