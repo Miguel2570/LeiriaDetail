@@ -17,7 +17,7 @@
           <DatePicker v-model="selectedDate" is-expanded @dayclick="handleDateSelect" />
         </div>
 
-        <button @click="isModalOpen = true" class="px-4 py-2 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white font-bold rounded-xl shadow-[0_0_12px_rgba(59,130,246,0.4)] hover:shadow-[0_0_20px_rgba(59,130,246,0.6)] transition-all flex items-center gap-2">
+        <button @click="openNewBookingModal" class="px-4 py-2 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white font-bold rounded-xl shadow-[0_0_12px_rgba(59,130,246,0.4)] hover:shadow-[0_0_20px_rgba(59,130,246,0.6)] transition-all flex items-center gap-2">
           <Plus class="w-5 h-5" /> New Booking
         </button>
       </div>
@@ -26,6 +26,7 @@
     <div v-if="isLoading" class="flex-1 flex items-center justify-center text-[#64748B] font-medium">A carregar agenda...</div>
 
     <div v-else class="flex flex-col lg:flex-row gap-8 flex-1 overflow-hidden">
+      <!-- Pending Bookings -->
       <div class="w-full lg:w-1/3 flex flex-col bg-white/40 border border-[#06B6D4]/30 rounded-2xl p-5 overflow-y-auto backdrop-blur-md">
         <div class="flex items-center justify-between mb-4 pb-4 border-b border-[#06B6D4]/20">
           <h4 class="font-bold text-[#000000] text-xl flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-[#F59E0B] animate-pulse" /> Requests</h4>
@@ -33,65 +34,183 @@
         </div>
         <p v-if="pending.length === 0" class="text-center text-[#64748B] font-medium py-8">No pending requests.</p>
         <div v-else class="space-y-4">
-          <div v-for="booking in pending" :key="booking.id" draggable="true" @dragstart="handleDragStart($event, booking)" class="p-4 bg-white rounded-xl border border-[#06B6D4]/20 shadow-sm cursor-move hover:shadow-md transition-all">
+          <div v-for="booking in pending" :key="booking.id" 
+            draggable="true" 
+            @dragstart="handleDragStart($event, booking)" 
+            class="p-4 bg-white rounded-xl border border-[#06B6D4]/20 shadow-sm cursor-move hover:shadow-md transition-all group">
             <div class="flex items-center justify-between mb-2">
-              <span class="font-bold text-[#000000]">{{ booking.clientName }}</span>
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-[#3B82F6] to-[#06B6D4] flex items-center justify-center text-white text-xs font-bold">
+                  {{ getInitials(booking.clientName) }}
+                </div>
+                <span class="font-bold text-[#000000]">{{ booking.clientName }}</span>
+              </div>
               <span class="text-xs bg-[#F59E0B]/20 text-[#F59E0B] px-2 py-1 rounded-full font-bold">PENDING</span>
             </div>
-            <p class="text-sm text-[#334155]">{{ booking.service }}</p>
-            <div class="flex items-center gap-2 mt-2 text-xs text-[#64748B]"><Clock class="w-3 h-3" /> {{ booking.time }}</div>
+            <p class="text-sm text-[#334155] font-medium">{{ booking.service }}</p>
+            <p class="text-xs text-[#64748B] mt-1">{{ booking.vehiclePlate }} - {{ booking.vehicle }}</p>
+            <div class="flex items-center gap-2 mt-3 text-xs text-[#64748B]">
+              <Clock class="w-3 h-3" /> {{ booking.time }}
+            </div>
           </div>
         </div>
       </div>
 
+      <!-- Bays Grid -->
       <div class="w-full lg:w-2/3 grid grid-cols-1 md:grid-cols-3 gap-6 overflow-y-auto pr-2 pb-4">
-        <div v-for="bay in bays" :key="bay.id" @drop="handleDrop($event, bay.id)" @dragover.prevent class="bg-white/60 border border-[#06B6D4]/20 rounded-2xl p-4 min-h-[200px]">
-          <h5 class="font-bold text-[#000000] mb-3">{{ bay.name }}</h5>
-          <div v-if="bay.bookings.length === 0" class="text-center text-[#94A3B8] text-sm py-8">Vazio</div>
+        <div v-for="bay in bays" :key="bay.id" 
+          @drop="handleDrop($event, bay.id)" 
+          @dragover.prevent
+          :class="['bg-white/60 border rounded-2xl p-4 min-h-[200px] transition-all',
+            bay.id === dragOverBay ? 'border-[#06B6D4] bg-[#E0F2FE]/30 shadow-lg' : 'border-[#06B6D4]/20']"
+          @dragenter.prevent="dragOverBay = bay.id"
+          @dragleave.prevent="dragOverBay = null">
+          <div class="flex items-center justify-between mb-3">
+            <h5 class="font-bold text-[#000000]">{{ bay.name }}</h5>
+            <span class="text-xs font-bold text-[#64748B] bg-white/80 px-2 py-1 rounded-full">{{ bay.bookings.length }}</span>
+          </div>
+          <div v-if="bay.bookings.length === 0" class="text-center text-[#94A3B8] text-sm py-8">
+            Arraste para aqui
+          </div>
           <div v-else class="space-y-2">
-            <div v-for="booking in bay.bookings" :key="booking.id" class="p-3 bg-white rounded-lg border border-black/5 text-sm">
-              <p class="font-bold text-[#000000]">{{ booking.clientName }}</p>
-              <p class="text-[#334155]">{{ booking.service }}</p>
-              <p class="text-xs text-[#64748B] mt-1">{{ booking.time }}</p>
+            <div v-for="booking in bay.bookings" :key="booking.id" 
+              class="p-3 bg-white rounded-lg border border-black/5 text-sm hover:shadow-md transition-shadow cursor-pointer"
+              @click="openBookingDetail(booking)">
+              <div class="flex items-center justify-between mb-1">
+                <p class="font-bold text-[#000000] text-xs">{{ booking.clientName }}</p>
+                <span :class="['text-[10px] px-2 py-0.5 rounded-full font-bold',
+                  booking.status === 'CONCLUIDO' ? 'bg-[#D1FAE5] text-[#059669]' : 
+                  booking.status === 'EM_PROGRESSO' ? 'bg-[#FEF3C7] text-[#D97706]' : 
+                  'bg-[#E0F2FE] text-[#0284C7]']">
+                  {{ getStatusText(booking.status) }}
+                </span>
+              </div>
+              <p class="text-[#334155] text-xs">{{ booking.service }}</p>
+              <div class="flex items-center justify-between mt-2">
+                <p class="text-xs text-[#64748B]">{{ booking.time }}</p>
+                <button 
+                  v-if="booking.status !== 'CONCLUIDO'"
+                  @click.stop="handleRemoveFromBay(booking)"
+                  class="text-[10px] text-red-500 hover:text-red-700 font-bold">
+                  Remover
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div v-if="isModalOpen" class="absolute inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm rounded-[16px]">
-      <div class="w-full max-w-lg bg-white/90 backdrop-blur-xl border border-white/50 p-8 rounded-2xl shadow-2xl">
+    <!-- New Booking Modal -->
+    <div v-if="isNewBookingOpen" class="absolute inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm rounded-[16px]">
+      <div class="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white/95 backdrop-blur-xl border border-white/50 p-8 rounded-2xl shadow-2xl">
         <div class="flex justify-between items-center mb-6">
           <h3 class="text-2xl font-bold text-[#000000]">New Booking</h3>
-          <button @click="isModalOpen = false" class="p-2 hover:bg-black/5 rounded-full"><X class="w-6 h-6 text-[#334155]" /></button>
+          <button @click="closeNewBookingModal" class="p-2 hover:bg-black/5 rounded-full"><X class="w-6 h-6 text-[#334155]" /></button>
         </div>
         <form @submit.prevent="handleAddBooking" class="space-y-4">
-          <div class="grid grid-cols-2 gap-4">
-            <div><label class="block text-sm font-bold text-[#334155] mb-1">User ID</label><input required type="number" v-model="form.userId" class="w-full px-4 py-2.5 rounded-xl bg-white/60 border border-[#06B6D4]/30 focus:outline-none focus:ring-2 focus:ring-[#06B6D4]/20 text-[#000000] font-medium" /></div>
-            <div><label class="block text-sm font-bold text-[#334155] mb-1">Vehicle ID</label><input required type="number" v-model="form.vehicleId" class="w-full px-4 py-2.5 rounded-xl bg-white/60 border border-[#06B6D4]/30 focus:outline-none focus:ring-2 focus:ring-[#06B6D4]/20 text-[#000000] font-medium" /></div>
+          <div>
+            <label class="block text-sm font-bold text-[#334155] mb-1">Cliente</label>
+            <select v-model="newBooking.clientId" required class="w-full px-4 py-2.5 rounded-xl bg-white/60 border border-[#06B6D4]/30 focus:outline-none focus:ring-2 focus:ring-[#06B6D4]/20 text-[#000000] font-medium">
+              <option value="">Selecionar cliente</option>
+              <option v-for="client in clients" :key="client.id" :value="client.id">{{ client.name }}</option>
+            </select>
           </div>
-          <div><label class="block text-sm font-bold text-[#334155] mb-1">Service ID</label><input required type="number" v-model="form.serviceId" class="w-full px-4 py-2.5 rounded-xl bg-white/60 border border-[#06B6D4]/30 focus:outline-none focus:ring-2 focus:ring-[#06B6D4]/20 text-[#000000] font-medium" /></div>
-          <div class="grid grid-cols-2 gap-4">
-            <div><label class="block text-sm font-bold text-[#334155] mb-1">Date</label><input required type="date" v-model="form.bookingDate" class="w-full px-4 py-2.5 rounded-xl bg-white/60 border border-[#06B6D4]/30 focus:outline-none focus:ring-2 focus:ring-[#06B6D4]/20 text-[#000000] font-medium" /></div>
-            <div><label class="block text-sm font-bold text-[#334155] mb-1">Time</label><input required type="time" v-model="form.bookingTime" class="w-full px-4 py-2.5 rounded-xl bg-white/60 border border-[#06B6D4]/30 focus:outline-none focus:ring-2 focus:ring-[#06B6D4]/20 text-[#000000] font-medium" /></div>
+          <div>
+            <label class="block text-sm font-bold text-[#334155] mb-1">Veículo</label>
+            <select v-model="newBooking.vehicleId" required class="w-full px-4 py-2.5 rounded-xl bg-white/60 border border-[#06B6D4]/30 focus:outline-none focus:ring-2 focus:ring-[#06B6D4]/20 text-[#000000] font-medium">
+              <option value="">Selecionar veículo</option>
+              <option v-for="vehicle in availableVehicles" :key="vehicle.id" :value="vehicle.id">
+                {{ vehicle.plate }} - {{ vehicle.brand }} {{ vehicle.model }}
+              </option>
+            </select>
           </div>
-          <button type="submit" :disabled="isSubmitting" class="w-full mt-6 py-4 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white rounded-xl font-bold shadow-[0_0_12px_rgba(59,130,246,0.4)] hover:shadow-[0_0_20px_rgba(59,130,246,0.6)] transition-all disabled:opacity-50">{{ isSubmitting ? 'A criar...' : 'Create Booking' }}</button>
+          <div>
+            <label class="block text-sm font-bold text-[#334155] mb-1">Serviço</label>
+            <select v-model="newBooking.serviceType" required class="w-full px-4 py-2.5 rounded-xl bg-white/60 border border-[#06B6D4]/30 focus:outline-none focus:ring-2 focus:ring-[#06B6D4]/20 text-[#000000] font-medium">
+              <option value="">Selecionar serviço</option>
+              <option value="Lavagem Detalhada">Lavagem Detalhada</option>
+              <option value="Polimento">Polimento</option>
+              <option value="Limpeza de Interior">Limpeza de Interior</option>
+              <option value="Proteção Cerâmica">Proteção Cerâmica</option>
+              <option value="Higienização">Higienização</option>
+              <option value="Manutenção Geral">Manutenção Geral</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-bold text-[#334155] mb-1">Data</label>
+              <input required type="date" v-model="newBooking.bookingDate" class="w-full px-4 py-2.5 rounded-xl bg-white/60 border border-[#06B6D4]/30 focus:outline-none focus:ring-2 focus:ring-[#06B6D4]/20 text-[#000000] font-medium" />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-[#334155] mb-1">Hora</label>
+              <input required type="time" v-model="newBooking.bookingTime" class="w-full px-4 py-2.5 rounded-xl bg-white/60 border border-[#06B6D4]/30 focus:outline-none focus:ring-2 focus:ring-[#06B6D4]/20 text-[#000000] font-medium" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-[#334155] mb-1">Bay (opcional)</label>
+            <select v-model="newBooking.bayId" class="w-full px-4 py-2.5 rounded-xl bg-white/60 border border-[#06B6D4]/30 focus:outline-none focus:ring-2 focus:ring-[#06B6D4]/20 text-[#000000] font-medium">
+              <option value="">Sem bay (pendente)</option>
+              <option v-for="bay in bays" :key="bay.id" :value="bay.id">{{ bay.name }}</option>
+            </select>
+          </div>
+          <button type="submit" :disabled="isSubmitting" class="w-full mt-6 py-4 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white rounded-xl font-bold shadow-[0_0_12px_rgba(59,130,246,0.4)] hover:shadow-[0_0_20px_rgba(59,130,246,0.6)] transition-all disabled:opacity-50">
+            {{ isSubmitting ? 'A criar...' : 'Create Booking' }}
+          </button>
         </form>
+      </div>
+    </div>
+
+    <!-- Booking Detail Modal -->
+    <div v-if="selectedBooking" class="absolute inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm rounded-[16px]">
+      <div class="w-full max-w-md bg-white/95 backdrop-blur-xl border border-white/50 p-8 rounded-2xl shadow-2xl">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-2xl font-bold text-[#000000]">Detalhes da Marcação</h3>
+          <button @click="selectedBooking = null" class="p-2 hover:bg-black/5 rounded-full"><X class="w-6 h-6 text-[#334155]" /></button>
+        </div>
+        <div class="space-y-4">
+          <div class="bg-[#F8FAFC] p-4 rounded-xl">
+            <p class="text-xs font-bold text-[#64748B] uppercase mb-1">Cliente</p>
+            <p class="font-bold text-[#0F172A]">{{ selectedBooking.clientName }}</p>
+          </div>
+          <div class="bg-[#F8FAFC] p-4 rounded-xl">
+            <p class="text-xs font-bold text-[#64748B] uppercase mb-1">Serviço</p>
+            <p class="font-bold text-[#0F172A]">{{ selectedBooking.service }}</p>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-[#F8FAFC] p-4 rounded-xl">
+              <p class="text-xs font-bold text-[#64748B] uppercase mb-1">Data</p>
+              <p class="font-bold text-[#0F172A]">{{ selectedBooking.date }}</p>
+            </div>
+            <div class="bg-[#F8FAFC] p-4 rounded-xl">
+              <p class="text-xs font-bold text-[#64748B] uppercase mb-1">Hora</p>
+              <p class="font-bold text-[#0F172A]">{{ selectedBooking.time }}</p>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <button 
+              @click="convertToService(selectedBooking)"
+              class="flex-1 py-3 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white rounded-xl font-bold">
+              Criar Entrada de Serviço
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { Clock, Plus, X, CalendarDays, ChevronDown } from 'lucide-vue-next'
 import { DatePicker } from 'v-calendar'
 import 'v-calendar/style.css'
 import { format } from 'date-fns'
-import { apiFetch } from '@/services/api'
+import { graphql } from '@/graphql'
 
 interface Booking {
   id: number
+  clientId: number
   clientName: string
   clientPhone: string
   service: string
@@ -110,37 +229,99 @@ interface Bay {
   bookings: Booking[]
 }
 
+interface Client {
+  id: number
+  name: string
+  vehicles: Vehicle[]
+}
+
+interface Vehicle {
+  id: number
+  plate: string
+  brand: string
+  model: string
+}
+
 const bays = ref<Bay[]>([
   { id: 'bay-1', name: 'Bay 1 (Ceramics/Paint)', bookings: [] },
   { id: 'bay-2', name: 'Bay 2 (Interiors)', bookings: [] },
   { id: 'bay-3', name: 'Bay 3 (Express/Wash)', bookings: [] },
 ])
 const pending = ref<Booking[]>([])
+const clients = ref<Client[]>([])
 const isLoading = ref(true)
 const isSubmitting = ref(false)
-const isModalOpen = ref(false)
+const isNewBookingOpen = ref(false)
 const isCalendarOpen = ref(false)
 const selectedDate = ref(new Date())
 const calendarRef = ref<HTMLElement | null>(null)
+const dragOverBay = ref<string | null>(null)
+const selectedBooking = ref<Booking | null>(null)
 
-const form = ref({
-  userId: 0,
-  vehicleId: 0,
-  serviceId: 0,
+const newBooking = ref({
+  clientId: '',
+  vehicleId: '',
+  serviceType: '',
   bookingDate: format(new Date(), 'yyyy-MM-dd'),
-  bookingTime: '09:00'
+  bookingTime: '09:00',
+  bayId: ''
+})
+
+const availableVehicles = computed(() => {
+  if (!newBooking.value.clientId) return []
+  const client = clients.value.find(c => c.id === Number(newBooking.value.clientId))
+  return client?.vehicles || []
 })
 
 const fetchAppointments = async () => {
   try {
     const date = format(selectedDate.value, 'yyyy-MM-dd')
-    const data = await apiFetch(`/Appointments?date=${date}`)
     
-    if (!data.HasError && data.Data) {
-      pending.value = data.Data.pending || []
-      if (data.Data.bays) {
-        bays.value = data.Data.bays.map((b: any) => ({ ...b, bookings: b.bookings || [] }))
+    // Query GraphQL para buscar marcações do dia
+    const query = `
+      query($date: String!) {
+        registosServices {
+          services {
+            id
+            clientId
+            vehicleId
+            vehiclePlate
+            serviceType
+            status
+            entryDate
+          }
+          errors { field message }
+        }
       }
+    `
+    const data = await graphql<{ registosServices: any }>(query)
+    
+    if (data.registosServices?.services) {
+      // Mapear serviços para o formato de booking
+      const allBookings: Booking[] = data.registosServices.services
+        .filter((s: any) => s.entryDate?.startsWith(date))
+        .map((s: any) => ({
+          id: s.id,
+          clientId: s.clientId,
+          clientName: getClientName(s.clientId),
+          clientPhone: '',
+          service: s.serviceType,
+          vehicle: s.vehiclePlate,
+          vehiclePlate: s.vehiclePlate,
+          date: format(new Date(s.entryDate), 'yyyy-MM-dd'),
+          time: format(new Date(s.entryDate), 'HH:mm'),
+          duration: '60min',
+          status: s.status,
+          bay: null // TODO: Adicionar lógica de bay
+        }))
+      
+      // Separar pendentes e alocados
+      pending.value = allBookings.filter(b => b.status === 'EM_ABERTO')
+      
+      // Distribuir pelos bays (mock por enquanto)
+      bays.value.forEach(bay => {
+        bay.bookings = allBookings.filter(b => b.status !== 'EM_ABERTO').slice(0, 2)
+      })
     }
   } catch (error) {
     console.error('Erro ao carregar marcações:', error)
@@ -149,45 +330,165 @@ const fetchAppointments = async () => {
   }
 }
 
+const fetchClients = async () => {
+  try {
+    const query = `
+      query {
+        crmClients {
+          clients {
+            id
+            name
+            vehicles {
+              id
+              plate
+              brand
+              model
+            }
+          }
+          errors { field message }
+        }
+      }
+    `
+    const data = await graphql<{ crmClients: { clients: Client[], errors: any[] } }>(query)
+    if (data.crmClients?.clients) {
+      clients.value = data.crmClients.clients
+    }
+  } catch (error) {
+    console.error('Erro ao carregar clientes:', error)
+  }
+}
+
+const fetchData = async () => {
+  isLoading.value = true
+  await Promise.all([fetchAppointments(), fetchClients()])
+  isLoading.value = false
+}
+
+const getClientName = (clientId: number) => {
+  return clients.value.find(c => c.id === clientId)?.name || `Cliente #${clientId}`
+}
+
+const getInitials = (name: string) => {
+  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+}
+
+const getStatusText = (status: string) => {
+  const texts: Record<string, string> = {
+    'EM_ABERTO': 'Pendente',
+    'EM_PROGRESSO': 'Em Curso',
+    'CONCLUIDO': 'Pronto'
+  }
+  return texts[status] || status
+}
+
 const handleDateSelect = (day: Date) => {
   selectedDate.value = day
-  form.value.bookingDate = format(day, 'yyyy-MM-dd')
+  newBooking.value.bookingDate = format(day, 'yyyy-MM-dd')
   isCalendarOpen.value = false
   fetchAppointments()
 }
 
 const handleDragStart = (event: DragEvent, booking: Booking) => {
   event.dataTransfer?.setData('text/plain', String(booking.id))
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'move'
+  }
 }
 
 const handleDrop = async (event: DragEvent, bayId: string) => {
+  dragOverBay.value = null
   const bookingId = event.dataTransfer?.getData('text/plain')
   if (!bookingId) return
+  
   try {
-    await apiFetch('/Appointments/Move', {
-      method: 'POST',
-      body: JSON.stringify({ bookingId: parseInt(bookingId), toBayId: bayId })
-    })
+    // Mutation para mover booking para um bay
+    await graphql(`
+      mutation MoveBooking($bookingId: Int!, $bayId: String!) {
+        moveBooking(bookingId: $bookingId, bayId: $bayId) {
+          hasError
+          message
+        }
+      }
+    `, { bookingId: Number(bookingId), bayId })
+    
     await fetchAppointments()
   } catch (error) {
     console.error('Erro ao mover marcação:', error)
   }
 }
 
+const handleRemoveFromBay = async (booking: Booking) => {
+  try {
+    await graphql(`
+      mutation RemoveFromBay($bookingId: Int!) {
+        removeFromBay(bookingId: $bookingId) {
+          hasError
+          message
+        }
+      }
+    `, { bookingId: booking.id })
+    
+    await fetchAppointments()
+  } catch (error) {
+    console.error('Erro ao remover do bay:', error)
+  }
+}
+
 const handleAddBooking = async () => {
   isSubmitting.value = true
   try {
-    const data = await apiFetch('/Appointments', { method: 'POST', body: JSON.stringify(form.value) })
-    if (!data.HasError) {
-      await fetchAppointments()
-      isModalOpen.value = false
-      form.value = { userId: 0, vehicleId: 0, serviceId: 0, bookingDate: format(selectedDate.value, 'yyyy-MM-dd'), bookingTime: '09:00' }
-    }
+    const mutation = `
+      mutation CreateService($input: CreateServiceInput!) {
+        createService(input: $input) {
+          service { id }
+          errors { field message }
+        }
+      }
+    `
+    await graphql(mutation, {
+      input: {
+        clientId: Number(newBooking.value.clientId),
+        vehicleId: Number(newBooking.value.vehicleId),
+        serviceType: newBooking.value.serviceType,
+        observations: '',
+        entryChecks: [],
+        estimatedValue: 0
+      }
+    })
+    
+    await fetchData()
+    closeNewBookingModal()
   } catch (error) {
     console.error('Erro ao criar marcação:', error)
   } finally {
     isSubmitting.value = false
   }
+}
+
+const openNewBookingModal = () => {
+  isNewBookingOpen.value = true
+}
+
+const closeNewBookingModal = () => {
+  isNewBookingOpen.value = false
+  newBooking.value = {
+    clientId: '',
+    vehicleId: '',
+    serviceType: '',
+    bookingDate: format(selectedDate.value, 'yyyy-MM-dd'),
+    bookingTime: '09:00',
+    bayId: ''
+  }
+}
+
+const openBookingDetail = (booking: Booking) => {
+  selectedBooking.value = booking
+}
+
+const convertToService = async (booking: Booking) => {
+  // Redireciona para o ServiceManager ou cria entrada diretamente
+  selectedBooking.value = null
+  // router.push('/admin/registos')
 }
 
 const handleClickOutside = (event: MouseEvent) => {
@@ -198,7 +499,7 @@ const handleClickOutside = (event: MouseEvent) => {
 
 onMounted(() => {
   document.addEventListener('mousedown', handleClickOutside)
-  fetchAppointments()
+  fetchData()
 })
 
 onUnmounted(() => {

@@ -13,5 +13,6 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     role VARCHAR(50) DEFAULT 'customer',
-    avatar_url VARCHAR(500)
+    avatar_url TEXT,
+    provider VARCHAR(20) DEFAULT 'local'
 );

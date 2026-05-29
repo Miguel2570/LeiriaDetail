@@ -2,6 +2,14 @@
 import { ref, computed, onMounted } from 'vue';
 import { Sparkles, Shield, Droplets, CarFront, ArrowRight, Check } from 'lucide-vue-next';
 import { graphql } from '@/graphql';
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: 'Serviços de Detalhe Automóvel - LeiriaDetail',
+  meta: [
+    { name: 'description', content: 'Conheça os nossos packs de lavagem, polimento. Preços competitivos em Leiria.' },
+  ]
+})
 
 // Apenas categorias principais para mostrar na landing
 const mainCategories = [

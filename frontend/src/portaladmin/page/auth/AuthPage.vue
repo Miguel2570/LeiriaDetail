@@ -13,6 +13,8 @@ const errorMessage = ref('')
 
 const router = useRouter()
 
+const ALLOWED_ROLES = ['superadmin', 'admin', 'manager', 'operator']
+
 const handleLogin = async () => {
     isLoading.value = true
     errorMessage.value = ''
@@ -21,32 +23,35 @@ const handleLogin = async () => {
         const response = await fetch('/Authentication/Login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                email: email.value,
-                password: password.value
-            })
-        });
+            body: JSON.stringify({ email: email.value, password: password.value })
+        })
 
-        const data = await response.json();
+        const data = await response.json()
 
-        console.log('📦 Data:', data)
+        if (data.HasError) throw new Error(data.Error?.Message || 'Credenciais inválidas.')
 
-        if (data.HasError) {
-            throw new Error(data.Error?.Message || 'Credenciais inválidas.');
+        // Verificar role
+        const roleResponse = await fetch('/Authentication/Role', {
+            headers: { 'Session-Key': data.SessionKey }
+        })
+        const roleData = await roleResponse.json()
+        const userRole = roleData.role || 'customer'
+
+        if (!ALLOWED_ROLES.includes(userRole)) {
+            Cache.clearAuth()
+            window.location.href = '/login'
+            return
         }
 
-        Cache.setAuth(
-            data.SessionKey,
-            data.CredencialKey?.toString(),
-            email.value
-        );
-
-        router.push('/dashboard');
+        // ✅ Guardar role na cache (com role no setAuth, sem linha extra)
+        Cache.setAuth(data.SessionKey, data.CredencialKey?.toString(), email.value, userRole)
+        
+        router.push('/admin/dashboard')
         
     } catch (error: any) {
-        errorMessage.value = error.message;
+        errorMessage.value = error.message
     } finally {
-        isLoading.value = false;
+        isLoading.value = false
     }
 }
 

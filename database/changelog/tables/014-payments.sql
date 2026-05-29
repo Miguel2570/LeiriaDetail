@@ -1,5 +1,5 @@
 -- liquibase formatted sql
--- changeset leiria:013-create-payments
+-- changeset leiria:014-create-payments
 
 CREATE TABLE IF NOT EXISTS payments (
     id SERIAL PRIMARY KEY,

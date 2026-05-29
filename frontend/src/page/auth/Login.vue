@@ -54,7 +54,7 @@
           <div>
             <div class="flex items-center justify-between mb-2">
               <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider">Password</label>
-              <a href="#" class="text-xs font-bold text-[#06B6D4] hover:text-white transition-colors">Esqueceu?</a>
+              <router-link to="/recuperar-password" class="text-xs font-bold text-[#06B6D4] hover:text-white transition-colors">Recuperar palavra passe</router-link>
             </div>
             <div class="relative">
               <Lock class="absolute left-4 top-3.5 h-5 w-5 text-gray-500" />
@@ -108,19 +108,20 @@ const handleLogin = async () => {
 
         if (data.HasError) throw new Error(data.Error?.Message || 'Credenciais inválidas.');
 
-        // Verificar role - rejeitar staff
+        // Verificar role
         const roleResponse = await fetch('/Authentication/Role', {
             headers: { 'Session-Key': data.SessionKey }
         });
         const roleData = await roleResponse.json();
         
+        // ✅ Guardar role na cache
+        Cache.setAuth(data.SessionKey, data.CredencialKey?.toString(), email.value, roleData.role);
+        
         if (roleData.role !== 'customer') {
-          Cache.setAuth(data.SessionKey, data.CredencialKey?.toString(), email.value);
-          router.push('/admin/dashboard');
-          return;
+            router.push('/admin/dashboard');
+            return;
         }
 
-        Cache.setAuth(data.SessionKey, data.CredencialKey?.toString(), email.value);
         router.push('/');
         
     } catch (error: any) {
@@ -144,7 +145,8 @@ const loginWithGoogle = async () => {
     const client = (window as any).google.accounts.oauth2.initCodeClient({
       client_id: '433691700860-nuutndflkr2iosttdc0ij269igarlua7.apps.googleusercontent.com',
       scope: 'email profile',
-      ux_mode: 'popup',
+      ux_mode: 'redirect',
+      redirect_uri: 'http://localhost:5174/login',
       callback: async (response: any) => {
         if (response.code) {
           isLoading.value = true;

@@ -15,11 +15,17 @@
             <img v-if="avatarUrl" :src="avatarUrl" class="w-full h-full object-cover" />
             <span v-else>{{ avatar }}</span>
           </div>
-          <div class="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <!-- ✅ Loading overlay -->
+          <div v-if="isUploading" class="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+          </div>
+          <div v-else class="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
             <Camera class="w-5 h-5 text-white" />
           </div>
           <input type="file" ref="fileInput" class="hidden" accept="image/*" @change="handleFileUpload" />
         </div>
+        <!-- ✅ Feedback de upload -->
+        <p v-if="uploadMessage" :class="['text-xs mb-2', uploadSuccess ? 'text-green-400' : 'text-red-400']">{{ uploadMessage }}</p>
         <h4 class="font-bold text-xl text-[#000000]">{{ profile.firstName }} {{ profile.lastName }}</h4>
         <p class="text-[#64748B] text-sm font-medium mt-1">{{ profile.email }}</p>
         <span class="mt-3 px-3 py-1 rounded-full text-xs font-bold uppercase bg-[#E0F2FE] text-[#0284C7]">Staff</span>
@@ -57,6 +63,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { Camera } from 'lucide-vue-next'
 import { graphql } from '@/graphql'
+import { Cache } from '@/services/cachemanager'
 
 interface Profile {
   id: number; firstName: string; lastName: string; email: string; phone: string; avatarUrl?: string; isVerified: boolean; createdAt: string; updatedAt: string
@@ -65,6 +72,9 @@ interface Profile {
 const profile = ref<Profile | null>(null)
 const isLoading = ref(true)
 const isSubmitting = ref(false)
+const isUploading = ref(false)
+const uploadMessage = ref('')
+const uploadSuccess = ref(false)
 const passwordMessage = ref('')
 const passwordError = ref(false)
 const passwordForm = ref({ current: '', newPass: '', confirm: '' })
@@ -84,18 +94,47 @@ const triggerUpload = () => fileInput.value?.click()
 const handleFileUpload = async (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0]
   if (!file) return
+  
+  isUploading.value = true
+  uploadMessage.value = ''
+
   const reader = new FileReader()
   reader.onload = async (e) => {
     const img = new Image()
     img.onload = async () => {
       const canvas = document.createElement('canvas')
-      const size = Math.min(img.width, img.height, 200)
+      const size = Math.min(img.width, img.height, 150)
       canvas.width = size; canvas.height = size
       const ctx = canvas.getContext('2d')
       ctx?.drawImage(img, 0, 0, size, size)
-      const base64 = canvas.toDataURL('image/jpeg', 0.7)
-      avatarUrl.value = base64
-      await graphql(`mutation { updateAvatar(avatarUrl: "${base64}") { hasError } }`)
+      const base64 = canvas.toDataURL('image/jpeg', 0.3)
+      
+      try {
+        const response = await fetch('/Profile/Avatar', {
+          method: 'PUT',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Session-Key': Cache.Session?.value || ''  // ✅ Corrigido
+          },
+          body: JSON.stringify({ avatarUrl: base64 })
+        })
+        
+        const data = await response.json()
+        if (!data.HasError) {
+          avatarUrl.value = base64
+          uploadMessage.value = 'Foto atualizada!'
+          uploadSuccess.value = true
+        } else {
+          uploadMessage.value = 'Erro ao guardar foto.'
+          uploadSuccess.value = false
+        }
+      } catch (error) {
+        uploadMessage.value = 'Erro ao guardar foto.'
+        uploadSuccess.value = false
+      }
+      
+      isUploading.value = false
+      setTimeout(() => { uploadMessage.value = '' }, 3000)
     }
     img.src = e.target?.result as string
   }

@@ -4,6 +4,7 @@ type Profile {
   lastName: String!
   email: String!
   phone: String
+  avatarUrl: String
   isVerified: Boolean!
   createdAt: String!
   updatedAt: String

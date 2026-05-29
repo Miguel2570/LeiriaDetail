@@ -1,0 +1,39 @@
+type ServiceEntry {
+    id: ID!
+    clientId: ID!
+    vehicleId: ID!
+    vehiclePlate: String!
+    serviceType: String!
+    status: ServiceStatus!
+    progress: Int!
+    entryDate: String!
+    startedAt: String
+    completedAt: String
+    observations: String
+    entryChecks: [String!]!
+    checklistItems: [String!]!
+    serviceNotes: String
+    estimatedValue: Float!
+    totalValue: Float!
+}
+
+enum ServiceStatus {
+    EM_ABERTO
+    EM_PROGRESSO
+    CONCLUIDO
+}
+
+type WorkshopStats {
+    emAberto: Int!
+    emProgresso: Int!
+    concluidosHoje: Int!
+    faturacaoHoje: Float!
+}
+
+type RegistosData {
+    services: [ServiceEntry!]
+    service: ServiceEntry
+    stats: WorkshopStats
+    totalCount: Int
+    errors: [Error!]!
+}

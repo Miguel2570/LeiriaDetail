@@ -20,14 +20,12 @@
       </div>
 
       <template v-else-if="booking">
-        <!-- Info Empresa -->
         <div class="bg-[#050508] border border-white/10 rounded-2xl p-4 mb-4 text-center">
           <p class="text-[10px] text-gray-500 uppercase tracking-wider">
             LeiriaDetail, Lda. | NIF: PT XXX XXX XXX | Rua do Detalhe, 123, 2400-000 Leiria | geral@leiriadetail.pt
           </p>
         </div>
 
-        <!-- Resumo -->
         <div class="bg-[#050508] border border-white/10 rounded-2xl p-6 mb-6">
           <h3 class="text-sm font-bold text-[#00D8FF] uppercase tracking-wider mb-4">Resumo da Marcação</h3>
           <div class="space-y-3 text-sm">
@@ -43,7 +41,6 @@
           </div>
         </div>
 
-        <!-- Fatura -->
         <div class="bg-[#050508] border border-white/10 rounded-2xl p-6 mb-6">
           <h3 class="text-sm font-bold text-[#00D8FF] uppercase tracking-wider mb-4">Dados de Faturação</h3>
           <div class="flex items-center gap-3 mb-4">
@@ -57,7 +54,6 @@
           </div>
         </div>
 
-        <!-- Método -->
         <div class="bg-[#050508] border border-white/10 rounded-2xl p-6 mb-6">
           <h3 class="text-sm font-bold text-[#00D8FF] uppercase tracking-wider mb-4">Método de Pagamento</h3>
           <div class="space-y-3">
@@ -70,7 +66,6 @@
               <div><p class="font-bold text-white text-sm">Multibanco</p><p class="text-xs text-gray-400">Entidade + Referência • Válido por 72h</p></div>
             </button>
           </div>
-
           <div v-if="method === 'mbway'" class="mt-4 pt-4 border-t border-white/5">
             <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Nº Telemóvel MB Way</label>
             <div class="flex gap-3">
@@ -78,7 +73,6 @@
               <input v-model="mbwayPhone" type="tel" placeholder="912 345 678" maxlength="9" class="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-[#00D8FF]" />
             </div>
           </div>
-
           <div v-if="method === 'multibanco' && paymentData" class="mt-4 pt-4 border-t border-white/5 space-y-3">
             <p class="text-[10px] text-gray-500 mb-2">Referência válida por 72 horas.</p>
             <div class="bg-[#0A0A0F] p-4 rounded-xl"><p class="text-xs text-gray-400 mb-1">Entidade</p><p class="text-xl font-mono font-bold text-white tracking-widest">{{ paymentData.entity }}</p></div>
@@ -87,7 +81,6 @@
           </div>
         </div>
 
-        <!-- Termos -->
         <div class="bg-[#050508] border border-white/10 rounded-2xl p-6 mb-6">
           <h3 class="text-sm font-bold text-[#00D8FF] uppercase tracking-wider mb-4">Termos e Condições</h3>
           <div class="space-y-3">
@@ -97,7 +90,6 @@
           </div>
         </div>
 
-        <!-- Legal -->
         <div class="bg-[#050508] border border-white/10 rounded-2xl p-4 mb-6">
           <p class="text-[10px] text-gray-500">DL n.º 24/2014: 14 dias para livre resolução. Perde o direito após execução completa do serviço.</p>
         </div>
@@ -108,10 +100,11 @@
           <a href="https://www.livroreclamacoes.pt" target="_blank" class="text-[10px] text-gray-500 hover:text-[#00D8FF] underline">📖 Livro de Reclamações Eletrónico</a>
         </div>
 
-        <!-- Botão -->
         <button @click="handlePayment" :disabled="isSubmitting || !canPay" class="w-full py-4 bg-gradient-to-r from-[#2563EB] to-[#00D8FF] text-white font-black uppercase tracking-widest text-sm rounded-xl shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
           {{ isSubmitting ? 'A processar...' : method === 'multibanco' ? 'Gerar Referências Multibanco' : 'Pagar com MB Way' }}
         </button>
+
+        <p v-if="sessionTimeout" class="text-red-400 text-xs text-center mt-4">⚠️ Sessão expirada por inatividade. Redirecionando...</p>
 
         <p class="text-[9px] text-gray-600 text-center mt-6">DPO: dpo@leiriadetail.pt | © {{ new Date().getFullYear() }} LeiriaDetail, Lda.</p>
       </template>
@@ -120,10 +113,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ShieldCheck, Smartphone, CreditCard } from 'lucide-vue-next'
-import { graphql } from '@/graphql'
+import { Cache } from '@/services/cachemanager'
 import { apiFetch } from '@/services/api'
 
 const route = useRoute()
@@ -142,6 +135,9 @@ const invoiceAddress = ref('')
 const acceptedPrivacy = ref(false)
 const acceptedTerms = ref(false)
 const acceptedCancellation = ref(false)
+const sessionTimeout = ref(false)
+
+let timeoutTimer: ReturnType<typeof setTimeout> | null = null
 
 const subtotal = computed(() => ((booking.value?.servicePrice || 0) / 1.23).toFixed(2))
 const iva = computed(() => ((booking.value?.servicePrice || 0) - parseFloat(subtotal.value)).toFixed(2))
@@ -163,27 +159,26 @@ const fetchBooking = async () => {
   const bookingId = route.params.bookingId as string
   if (!bookingId) { router.push('/client-area'); return }
 
-  try {
-    const query = `query($id: Int!) { userBookings(userId: $id) { id bookingDate bookingTime status vehicleName vehiclePlate serviceName servicePrice } }`
-    // Como não temos o booking por ID, usamos os dados da marcação recém-criada
-    // Simulação com dados do localStorage ou estado
-    booking.value = {
-      id: bookingId,
-      serviceName: localStorage.getItem('last_service') || 'Serviço',
-      vehicleName: localStorage.getItem('last_vehicle') || 'Veículo',
-      vehiclePlate: localStorage.getItem('last_plate') || 'AA-00-BB',
-      bookingDate: localStorage.getItem('last_date') || new Date().toISOString().split('T')[0],
-      bookingTime: localStorage.getItem('last_time') || '10:00',
-      servicePrice: parseFloat(localStorage.getItem('last_price') || '75')
-    }
-  } catch (error) { console.error('Erro ao carregar marcação:', error) }
-  finally { isLoading.value = false }
+  booking.value = {
+    id: bookingId,
+    serviceName: localStorage.getItem('last_service') || 'Serviço',
+    vehicleName: localStorage.getItem('last_vehicle') || 'Veículo',
+    vehiclePlate: localStorage.getItem('last_plate') || 'AA-00-BB',
+    bookingDate: localStorage.getItem('last_date') || new Date().toISOString().split('T')[0],
+    bookingTime: localStorage.getItem('last_time') || '10:00',
+    servicePrice: parseFloat(localStorage.getItem('last_price') || '75')
+  }
+  isLoading.value = false
 }
 
 const handlePayment = async () => {
+  if (isSubmitting.value) return
   isSubmitting.value = true
+
+  // Proteção: reabilitar após 10s mesmo com erro
+  const safetyTimer = setTimeout(() => { isSubmitting.value = false }, 10000)
+
   try {
-    // Criar pagamento na BD
     await apiFetch('/Payment', {
       method: 'POST',
       body: JSON.stringify({
@@ -201,20 +196,56 @@ const handlePayment = async () => {
       const refData = await apiFetch('/Payment/multibanco', {
         method: 'POST',
         body: JSON.stringify({ amount: parseFloat(total.value) })
-      })
+      }) as { entity: string; reference: string; amount: string }
       paymentData.value = refData
     } else {
-      await new Promise(r => setTimeout(r, 2000))
+      await new Promise(r => setTimeout(r, 1500))
       alert('✅ Pagamento MB Way confirmado!')
       router.push('/client-area')
     }
   } catch (error) {
     console.error('Erro no pagamento:', error)
-    alert('Erro ao processar pagamento.')
+    alert('Erro ao processar pagamento. Tente novamente.')
   } finally {
+    clearTimeout(safetyTimer)
     isSubmitting.value = false
   }
 }
 
-onMounted(() => fetchBooking())
+onMounted(async () => {
+  // Verificar sessão
+  const sessionKey = Cache.Session?.value
+  if (!sessionKey) {
+    router.push('/login')
+    return
+  }
+
+  try {
+    const res = await fetch('/Authentication/Role', {
+      headers: { 'Session-Key': sessionKey }
+    })
+    if (!res.ok) {
+      Cache.clearAuth()
+      router.push('/login')
+      return
+    }
+  } catch {
+    router.push('/login')
+    return
+  }
+
+  // Timeout de 30 minutos de inatividade
+  timeoutTimer = setTimeout(() => {
+    sessionTimeout.value = true
+    setTimeout(() => {
+      router.push('/client-area')
+    }, 3000)
+  }, 30 * 60 * 1000)
+
+  fetchBooking()
+})
+
+onUnmounted(() => {
+  if (timeoutTimer) clearTimeout(timeoutTimer)
+})
 </script>

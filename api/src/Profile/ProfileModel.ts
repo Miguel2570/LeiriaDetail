@@ -36,6 +36,7 @@ export class ProfileOutputModel {
         isVerified: boolean;
         createdAt: Date;
         updatedAt: Date;
+        avatar_url?: string;
     };
 
     constructor(profile?: any, message?: string, error?: ErrorModel) {
@@ -48,7 +49,8 @@ export class ProfileOutputModel {
                 phone: profile.phone || '',
                 isVerified: profile.is_verified,
                 createdAt: profile.created_at,
-                updatedAt: profile.updated_at
+                updatedAt: profile.updated_at,
+                avatar_url: profile.avatar_url,
             };
         }
         this.Message = message;
@@ -64,6 +66,7 @@ export class UpdateProfileOutputModel {
     firstName?: string;
     lastName?: string;
     phone?: string;
+    avatarUrl?: string;
 
     constructor(firstName?: string, lastName?: string, phone?: string, message?: string, error?: ErrorModel) {
         this.firstName = firstName;

@@ -1,13 +1,14 @@
 type PortfolioItem {
-  id: ID!
-  title: String!
-  description: String
-  category: String!
-  imageUrl: String!
-  beforeImageUrl: String
-  afterImageUrl: String
-  isFeatured: Boolean!
-  createdAt: String
+    id: ID!
+    title: String!
+    description: String
+    category: String!
+    imageUrl: String!
+    beforeImageUrl: String
+    afterImageUrl: String
+    galleryImages: String
+    isFeatured: Boolean!
+    createdAt: String
 }
 
 type PortfolioOutput {

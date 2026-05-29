@@ -5,10 +5,19 @@
         <h3 class="text-3xl font-bold text-[#000000]">CRM & Fleet Management</h3>
         <p class="text-[#334155] font-medium mt-1">Unified view of your clients, their vehicles, and service history.</p>
       </div>
-      <button @click="setIsAddClientOpen(true)" class="bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white px-5 py-3 rounded-xl font-bold shadow-[0_0_15px_rgba(6,182,212,0.4)] hover:shadow-[0_0_25px_rgba(6,182,212,0.6)] transition-all flex items-center gap-2">
-        <Plus class="w-5 h-5" />
-        New Client Profile
-      </button>
+      <div class="flex items-center gap-3">
+        <button 
+          @click="openGlobalHistory" 
+          class="bg-white/80 backdrop-blur-sm border-2 border-[#06B6D4]/30 text-[#0F172A] px-5 py-3 rounded-xl font-bold hover:border-[#06B6D4] hover:shadow-[0_0_15px_rgba(6,182,212,0.2)] transition-all flex items-center gap-2"
+        >
+          <History class="w-5 h-5 text-[#06B6D4]" />
+          Histórico Global
+        </button>
+        <button @click="setIsAddClientOpen(true)" class="bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white px-5 py-3 rounded-xl font-bold shadow-[0_0_15px_rgba(6,182,212,0.4)] hover:shadow-[0_0_25px_rgba(6,182,212,0.6)] transition-all flex items-center gap-2">
+          <Plus class="w-5 h-5" />
+          New Client Profile
+        </button>
+      </div>
     </div>
 
     <div class="flex flex-col lg:flex-row gap-8 flex-1 overflow-hidden">
@@ -78,9 +87,18 @@
         </div>
 
         <div class="p-8 border border-black/10 rounded-2xl backdrop-blur-sm card-inner">
-          <h4 class="font-bold text-[#000000] text-xl mb-6 flex items-center gap-3"><History class="w-6 h-6 text-[#06B6D4]" /> Unified Service History</h4>
+          <div class="flex items-center justify-between mb-6">
+            <h4 class="font-bold text-[#000000] text-xl flex items-center gap-3"><History class="w-6 h-6 text-[#06B6D4]" /> Unified Service History</h4>
+            <button 
+              @click="openFullHistory" 
+              class="bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white px-4 py-2 rounded-xl font-bold shadow-[0_0_10px_rgba(6,182,212,0.3)] hover:shadow-[0_0_15px_rgba(6,182,212,0.5)] transition-all flex items-center gap-2 text-sm"
+            >
+              <ExternalLink class="w-4 h-4" />
+              Ver Histórico Completo
+            </button>
+          </div>
           <div v-if="selectedClient.history && selectedClient.history.length > 0" class="relative border-l-2 border-[#06B6D4]/30 ml-4 space-y-8 pb-4">
-            <div v-for="record in selectedClient.history" :key="record.id" class="relative pl-8">
+            <div v-for="record in recentHistory" :key="record.id" class="relative pl-8">
               <div :class="['absolute -left-[9px] top-1 w-4 h-4 rounded-full border-2 border-white shadow-sm', record.status === 'EM_PROGRESSO' ? 'bg-[#06B6D4]' : record.status === 'CONCLUIDO' ? 'bg-[#10B981]' : 'bg-[#94A3B8]']" />
               <div class="bg-white/60 p-4 rounded-xl border border-black/5">
                 <div class="flex justify-between items-start gap-2 mb-2">
@@ -95,6 +113,262 @@
         </div>
       </div>
       <div v-else class="w-full lg:w-2/3 flex items-center justify-center text-[#64748B] font-medium">Selecione um cliente para ver os detalhes.</div>
+    </div>
+
+    <!-- Global History Modal -->
+    <div v-if="isGlobalHistoryOpen" class="absolute inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm rounded-[16px]">
+      <div class="w-full max-w-5xl h-[90vh] bg-white/95 backdrop-blur-xl border border-white/50 p-8 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+        <div class="flex justify-between items-center mb-6 shrink-0">
+          <h3 class="text-2xl font-bold text-[#000000] flex items-center gap-2">
+            <History class="w-7 h-7 text-[#06B6D4]" />
+            Histórico Global de Serviços
+          </h3>
+          <button @click="closeGlobalHistory" class="p-2 hover:bg-black/5 rounded-full transition-colors">
+            <X class="w-6 h-6 text-[#334155]" />
+          </button>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white/60 rounded-xl border border-[#06B6D4]/20 p-6 mb-6 shrink-0">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+            <div>
+              <label class="block text-sm font-bold text-[#334155] mb-1">Cliente</label>
+              <select 
+                v-model="globalFilter.clientId" 
+                class="w-full px-4 py-3 rounded-xl bg-white/80 border border-[#06B6D4]/30 focus:outline-none focus:ring-2 focus:ring-[#06B6D4]/20 text-[#000000] font-medium"
+              >
+                <option value="">Todos os Clientes</option>
+                <option v-for="client in clients" :key="client.id" :value="client.id">{{ client.name }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-[#334155] mb-1">Veículo</label>
+              <select 
+                v-model="globalFilter.vehicleId" 
+                class="w-full px-4 py-3 rounded-xl bg-white/80 border border-[#06B6D4]/30 focus:outline-none focus:ring-2 focus:ring-[#06B6D4]/20 text-[#000000] font-medium"
+              >
+                <option value="">Todos os Veículos</option>
+                <option v-for="vehicle in allVehicles" :key="vehicle.id" :value="vehicle.id">{{ vehicle.plate }} - {{ vehicle.brand }} {{ vehicle.model }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-[#334155] mb-1">Data Início</label>
+              <input 
+                v-model="globalFilter.startDate" 
+                type="date" 
+                class="w-full px-4 py-3 rounded-xl bg-white/80 border border-[#06B6D4]/30 focus:outline-none focus:ring-2 focus:ring-[#06B6D4]/20 text-[#000000] font-medium"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-[#334155] mb-1">Data Fim</label>
+              <input 
+                v-model="globalFilter.endDate" 
+                type="date" 
+                class="w-full px-4 py-3 rounded-xl bg-white/80 border border-[#06B6D4]/30 focus:outline-none focus:ring-2 focus:ring-[#06B6D4]/20 text-[#000000] font-medium"
+              />
+            </div>
+          </div>
+          
+          <div class="flex gap-3">
+            <button 
+              @click="clearGlobalFilter" 
+              class="px-6 py-2.5 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white rounded-xl font-bold shadow-[0_0_10px_rgba(59,130,246,0.3)] hover:shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all text-sm"
+            >
+              Limpar Filtros
+            </button>
+            <div class="flex-1 flex items-center justify-end gap-2 text-sm text-[#64748B] font-medium">
+              <span>{{ filteredGlobalHistory.length }} registos encontrados</span>
+            </div>
+          </div>
+
+          <!-- Mini Calendar for Global View -->
+          <div class="mt-6">
+            <div class="flex items-center justify-between mb-4">
+              <button @click="previousMonth" class="p-1 hover:bg-[#06B6D4]/10 rounded-lg transition-colors">
+                <ChevronRight class="w-5 h-5 text-[#06B6D4] rotate-180" />
+              </button>
+              <h4 class="font-bold text-[#0F172A]">
+                {{ currentGlobalMonth.toLocaleDateString('pt-PT', { month: 'long', year: 'numeric' }) }}
+              </h4>
+              <button @click="nextMonth" class="p-1 hover:bg-[#06B6D4]/10 rounded-lg transition-colors">
+                <ChevronRight class="w-5 h-5 text-[#06B6D4]" />
+              </button>
+            </div>
+            <div class="grid grid-cols-7 gap-2">
+              <div v-for="day in ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']" :key="day" class="text-center text-xs font-bold text-[#64748B] py-1">
+                {{ day }}
+              </div>
+              <div 
+                v-for="(day, index) in globalCalendarDays" 
+                :key="index"
+                @click="selectGlobalCalendarDay(day)"
+                :class="[
+                  'text-center py-2 rounded-lg text-sm font-medium cursor-pointer transition-all',
+                  day.isCurrentMonth ? 'text-[#0F172A] hover:bg-[#06B6D4]/10' : 'text-[#CBD5E1]',
+                  day.isSelected ? 'bg-[#06B6D4] text-white shadow-md' : '',
+                  day.hasHistory ? 'font-bold' : ''
+                ]"
+              >
+                <div class="relative">
+                  {{ day.date }}
+                  <div v-if="day.hasHistory" class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-[#06B6D4] rounded-full"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Global History List -->
+        <div class="flex-1 overflow-y-auto pr-2 scrollbar-thin">
+          <div v-if="filteredGlobalHistory.length > 0" class="space-y-4">
+            <div 
+              v-for="record in filteredGlobalHistory" 
+              :key="record.id" 
+              class="bg-white/60 p-5 rounded-xl border border-black/5 hover:shadow-md transition-shadow"
+            >
+              <div class="flex justify-between items-start gap-4">
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 mb-2">
+                    <h5 class="font-bold text-[#0F172A] text-lg">{{ record.service }}</h5>
+                    <span class="text-sm font-medium text-[#06B6D4] bg-[#E0F2FE] px-2 py-1 rounded-lg">
+                      {{ getClientName(record.clientId) }}
+                    </span>
+                  </div>
+                  <div class="flex items-center gap-3 text-sm">
+                    <span class="flex items-center gap-1 text-[#06B6D4] font-bold">
+                      <Calendar class="w-4 h-4" />
+                      {{ new Date(record.date).toLocaleDateString('pt-PT') }}
+                    </span>
+                    <span class="text-[#64748B]">•</span>
+                    <span class="font-medium text-[#475569]">{{ getVehiclePlate(record.vehicleId) }}</span>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end gap-2">
+                  <span :class="['px-3 py-1.5 rounded-full font-bold text-xs uppercase tracking-wide', 
+                    record.status === 'CONCLUIDO' ? 'bg-[#D1FAE5] text-[#059669]' : 
+                    record.status === 'EM_PROGRESSO' ? 'bg-[#E0F2FE] text-[#0284C7]' : 
+                    'bg-[#F1F5F9] text-[#64748B]']">
+                    {{ record.status }}
+                  </span>
+                  <span class="text-[#10B981] font-bold">€{{ record.price }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-else class="text-center py-12 text-[#64748B] font-medium">
+            Nenhum histórico encontrado para os filtros selecionados.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full History Modal with Calendar -->
+    <div v-if="isFullHistoryOpen" class="absolute inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm rounded-[16px]">
+      <div class="w-full max-w-4xl h-[85vh] bg-white/95 backdrop-blur-xl border border-white/50 p-8 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+        <div class="flex justify-between items-center mb-6 shrink-0">
+          <h3 class="text-2xl font-bold text-[#000000] flex items-center gap-2">
+            <History class="w-7 h-7 text-[#06B6D4]" />
+            Histórico Completo - {{ selectedClient?.name }}
+          </h3>
+          <button @click="closeFullHistory" class="p-2 hover:bg-black/5 rounded-full transition-colors">
+            <X class="w-6 h-6 text-[#334155]" />
+          </button>
+        </div>
+
+        <!-- Calendar Filter -->
+        <div class="bg-white/60 rounded-xl border border-[#06B6D4]/20 p-6 mb-6 shrink-0">
+          <h4 class="font-bold text-[#0F172A] mb-4 flex items-center gap-2">
+            <Calendar class="w-5 h-5 text-[#06B6D4]" />
+            Filtrar por Data
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-sm font-bold text-[#334155] mb-1">Data Início</label>
+              <input 
+                v-model="dateFilter.start" 
+                type="date" 
+                class="w-full px-4 py-3 rounded-xl bg-white/80 border border-[#06B6D4]/30 focus:outline-none focus:ring-2 focus:ring-[#06B6D4]/20 text-[#000000] font-medium"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-[#334155] mb-1">Data Fim</label>
+              <input 
+                v-model="dateFilter.end" 
+                type="date" 
+                class="w-full px-4 py-3 rounded-xl bg-white/80 border border-[#06B6D4]/30 focus:outline-none focus:ring-2 focus:ring-[#06B6D4]/20 text-[#000000] font-medium"
+              />
+            </div>
+            <div class="flex items-end">
+              <button 
+                @click="clearDateFilter" 
+                class="w-full px-4 py-3 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white rounded-xl font-bold shadow-[0_0_12px_rgba(59,130,246,0.4)] hover:shadow-[0_0_20px_rgba(59,130,246,0.6)] transition-all text-sm"
+              >
+                Limpar Filtro
+              </button>
+            </div>
+          </div>
+          
+          <!-- Mini Calendar -->
+          <div class="mt-6 grid grid-cols-7 gap-2">
+            <div v-for="day in ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']" :key="day" class="text-center text-xs font-bold text-[#64748B] py-1">
+              {{ day }}
+            </div>
+            <div 
+              v-for="(day, index) in calendarDays" 
+              :key="index"
+              @click="selectCalendarDay(day)"
+              :class="[
+                'text-center py-2 rounded-lg text-sm font-medium cursor-pointer transition-all',
+                day.isCurrentMonth ? 'text-[#0F172A] hover:bg-[#06B6D4]/10' : 'text-[#CBD5E1]',
+                day.isSelected ? 'bg-[#06B6D4] text-white shadow-md' : '',
+                day.hasHistory ? 'font-bold' : ''
+              ]"
+            >
+              <div class="relative">
+                {{ day.date }}
+                <div v-if="day.hasHistory" class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-[#06B6D4] rounded-full"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filtered History List -->
+        <div class="flex-1 overflow-y-auto pr-2 scrollbar-thin">
+          <div v-if="filteredFullHistory.length > 0" class="space-y-4">
+            <div 
+              v-for="record in filteredFullHistory" 
+              :key="record.id" 
+              class="bg-white/60 p-5 rounded-xl border border-black/5 hover:shadow-md transition-shadow"
+            >
+              <div class="flex justify-between items-start gap-4">
+                <div class="flex-1">
+                  <h5 class="font-bold text-[#0F172A] text-lg mb-2">{{ record.service }}</h5>
+                  <div class="flex items-center gap-3 text-sm">
+                    <span class="flex items-center gap-1 text-[#06B6D4] font-bold">
+                      <Calendar class="w-4 h-4" />
+                      {{ new Date(record.date).toLocaleDateString('pt-PT') }}
+                    </span>
+                    <span class="text-[#64748B]">•</span>
+                    <span class="font-medium text-[#475569]">{{ getVehiclePlate(record.vehicleId) }}</span>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end gap-2">
+                  <span :class="['px-3 py-1.5 rounded-full font-bold text-xs uppercase tracking-wide', 
+                    record.status === 'CONCLUIDO' ? 'bg-[#D1FAE5] text-[#059669]' : 
+                    record.status === 'EM_PROGRESSO' ? 'bg-[#E0F2FE] text-[#0284C7]' : 
+                    'bg-[#F1F5F9] text-[#64748B]']">
+                    {{ record.status }}
+                  </span>
+                  <span class="text-[#10B981] font-bold">€{{ record.price }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-else class="text-center py-12 text-[#64748B] font-medium">
+            Nenhum histórico encontrado para o período selecionado.
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Add Client Modal -->
@@ -142,12 +416,20 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { Search, Car, History, Phone, Mail, Plus, Shield, ChevronRight, X } from 'lucide-vue-next'
+import { Search, Car, History, Phone, Mail, Plus, Shield, ChevronRight, X, ExternalLink, Calendar } from 'lucide-vue-next'
 import { graphql } from '@/graphql'
 
 interface Vehicle { id: number; plate: string; brand: string; model: string; year: number; color: string; size_category: string }
-interface HistoryRecord { id: number; vehicleId: number; date: string; service: string; status: string; price: number }
+interface HistoryRecord { id: number; vehicleId: number; date: string; service: string; status: string; price: number; clientId: number }
 interface Client { id: number; name: string; phone: string; email: string; ltv: string; avatar: string; vehicles: Vehicle[]; history: HistoryRecord[] }
+
+interface CalendarDay {
+  date: number
+  isCurrentMonth: boolean
+  isSelected: boolean
+  hasHistory: boolean
+  fullDate: Date
+}
 
 const clients = ref<Client[]>([])
 const selectedClientId = ref<number | null>(null)
@@ -156,9 +438,20 @@ const isLoading = ref(true)
 const isSubmitting = ref(false)
 const isAddClientOpen = ref(false)
 const isAddVehicleOpen = ref(false)
+const isFullHistoryOpen = ref(false)
+const isGlobalHistoryOpen = ref(false)
+const currentCalendarMonth = ref(new Date())
+const currentGlobalMonth = ref(new Date())
 
 const newClient = ref({ firstName: '', lastName: '', email: '', phone: '' })
 const newVehicle = ref({ plate: '', brand: '', model: '', year: new Date().getFullYear(), sizeCategory: 'M' })
+const dateFilter = ref({ start: '', end: '' })
+const globalFilter = ref({
+  clientId: '',
+  vehicleId: '',
+  startDate: '',
+  endDate: ''
+})
 
 const filteredClients = computed(() => {
   if (!searchQuery.value) return clients.value
@@ -167,6 +460,118 @@ const filteredClients = computed(() => {
 })
 
 const selectedClient = computed(() => clients.value.find(c => c.id === selectedClientId.value) || null)
+
+const recentHistory = computed(() => {
+  if (!selectedClient.value?.history) return []
+  return selectedClient.value.history.slice(0, 5)
+})
+
+const allVehicles = computed(() => {
+  const vehicles: Vehicle[] = []
+  clients.value.forEach(client => {
+    client.vehicles?.forEach(v => vehicles.push(v))
+  })
+  return vehicles
+})
+
+const allHistory = computed(() => {
+  const history: HistoryRecord[] = []
+  clients.value.forEach(client => {
+    client.history?.forEach(h => {
+      history.push({ ...h, clientId: client.id })
+    })
+  })
+  return history
+})
+
+const filteredFullHistory = computed(() => {
+  if (!selectedClient.value?.history) return []
+  let history = selectedClient.value.history
+  
+  if (dateFilter.value.start) {
+    history = history.filter(h => new Date(h.date) >= new Date(dateFilter.value.start))
+  }
+  if (dateFilter.value.end) {
+    history = history.filter(h => new Date(h.date) <= new Date(dateFilter.value.end))
+  }
+  
+  return history.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+})
+
+const filteredGlobalHistory = computed(() => {
+  let history = allHistory.value
+  
+  if (globalFilter.value.clientId) {
+    history = history.filter(h => h.clientId === Number(globalFilter.value.clientId))
+  }
+  if (globalFilter.value.vehicleId) {
+    history = history.filter(h => h.vehicleId === Number(globalFilter.value.vehicleId))
+  }
+  if (globalFilter.value.startDate) {
+    history = history.filter(h => new Date(h.date) >= new Date(globalFilter.value.startDate))
+  }
+  if (globalFilter.value.endDate) {
+    history = history.filter(h => new Date(h.date) <= new Date(globalFilter.value.endDate))
+  }
+  
+  return history.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+})
+
+const calendarDays = computed(() => {
+  return generateCalendarDays(currentCalendarMonth.value, selectedClient.value?.history || [])
+})
+
+const globalCalendarDays = computed(() => {
+  return generateCalendarDays(currentGlobalMonth.value, allHistory.value)
+})
+
+const generateCalendarDays = (month: Date, history: HistoryRecord[]) => {
+  const year = month.getFullYear()
+  const monthIndex = month.getMonth()
+  const firstDay = new Date(year, monthIndex, 1)
+  const lastDay = new Date(year, monthIndex + 1, 0)
+  const daysInMonth = lastDay.getDate()
+  const startingDayOfWeek = firstDay.getDay()
+  
+  const days: CalendarDay[] = []
+  
+  const prevMonthLastDay = new Date(year, monthIndex, 0).getDate()
+  for (let i = startingDayOfWeek - 1; i >= 0; i--) {
+    const date = prevMonthLastDay - i
+    days.push({
+      date,
+      isCurrentMonth: false,
+      isSelected: false,
+      hasHistory: false,
+      fullDate: new Date(year, monthIndex - 1, date)
+    })
+  }
+  
+  for (let i = 1; i <= daysInMonth; i++) {
+    const fullDate = new Date(year, monthIndex, i)
+    const dateStr = fullDate.toISOString().split('T')[0]
+    days.push({
+      date: i,
+      isCurrentMonth: true,
+      isSelected: false,
+      hasHistory: history.some(h => h.date.split('T')[0] === dateStr),
+      fullDate
+    })
+  }
+  
+  const remainingDays = 42 - days.length
+  for (let i = 1; i <= remainingDays; i++) {
+    days.push({
+      date: i,
+      isCurrentMonth: false,
+      isSelected: false,
+      hasHistory: false,
+      fullDate: new Date(year, monthIndex + 1, i)
+    })
+  }
+  
+  return days
+}
 
 const fetchClients = async () => {
   try {
@@ -185,6 +590,84 @@ const fetchClients = async () => {
 const selectClient = (id: number) => { selectedClientId.value = id }
 const setIsAddClientOpen = (value: boolean) => { isAddClientOpen.value = value }
 const setIsAddVehicleOpen = (value: boolean) => { isAddVehicleOpen.value = value }
+
+const openFullHistory = () => {
+  isFullHistoryOpen.value = true
+  currentCalendarMonth.value = new Date()
+}
+
+const closeFullHistory = () => {
+  isFullHistoryOpen.value = false
+  dateFilter.value = { start: '', end: '' }
+}
+
+const openGlobalHistory = () => {
+  isGlobalHistoryOpen.value = true
+  currentGlobalMonth.value = new Date()
+}
+
+const closeGlobalHistory = () => {
+  isGlobalHistoryOpen.value = false
+  globalFilter.value = { clientId: '', vehicleId: '', startDate: '', endDate: '' }
+}
+
+const selectCalendarDay = (day: CalendarDay) => {
+  const dateStr = day.fullDate.toISOString().split('T')[0]
+  
+  if (!dateFilter.value.start || (dateFilter.value.start && dateFilter.value.end)) {
+    dateFilter.value = { start: dateStr, end: '' }
+  } else {
+    if (new Date(dateStr) < new Date(dateFilter.value.start)) {
+      dateFilter.value = { start: dateStr, end: dateFilter.value.start }
+    } else {
+      dateFilter.value = { start: dateFilter.value.start, end: dateStr }
+    }
+  }
+}
+
+const selectGlobalCalendarDay = (day: CalendarDay) => {
+  const dateStr = day.fullDate.toISOString().split('T')[0]
+  
+  if (!globalFilter.value.startDate || (globalFilter.value.startDate && globalFilter.value.endDate)) {
+    globalFilter.value = { ...globalFilter.value, startDate: dateStr, endDate: '' }
+  } else {
+    if (new Date(dateStr) < new Date(globalFilter.value.startDate)) {
+      globalFilter.value = { ...globalFilter.value, startDate: dateStr, endDate: globalFilter.value.startDate }
+    } else {
+      globalFilter.value = { ...globalFilter.value, startDate: globalFilter.value.startDate, endDate: dateStr }
+    }
+  }
+}
+
+const clearDateFilter = () => {
+  dateFilter.value = { start: '', end: '' }
+}
+
+const clearGlobalFilter = () => {
+  globalFilter.value = { clientId: '', vehicleId: '', startDate: '', endDate: '' }
+}
+
+const previousMonth = () => {
+  const newDate = new Date(currentGlobalMonth.value)
+  newDate.setMonth(newDate.getMonth() - 1)
+  currentGlobalMonth.value = newDate
+}
+
+const nextMonth = () => {
+  const newDate = new Date(currentGlobalMonth.value)
+  newDate.setMonth(newDate.getMonth() + 1)
+  currentGlobalMonth.value = newDate
+}
+
+const getVehiclePlate = (vehicleId: number) => {
+  return selectedClient.value?.vehicles?.find(v => v.id === vehicleId)?.plate || 
+         allVehicles.value.find(v => v.id === vehicleId)?.plate || 
+         'Veículo não encontrado'
+}
+
+const getClientName = (clientId: number) => {
+  return clients.value.find(c => c.id === clientId)?.name || 'Cliente não encontrado'
+}
 
 const handleAddClient = async () => {
   isSubmitting.value = true

@@ -14,6 +14,9 @@ const router = createRouter({
     // Auth - Clientes
     { path: '/login', name: 'login', component: () => import('@/page/auth/Login.vue') },
     { path: '/registar', name: 'register', component: () => import('@/page/auth/Register.vue') },
+    // Recuperação de password
+    { path: '/recuperar-password', name: 'forgot-password', component: () => import('@/page/auth/ForgotPassword.vue') },
+    { path: '/reset-password', name: 'reset-password', component: () => import('@/page/auth/ResetPassword.vue') },
 
     // Pagamento
     { path: '/pagamento/:bookingId', name: 'payment', component: () => import('@/page/payment/PaymentPage.vue') },
@@ -23,13 +26,16 @@ const router = createRouter({
     
     // Área Cliente
     { path: '/client-area', alias: ['/clientarea'], name: 'client-area', component: () => import('@/page/profile/ClientArea.vue') },
+
+    // Portfolio
+    { path: '/portfolio/:id', name: 'portfolio-detail', component: () => import('@/page/portfolio/PortfolioDetail.vue') },
     
     // Páginas Públicas
     { path: '/sobre', component: () => import('@/page/About.vue') },
     { path: '/contacto', component: () => import('@/page/Contact.vue') },
     { path: '/servicos', component: () => import('@/page/services/Services.vue') },
     { path: '/precos', component: () => import('@/page/services/Pricing.vue') },
-    { path: '/portfolio', component: () => import('@/page/Portfolio.vue') },
+    { path: '/portfolio', component: () => import('@/page/portfolio/Portfolio.vue') },
     { path: '/materiais', component: () => import('@/page/MaterialsList.vue') },
     { path: '/faq', component: () => import('@/components/sections/FAQ.vue') },
     
@@ -47,9 +53,7 @@ const router = createRouter({
       path: '/admin',
       component: () => import('@/portaladmin/page/components/layout/DashboardLayout.vue'),
       children: [
-        // Login admin - SEM requiresRole (qualquer um pode ver)
         { path: 'login', component: () => import('@/portaladmin/page/auth/AuthPage.vue') },
-        // Dashboard - COM requiresRole
         { path: '', redirect: '/admin/dashboard' },
         { path: 'dashboard', name: 'admin-dashboard', component: () => import('@/portaladmin/page/dashboard/DashboardOverview.vue'), meta: { requiresRole: ALLOWED_ROLES, title: 'Dashboard' } },
         { path: 'crm', name: 'admin-crm', component: () => import('@/portaladmin/page/crm/CRMManager.vue'), meta: { requiresRole: ALLOWED_ROLES, title: 'CRM' } },
@@ -59,6 +63,10 @@ const router = createRouter({
         { path: 'staff', name: 'admin-staff', component: () => import('@/portaladmin/page/staff/StaffManagement.vue'), meta: { requiresRole: ALLOWED_ROLES, title: 'Funcionários' } },
         { path: 'inventory', name: 'admin-inventory', component: () => import('@/portaladmin/page/inventory/InventoryDashboard.vue'), meta: { requiresRole: ALLOWED_ROLES, title: 'Inventário' } },
         { path: 'profile', name: 'admin-profile', component: () => import('@/portaladmin/page/profile/ProfilePage.vue'), meta: { requiresRole: ALLOWED_ROLES, title: 'Perfil' } },
+        { path: 'audit', name: 'admin-audit', component: () => import('@/portaladmin/page/audit/AuditLogs.vue'), meta: { requiresRole: ['admin', 'superadmin'], title: 'Auditoria' } },
+        { path: 'holidays', name: 'admin-holidays', component: () => import('@/portaladmin/page/holiday/HolidayManager.vue'), meta: { requiresRole: ['admin', 'superadmin'], title: 'Feriados' } },
+        { path: 'portfolio', name: 'admin-portfolio', component: () => import('@/portaladmin/page/portfolio/PortfolioManager.vue'), meta: { requiresRole: ALLOWED_ROLES, title: 'Portfolio' } },
+        { path: 'registos', name: 'admin-registos', component: () => import('@/portaladmin/page/Registos/RegisterFlow.vue'), meta: { requiresRole: ALLOWED_ROLES, title: 'Registos' } },
       ]
     },
 
@@ -75,8 +83,15 @@ router.beforeEach(async (to, from, next) => {
     document.title = 'LeiriaDetail'
   }
 
-  // Sem requiresRole → deixar passar
   if (!to.meta.requiresRole) {
+    next()
+    return
+  }
+
+  const cachedRole = Cache.UserRole?.value
+  const allowedRoles = to.meta.requiresRole as string[]
+  
+  if (cachedRole && allowedRoles.includes(cachedRole)) {
     next()
     return
   }
@@ -92,9 +107,8 @@ router.beforeEach(async (to, from, next) => {
       headers: { 'Session-Key': sessionKey }
     })
     const data = await response.json()
-    const allowedRoles = to.meta.requiresRole as string[]
+    Cache.UserRole.value = data.role
     
-    // Customer → bloqueado
     if (data.role === 'customer' || !allowedRoles.includes(data.role)) {
       next('/')
       return

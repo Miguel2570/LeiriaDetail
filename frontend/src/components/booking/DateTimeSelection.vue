@@ -7,7 +7,7 @@
         <h3 class="text-sm font-black text-white uppercase tracking-widest italic">1. Dia</h3>
       </div>
       
-      <Calendar v-model="localDate" :min-value="minDate" class="rounded-xl" />
+      <Calendar v-model="localDate" :min-value="minDate" :disabled-dates="blockedDates" class="rounded-xl" />
     </div>
 
     <div class="bg-white/[0.01] border border-white/5 rounded-3xl p-6">
@@ -16,8 +16,19 @@
         <h3 class="text-sm font-black text-white uppercase tracking-widest italic">2. Hora</h3>
       </div>
       
-      <div v-if="localDate" class="grid grid-cols-2 gap-3 max-h-[320px] overflow-y-auto pr-2 custom-scrollbar">
+      <!-- Loja fechada -->
+      <div v-if="localDate && isBlocked && !isLoadingSlots" class="h-40 flex flex-col items-center justify-center text-center">
+        <p class="text-[#00D8FF] font-bold text-sm mb-1">🔒 Loja Fechada</p>
+        <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Não há horários disponíveis neste dia</p>
+      </div>
+
+      <!-- Slots disponíveis -->
+      <div v-else-if="localDate && !isBlocked" class="grid grid-cols-2 gap-3 max-h-[320px] overflow-y-auto pr-2 custom-scrollbar">
+        <div v-if="isLoadingSlots" class="col-span-2 text-center py-10">
+          <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[#00D8FF] mx-auto"></div>
+        </div>
         <button 
+          v-else
           v-for="slot in timeSlots" :key="slot.time"
           @click="slot.available && emit('update:time', slot.time)"
           :class="[
@@ -53,6 +64,8 @@ const localDate = ref(props.selectedDate || today(getLocalTimeZone()));
 const minDate = today(getLocalTimeZone());
 const timeSlots = ref<{ time: string; available: boolean }[]>([]);
 const isLoadingSlots = ref(false);
+const isBlocked = ref(false);
+const blockedDates = ref<string[]>([]);
 
 watch(localDate, (newValue) => {
   emit('update:date', newValue);
@@ -60,16 +73,25 @@ watch(localDate, (newValue) => {
 });
 
 onMounted(() => {
-  if (!localDate.value) {
-    localDate.value = today(getLocalTimeZone());
-  }
-  if (localDate.value) {
-    fetchSlots(localDate.value);
-  }
+  if (!localDate.value) localDate.value = today(getLocalTimeZone());
+  if (localDate.value) fetchSlots(localDate.value);
+  fetchBlockedDates();
 });
+
+const fetchBlockedDates = async () => {
+  try {
+    const res = await fetch('/Holiday');
+    const data = await res.json();
+    if (!data.HasError) {
+      blockedDates.value = data.Dates.map((d: any) => d.date);
+    }
+  } catch (e) { console.error('Erro ao carregar bloqueios:', e); }
+};
 
 const fetchSlots = async (date: any) => {
   isLoadingSlots.value = true;
+  isBlocked.value = false;
+  
   try {
     let dateStr: string;
     if (typeof date === 'string') {
@@ -80,16 +102,15 @@ const fetchSlots = async (date: any) => {
       dateStr = new Date().toISOString().split('T')[0];
     }
     
-    console.log('📅 Fetching slots for:', dateStr);
+    const checkRes = await fetch(`/Holiday/check?date=${dateStr}`);
+    const { blocked } = await checkRes.json();
+    if (blocked) {
+      isBlocked.value = true;
+      timeSlots.value = [];
+      return;
+    }
     
-    const query = `
-      query($date: String!) {
-        availableSlots(date: $date) {
-          availableSlots
-          occupiedSlots
-        }
-      }
-    `;
+    const query = `query($date: String!) { availableSlots(date: $date) { availableSlots occupiedSlots } }`;
     const data = await graphql<{ availableSlots: { availableSlots: string[], occupiedSlots: string[] } }>(query, { date: dateStr });
     
     const allSlots = [
@@ -110,19 +131,8 @@ const fetchSlots = async (date: any) => {
 </script>
 
 <style scoped>
-/* Estilo para a barra de scroll ficar fina e com as cores do teu site */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.02); 
-  border-radius: 8px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(0, 216, 255, 0.2); 
-  border-radius: 8px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 216, 255, 0.5); 
-}
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); border-radius: 8px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0, 216, 255, 0.2); border-radius: 8px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0, 216, 255, 0.5); }
 </style>

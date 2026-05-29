@@ -6,12 +6,13 @@ Database/.DS_Store
 /GraphQL/dist
 /node_modules
 API/tsconfig.tsbuildinfo
-API/tsconfig.tsbuildinfo
-api/.env
-# Environment variables
-.env
-.env.local
-.env.*.local
 
-# Não ignorar ficheiros de exemplo
-!.env.example
+# Environment variables - ignorar todos
+.env
+.env.*
+.env.development
+.env.staging
+.env.production
+api/.env
+frontend/.env
+graphql/.env

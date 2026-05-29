@@ -1,0 +1,20 @@
+input CreateServiceInput {
+    clientId: Int!
+    vehicleId: Int!
+    serviceType: String!
+    observations: String
+    entryChecks: [String!]
+    estimatedValue: Float
+}
+
+input UpdateChecklistInput {
+    serviceId: Int!
+    checklist: [String!]!
+    notes: String
+    progress: Int!
+}
+
+input CompleteServiceInput {
+    serviceId: Int!
+    totalValue: Float
+}

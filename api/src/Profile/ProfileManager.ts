@@ -27,7 +27,7 @@ class ProfileManager {
 
             // Buscar dados do utilizador
             const userQuery = `
-                SELECT id, first_name, last_name, email, phone, is_verified, created_at, updated_at
+                SELECT id, first_name, last_name, email, phone, is_verified, created_at, updated_at, avatar_url
                 FROM users WHERE id = $1
             `;
             const userResult = await server.query(userQuery, [userId]);

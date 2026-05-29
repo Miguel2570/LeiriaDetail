@@ -15,7 +15,17 @@ export const profileQueries = {
             }
 
             return {
-                profile: data.Profile,
+                profile: data.Profile ? {
+                    id: data.Profile.id,
+                    firstName: data.Profile.firstName,
+                    lastName: data.Profile.lastName,
+                    email: data.Profile.email,
+                    phone: data.Profile.phone || '',
+                    avatarUrl: data.Profile.avatar_url || data.Profile.avatarUrl || null,
+                    isVerified: data.Profile.isVerified || false,
+                    createdAt: data.Profile.createdAt || data.Profile.created_at || '',
+                    updatedAt: data.Profile.updatedAt || data.Profile.updated_at || null,
+                } : null,
                 message: data.Message,
                 hasError: false,
                 error: null

@@ -1,0 +1,12 @@
+type BlockedDate {
+    id: ID!
+    date: String!
+    reason: String!
+    isRecurring: Boolean
+}
+
+type HolidayOutput {
+    dates: [BlockedDate!]!
+    hasError: Boolean!
+    error: ErrorField
+}

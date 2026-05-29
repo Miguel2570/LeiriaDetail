@@ -111,8 +111,25 @@
               <p class="text-sm text-gray-400">{{ t('clientArea.profile.vehiclesCount') }}: {{ vehicles.length }}</p>
               <p class="text-sm text-gray-400">{{ t('clientArea.profile.bookingsCount') }}: {{ bookings.length }}</p>
             </div>
+            <div class="bg-[#050508] border border-red-500/20 rounded-2xl p-6">
+            <h3 class="text-lg font-bold text-red-400 mb-4 flex items-center gap-2">
+              <Trash2 class="w-5 h-5" /> Zona de Perigo
+            </h3>
+            <p class="text-sm text-gray-400 mb-4">
+              Ao apagar a sua conta, todos os dados pessoais serão anonimizados. 
+              As marcações anteriores serão mantidas por obrigação fiscal, mas deixarão de estar associadas a si.
+            </p>
+            <button 
+              @click="handleDeleteAccount" 
+              :disabled="isDeleting" 
+              class="px-6 py-3 bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-red-500/20 transition-all disabled:opacity-50"
+            >
+              {{ isDeleting ? 'A apagar...' : 'Apagar a Minha Conta' }}
+            </button>
+            <p v-if="deleteMessage" class="text-xs mt-2" :class="deleteError ? 'text-red-400' : 'text-green-400'">{{ deleteMessage }}</p>
           </div>
 
+          </div>
           <!-- ============ VEÍCULOS ============ -->
           <div v-if="activeTab === 'vehicles'" class="bg-[#050508] border border-white/10 rounded-2xl p-6">
             <div class="flex justify-between items-center mb-6">
@@ -280,8 +297,9 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n';
-import { Calendar, Clock, Sparkles, CalendarPlus, ShieldCheck, Car, Plus, User, Mail, Phone, Lock, ShieldAlert, History, FileText, Shield } from 'lucide-vue-next';
+import { Calendar, Clock, Sparkles, CalendarPlus, ShieldCheck, Car, Plus, User, Mail, Phone, Lock, ShieldAlert, History, FileText, Shield, Trash2 } from 'lucide-vue-next';
 import { graphql } from '@/graphql';
 import { generateHistoryPDF } from '@/services/pdfGenerator';
 import { Cache } from '@/services/cachemanager';
@@ -339,6 +357,10 @@ const bookings = ref<Booking[]>([]);
 const vehicles = ref<Vehicle[]>([]);
 const history = ref<HistoryItem[]>([]);
 
+const router = useRouter();
+const isDeleting = ref(false)
+const deleteMessage = ref('')
+const deleteError = ref(false)
 // Perfil
 const profile = reactive({
   firstName: '',
@@ -711,6 +733,33 @@ const handleDeleteVehicle = async (vehicleId: string) => {
   if (!confirm('Remover?')) return;
   try { const data = await graphql<{ deleteVehicle: { success: boolean } }>(`mutation { deleteVehicle(vehicleId: "${vehicleId}") { success } }`); if (data.deleteVehicle.success) await loadVehicles(); } catch (error) { console.error(error); }
 };
+
+const handleDeleteAccount = async () => {
+  if (!confirm('Tem a certeza? Esta ação é irreversível. Os seus dados serão anonimizados.')) return
+  if (!confirm('Confirma novamente: deseja apagar a sua conta?')) return
+  
+  isDeleting.value = true
+  deleteMessage.value = ''
+  
+  try {
+    const res = await fetch('/Authentication/DeleteAccount', {
+      method: 'DELETE',
+      headers: { 'Session-Key': Cache.Session?.value || '' }
+    })
+    const data = await res.json()
+    if (data.HasError) throw new Error(data.Error?.Message || 'Erro ao apagar conta.')
+    
+    deleteMessage.value = 'Conta apagada. Será redirecionado...'
+    deleteError.value = false
+    Cache.clearAuth()
+    setTimeout(() => router.push('/'), 2000)
+  } catch (error: any) {
+    deleteMessage.value = error.message
+    deleteError.value = true
+  } finally {
+    isDeleting.value = false
+  }
+}
 
 onMounted(() => {
   loadProfile();

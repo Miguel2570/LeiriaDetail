@@ -1,0 +1,4 @@
+extend type Mutation {
+    addBlockedDate(input: AddBlockedDateInput!): HolidayOutput!
+    removeBlockedDate(id: ID!): SimpleResponse!
+}

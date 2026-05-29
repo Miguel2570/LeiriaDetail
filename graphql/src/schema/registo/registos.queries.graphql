@@ -1,0 +1,7 @@
+extend type Query {
+    registosServices(status: ServiceStatus, clientId: Int): RegistosData!
+    registosActiveServices: RegistosData!
+    registosService(id: Int!): RegistosData!
+    registosStats: RegistosData!
+    registosClientHistory(clientId: Int!): RegistosData!
+}

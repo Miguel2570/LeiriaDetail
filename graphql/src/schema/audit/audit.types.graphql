@@ -1,0 +1,13 @@
+type AuditLog {
+    id: ID!
+    userId: Int
+    email: String
+    action: String!
+    details: String
+    createdAt: String!
+}
+
+type AuditLogOutput {
+    logs: [AuditLog!]!
+    hasError: Boolean!
+}

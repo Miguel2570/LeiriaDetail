@@ -1,5 +1,5 @@
 -- liquibase formatted sql
--- changeset leiria:seed-services
+-- changeset leiria:003-seed-services
 
 INSERT INTO services (name, description, price_ab, price_c, price_de, duration_minutes, pack_type)
 SELECT 'Lavagem Exterior', 'Lavagem à mão + secar com pano de microfibra', 20, 30, 40, 30, 'Básico'

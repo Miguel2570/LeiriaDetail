@@ -1,59 +1,37 @@
+// api/src/Authentication/AuthenticationRoutes.ts
 import { Request, Response, Router } from "express";
 import AuthenticationManager from "./AuthenticationManager";
 import { 
-    LoginOutputModel, 
-    CreateUserOutputModel, 
-    ChangePasswordOutputModel,
-    ResendVerificationOutputModel,
-    ResetPasswordOutputModel,
-    ErrorModel,
-    ValidateTokenOutputModel,
-    CheckEmailOutputModel
+    LoginOutputModel, CreateUserOutputModel, ChangePasswordOutputModel,
+    ResendVerificationOutputModel, ResetPasswordOutputModel,
+    ErrorModel, ValidateTokenOutputModel, CheckEmailOutputModel
 } from "./AuthenticationModel";
 import UserManager from "./AuthenticationManager";
+import { server } from "../Helpers/DatabaseConnectionHelper";
+import { RegisterSchema, LoginSchema, validate } from "../Helpers/ValidationSchemas";
 
 const router = Router();
 
 async function Register(request: Request, response: Response) {
-    const data = request.body;
-
-    if (!data.email) {
-        response.status(200).send(new CreateUserOutputModel(undefined, undefined, new ErrorModel("email", "Bad Request: email not defined")));
-        return;
-    }
-    
-    if (!data.password) {
-        response.status(200).send(new CreateUserOutputModel(undefined, undefined, new ErrorModel("password", "Bad Request: password not defined")));
-        return;
-    }
-    
-    if (!data.firstName || !data.lastName) {
-        response.status(200).send(new CreateUserOutputModel(undefined, undefined, new ErrorModel("name", "Bad Request: name fields not defined")));
+    const validation = validate(RegisterSchema, request.body);
+    if (!validation.success) {
+        response.status(400).send(new CreateUserOutputModel(undefined, undefined, new ErrorModel("Validation", validation.error)));
         return;
     }
 
-    const email = `${data.email ?? ""}`;
-    const password = `${data.password ?? ""}`;
-    const firstName = `${data.firstName ?? ""}`;
-    const lastName = `${data.lastName ?? ""}`;
-
+    const { email, password, firstName, lastName } = validation.data;
     const result = await AuthenticationManager.Register(email, password, firstName, lastName);
     response.status(200).send(result);
 }
 
 async function Login(request: Request, response: Response): Promise<void> {
-    const { email, password } = request.body;
-
-    if (!email || !password) {
-        response.status(400).json({
-            HasError: true,
-            Error: {
-                Message: "Email and Password are required."
-            }
-        });
+    const validation = validate(LoginSchema, request.body);
+    if (!validation.success) {
+        response.status(400).json({ HasError: true, Error: { Message: validation.error } });
         return;
     }
 
+    const { email, password } = validation.data;
     const result = await AuthenticationManager.Login(email, password);
 
     if (!result.SessionKey) {
@@ -65,222 +43,136 @@ async function Login(request: Request, response: Response): Promise<void> {
 }
 
 async function ResetPassword(request: Request, response: Response) {
-    const data = request.body;
-
-    if (!data.email) {
-        response.status(412).send(new ResetPasswordOutputModel(new ErrorModel("Email", "Bad Request: email not defined")));
+    if (!request.body.email) {
+        response.status(412).send(new ResetPasswordOutputModel(new ErrorModel("Email", "Email não fornecido.")));
         return;
     }
-
-    const email = `${data.email ?? ""}`;
-    const result = await AuthenticationManager.ResetPassword(email);
+    const result = await AuthenticationManager.ResetPassword(request.body.email);
     response.status(200).send(result);
 }
 
 async function ResendVerification(request: Request, response: Response) {
-    const data = request.body;
-
-    if (!data.email) {
-        response.status(412).send({
-            HasError: true,
-            Error: {
-                Field: "Email",
-                Message: "Bad Request: email not defined"
-            }
-        });
+    if (!request.body.email) {
+        response.status(412).send({ HasError: true, Error: { Field: "Email", Message: "Email não fornecido." } });
         return;
     }
-
-    const email = `${data.email ?? ""}`;
-    const result = await AuthenticationManager.ResendVerificationEmail(email);
+    const result = await AuthenticationManager.ResendVerificationEmail(request.body.email);
     response.status(200).send(result);
 }
 
 async function ChangePassword(request: Request, response: Response) {
-    const data = request.body;
-
-    if (!data.securityToken) {
-        response.status(412).send(new ChangePasswordOutputModel(new ErrorModel("securityToken", "Bad Request: token not defined")));
+    const { securityToken, password } = request.body;
+    if (!securityToken || !password) {
+        response.status(412).send(new ChangePasswordOutputModel(new ErrorModel("Input", "Token e password obrigatórios.")));
         return;
     }
-
-    if (!data.password) {
-        response.status(412).send(new ChangePasswordOutputModel(new ErrorModel("password", "Bad Request: password not defined")));
-        return;
-    }
-
-    const isValid = await AuthenticationManager.ValidateToken(data.securityToken);
-    
+    const isValid = await AuthenticationManager.ValidateToken(securityToken);
     if (isValid.isValid) {
-        response.status(200).send(await AuthenticationManager.ChangePassword(data.securityToken, data.password));
+        response.status(200).send(await AuthenticationManager.ChangePassword(securityToken, password));
     } else {
-        response.status(401).send("You are not allowed to execute this action");
+        response.status(401).send("Token inválido ou expirado.");
     }
 }
 
 async function ChangeAccountPassword(request: Request, response: Response) {
-    const data = request.body;
-
-    if (!data.credencialKey) {
-        response.status(412).send(new ChangePasswordOutputModel(new ErrorModel("credencialKey", "Bad Request: credencialKey not defined")));
+    const { credencialKey, currentPassword, newPassword } = request.body;
+    if (!credencialKey || !currentPassword || !newPassword) {
+        response.status(412).send(new ChangePasswordOutputModel(new ErrorModel("Input", "Todos os campos obrigatórios.")));
         return;
     }
-
-    if (!data.currentPassword) {
-        response.status(412).send(new ChangePasswordOutputModel(new ErrorModel("currentPassword", "Bad Request: currentPassword not defined")));
-        return;
-    }
-
-    if (!data.newPassword) {
-        response.status(412).send(new ChangePasswordOutputModel(new ErrorModel("newPassword", "Bad Request: newPassword not defined")));
-        return;
-    }
-
-    response.status(200).send(await AuthenticationManager.ChangeAccountPassword(data.credencialKey, data.currentPassword, data.newPassword));
+    response.status(200).send(await AuthenticationManager.ChangeAccountPassword(credencialKey, currentPassword, newPassword));
 }
 
 async function Logout(request: Request, response: Response) {
     const token = request.params['SecurityToken'];
-
     if (!token) {
-        response.status(412).send("Bad Request: SecurityToken not defined");
+        response.status(412).send("Token não fornecido.");
+        return;
+    }
+    const tokenValidationResult = await AuthenticationManager.ValidateToken(token);
+    if (tokenValidationResult.isValid) {
+        response.status(200).send(await AuthenticationManager.Logout(token));
     } else {
-        const tokenValidationResult = await AuthenticationManager.ValidateToken(token);
-        if (tokenValidationResult.isValid) {
-            response.status(200).send(await AuthenticationManager.Logout(token));
-        } else {
-            response.status(401).send("You are not allowed to execute this action");
-        }
+        response.status(401).send("Token inválido.");
     }
 }
 
 async function VerifyAccount(request: Request, response: Response): Promise<void> {
     const token = request.query.token as string;
-
-    if (!token) {
-        response.status(200).send({
-            HasError: true,
-            Error: { Message: "Missing token." }
-        });
-        return;
-    }
-
+    if (!token) { response.status(200).send({ HasError: true, Error: { Message: "Token não fornecido." } }); return; }
     const result = await AuthenticationManager.VerifyAccount(token);
     response.status(200).send(result);
 }
 
 async function ValidateToken(request: Request, response: Response): Promise<void> {
     const token = request.query.token as string;
-
-    if (!token) {
-        response.status(400).json({
-            isValid: false,
-            message: "Token not provided"
-        });
-        return;
-    }
-
+    if (!token) { response.status(400).json({ isValid: false, message: "Token não fornecido." }); return; }
     try {
         const result = await AuthenticationManager.ValidateToken(token);
         response.json(result);
-        return;
     } catch (error) {
-        console.error("Erro ao validar token:", error);
-        response.status(500).json({
-            isValid: false,
-            message: "Internal server error while validating token"
-        });
-        return;
+        response.status(500).json({ isValid: false, message: "Erro interno." });
     }
 }
 
 async function CheckEmail(request: Request, response: Response) {
     const email = request.query.email as string;
-
-    if (!email) {
-        response.status(400).json({
-            exists: false,
-            message: "Email not provided"
-        });
-        return;
-    }
-
+    if (!email) { response.status(400).json({ exists: false, message: "Email não fornecido." }); return; }
     try {
         const result = await AuthenticationManager.CheckEmail(email);
         response.json(result);
     } catch (error) {
-        response.status(500).json({
-            exists: false,
-            message: "Internal server error"
-        });
+        response.status(500).json({ exists: false, message: "Erro interno." });
     }
 }
 
 async function VerifyPassword(request: Request, response: Response): Promise<void> {
     const credencialKey = request.headers['credencialkey'] as string;
     const { password } = request.body;
-
-    if (!credencialKey || !password) {
-        response.status(400).json({ success: false, error: 'Missing credentials' });
-        return;
-    }
-
+    if (!credencialKey || !password) { response.status(400).json({ success: false, error: 'Credenciais em falta.' }); return; }
     const result = await AuthenticationManager.VerifyPassword(parseInt(credencialKey), password);
-
-    if (result.success) {
-        response.json({ success: true });
-    } else {
-        response.status(401).json({ success: false, error: result.error });
-    }
+    if (result.success) { response.json({ success: true }); }
+    else { response.status(401).json({ success: false, error: result.error }); }
 }
 
 async function GoogleLogin(request: Request, response: Response) {
-    const { token } = request.body;
-
-    if (!token) {
-        response.status(400).json({ HasError: true, Error: { Message: "Token não fornecido." } });
-        return;
-    }
-
-    const result = await AuthenticationManager.GoogleLogin(token);
+    if (!request.body.token) { response.status(400).json({ HasError: true, Error: { Message: "Token não fornecido." } }); return; }
+    const result = await AuthenticationManager.GoogleLogin(request.body.token);
     response.status(200).send(result);
 }
 
 async function AppleLogin(request: Request, response: Response) {
-    const { token, fullName } = request.body;
-
-    if (!token) {
-        response.status(400).json({ HasError: true, Error: { Message: "Token não fornecido." } });
-        return;
-    }
-
-    const result = await AuthenticationManager.AppleLogin(token, fullName);
+    if (!request.body.token) { response.status(400).json({ HasError: true, Error: { Message: "Token não fornecido." } }); return; }
+    const result = await AuthenticationManager.AppleLogin(request.body.token, request.body.fullName);
     response.status(200).send(result);
 }
 
 async function GetRole(request: Request, response: Response) {
     const sessionKey = request.headers['session-key'] as string;
-    
-    if (!sessionKey) {
-        response.status(200).json({ role: 'customer' });
-        return;
-    }
-    
+    if (!sessionKey) { response.status(200).json({ role: 'customer' }); return; }
     const tokenResult = await UserManager.ValidateToken(sessionKey);
-    if (!tokenResult.isValid || !tokenResult.userId) {
-        response.status(200).json({ role: 'customer' });
-        return;
-    }
-    
+    if (!tokenResult.isValid || !tokenResult.userId) { response.status(200).json({ role: 'customer' }); return; }
     const role = await UserManager.GetUserRole(tokenResult.userId);
     response.status(200).json({ role });
 }
 
+async function DeleteAccount(request: Request, response: Response) {
+    const sessionKey = request.headers['session-key'] as string;
+    if (!sessionKey) { response.status(401).send({ HasError: true, Error: { Message: "Sessão não fornecida." } }); return; }
+    const tokenResult = await UserManager.ValidateToken(sessionKey);
+    if (!tokenResult.isValid || !tokenResult.userId) { response.status(401).send({ HasError: true, Error: { Message: "Sessão inválida." } }); return; }
+    const userId = tokenResult.userId;
+    await server.query(`UPDATE users SET first_name = 'Conta', last_name = 'Apagada', email = 'apagado_' || $1 || '@anon.pt', phone = NULL, is_active = false, password_hash = 'DELETED', updated_at = NOW() WHERE id = $1`, [userId]);
+    await server.query('DELETE FROM user_sessions WHERE user_id = $1', [userId]);
+    response.status(200).send({ HasError: false, Message: "Conta apagada com sucesso." });
+}
+
+router.delete("/DeleteAccount", DeleteAccount);
 router.post("/Register", Register);
 router.post("/Login", Login);
 router.post("/Logout/:SecurityToken", Logout);
-router.post("/Change-Password", ChangePassword);
-router.post("/Change-Account-Password", ChangeAccountPassword);
+router.put("/Change-Password", ChangePassword);
+router.put("/Change-Account-Password", ChangeAccountPassword);
 router.post("/Reset-Password", ResetPassword);
 router.post("/Resend-Verification", ResendVerification);
 router.post("/verify-password", VerifyPassword);

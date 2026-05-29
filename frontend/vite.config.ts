@@ -22,6 +22,7 @@ export default defineConfig({
     proxy: {
         '/Authentication': { target: 'http://localhost:3001', changeOrigin: true },
         '/Profile': { target: 'http://localhost:3001', changeOrigin: true },
+        '/Portfolio': { target: 'http://localhost:3001', changeOrigin: true },
     }
   }
 })

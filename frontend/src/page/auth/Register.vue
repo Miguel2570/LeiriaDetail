@@ -166,7 +166,8 @@ const registerWithGoogle = async () => {
     const client = (window as any).google.accounts.oauth2.initCodeClient({
       client_id: '433691700860-nuutndflkr2iosttdc0ij269igarlua7.apps.googleusercontent.com',
       scope: 'email profile',
-      ux_mode: 'popup',
+      ux_mode: 'redirect',
+      redirect_uri: 'http://localhost:5174/registar',
       callback: async (response: any) => {
         if (response.code) {
           isLoading.value = true;

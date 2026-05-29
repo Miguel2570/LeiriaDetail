@@ -17,6 +17,7 @@ export const portfolioQueries = {
                     imageUrl: i.image_url,
                     beforeImageUrl: i.before_image_url,
                     afterImageUrl: i.after_image_url,
+                    galleryImages: i.gallery_images ? JSON.stringify(i.gallery_images) : null,
                     isFeatured: i.is_featured || false,
                     createdAt: i.created_at
                 })),

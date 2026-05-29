@@ -119,3 +119,22 @@ export function generateHistoryPDF(
   // GUARDAR
   doc.save(`leiriadetail-historico-${client.name.toLowerCase().replace(/\s/g, '-')}.pdf`);
 }
+
+export function generateHistoryCSV(
+  client: ClientData,
+  history: HistoryItem[]
+) {
+  const header = 'Data,Hora,Serviço,Matrícula,Preço\n';
+  const rows = history.map(item => 
+    `${item.bookingDate},${item.bookingTime},"${item.serviceName}",${item.vehiclePlate},${item.servicePrice}€`
+  ).join('\n');
+  
+  const total = history.reduce((sum, item) => sum + item.servicePrice, 0);
+  const csv = header + rows + `\nTotal,,,,"${total}€"`;
+  
+  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `leiriadetail-historico-${client.name.toLowerCase().replace(/\s/g, '-')}.csv`;
+  link.click();
+}

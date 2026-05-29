@@ -1,5 +1,5 @@
 -- liquibase formatted sql
--- changeset leiria:reviews-seed
+-- changeset leiria:004-reviews-seed
 INSERT INTO reviews (name, car, text, rating) VALUES
 ('João Francisco', 'Tesla Model 3', 'Entreguei o meu carro cheio de marcas de lavagens antigas e recebi-o com um brilho de espelho. O Pack Completo vale cada cêntimo. Trabalho de excelência em Leiria!', 5),
 ('Marta Silva', 'BMW Série 1', 'Os estofos estavam manchados e os plásticos baços. Parecia magia, o detalhe interior deixou o carro a cheirar a novo. O cuidado e a simpatia foram incríveis.', 5),

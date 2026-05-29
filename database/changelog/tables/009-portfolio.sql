@@ -6,9 +6,9 @@ CREATE TABLE IF NOT EXISTS portfolio (
     title VARCHAR(255) NOT NULL,
     description TEXT,
     category VARCHAR(100) NOT NULL,
-    image_url VARCHAR(500) NOT NULL,
-    before_image_url VARCHAR(500),
-    after_image_url VARCHAR(500),
+    image_url TEXT NOT NULL,
+    before_image_url TEXT,
+    after_image_url TEXT,
     is_featured BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

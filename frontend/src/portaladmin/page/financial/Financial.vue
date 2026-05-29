@@ -5,10 +5,18 @@
         <h3 class="text-3xl font-bold text-[#000000]">Financial Overview</h3>
         <p class="text-[#334155] font-medium mt-1">Track your detailing business revenue and growth</p>
       </div>
-      <button class="px-5 py-2.5 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white rounded-xl font-bold shadow-[0_0_12px_rgba(59,130,246,0.4)] hover:shadow-[0_0_20px_rgba(59,130,246,0.6)] transition-all flex items-center gap-2">
-        <CalendarDays class="w-5 h-5" />
-        Last 7 Days
-      </button>
+      <div class="flex gap-3">
+        <button @click="exportPDF" class="px-4 py-2 bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold uppercase rounded-xl hover:bg-red-500/20 transition-all flex items-center gap-2">
+          <FileText class="w-4 h-4" /> PDF
+        </button>
+        <button @click="exportCSV" class="px-4 py-2 bg-green-500/10 border border-green-500/30 text-green-400 text-xs font-bold uppercase rounded-xl hover:bg-green-500/20 transition-all flex items-center gap-2">
+          <FileText class="w-4 h-4" /> CSV
+        </button>
+        <button class="px-5 py-2.5 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white rounded-xl font-bold shadow-[0_0_12px_rgba(59,130,246,0.4)] hover:shadow-[0_0_20px_rgba(59,130,246,0.6)] transition-all flex items-center gap-2">
+          <CalendarDays class="w-5 h-5" />
+          Last 7 Days
+        </button>
+      </div>
     </div>
 
     <div v-if="isLoading" class="flex-1 flex items-center justify-center text-[#64748B] font-medium">A carregar dados financeiros...</div>
@@ -74,9 +82,10 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { TrendingUp, Clock, CalendarDays, Wallet } from 'lucide-vue-next'
+import { TrendingUp, Clock, CalendarDays, Wallet, FileText } from 'lucide-vue-next'
 import { Line } from 'vue-chartjs'
 import { graphql } from '@/graphql'
+import { generateHistoryPDF, generateHistoryCSV } from '@/services/pdfGenerator'
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Filler, Legend } from 'chart.js'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Filler, Legend)
@@ -102,6 +111,38 @@ const chartOptions = {
 }
 
 const formatPrice = (value: number) => value.toLocaleString('pt-PT', { minimumFractionDigits: 2 })
+
+const exportPDF = () => {
+  generateHistoryPDF(
+    { name: 'LeiriaDetail - Relatório Financeiro', email: 'geral@leiriadetail.pt', phone: '' },
+    revenueData.value.map((r, i) => ({
+      id: String(i),
+      bookingDate: r.date,
+      bookingTime: '',
+      serviceName: 'Receita Diária',
+      servicePrice: r.revenue,
+      vehicleName: '',
+      vehiclePlate: '',
+      status: 'CONCLUIDO'
+    }))
+  )
+}
+
+const exportCSV = () => {
+  generateHistoryCSV(
+    { name: 'LeiriaDetail - Relatório Financeiro', email: 'geral@leiriadetail.pt', phone: '' },
+    revenueData.value.map((r, i) => ({
+      id: String(i),
+      bookingDate: r.date,
+      bookingTime: '',
+      serviceName: 'Receita Diária',
+      servicePrice: r.revenue,
+      vehicleName: '',
+      vehiclePlate: '',
+      status: 'CONCLUIDO'
+    }))
+  )
+}
 
 const fetchFinancialData = async () => {
   try {

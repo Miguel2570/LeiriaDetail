@@ -1,5 +1,5 @@
 -- liquibase formatted sql
--- changeset leiriadetail:create-vehicles
+-- changeset leiriadetail:003-create-vehicles
 
 CREATE TABLE IF NOT EXISTS vehicles (
     id SERIAL PRIMARY KEY,
