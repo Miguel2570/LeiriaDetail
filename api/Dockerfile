@@ -1,10 +1,14 @@
-FROM node:20
+FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package.json .
-RUN npm install
+COPY package.json package-lock.json* ./
+RUN npm ci --only=production
 
 COPY . .
 
-CMD ["node", "src/index.js"]
+USER node
+
+EXPOSE 3001
+
+CMD ["node", "dist/app.js"]

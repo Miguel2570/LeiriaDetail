@@ -1,11 +1,11 @@
 {
   "name": "leiriadetail-api",
   "version": "1.0.0",
-  "main": "dist/server.js",
+  "main": "dist/app.js",
   "scripts": {
     "dev": "ts-node-dev src/app.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/app.js"
   },
   "dependencies": {
     "@elastic/elasticsearch": "^9.4.2",
