@@ -915,3 +915,5 @@
 {"duration":"16ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-29T22:54:34.120Z","url":"/Dashboard"}
 {"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-05-29T22:55:29.134Z"}
 {"duration":"49ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-29T22:55:34.199Z","url":"/Dashboard"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-05-30T00:18:17.903Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-05-30T00:30:37.801Z"}
