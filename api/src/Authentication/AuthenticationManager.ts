@@ -10,7 +10,7 @@ import {
     ResendVerificationOutputModel, ResetPasswordOutputModel,
     ValidateTokenOutputModel, CheckEmailOutputModel, ErrorModel 
 } from "./AuthenticationModel";
-import { sendVerificationEmail, sendPasswordResetEmail, sendWelcomeEmail } from '../Helpers/EmailService';
+import { sendVerificationEmail, sendPasswordResetEmail, sendWelcomeEmail, sendEmail } from '../Helpers/EmailService';
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -37,25 +37,28 @@ class UserManager {
         if (existing.rows.length > 0) return new CreateUserOutputModel(undefined, undefined, new ErrorModel("Email", "Email já registado."));
         
         const hash = await bcrypt.hash(password, await bcrypt.genSalt(10));
-        await server.query('BEGIN');
         
         try {
-            const insertQuery = `INSERT INTO users (first_name, last_name, email, password_hash, is_verified, role, provider) VALUES ($1, $2, $3, $4, false, 'customer', 'local') RETURNING id, first_name, last_name, email`;
-            const result = await server.query(insertQuery, [firstName, lastName, normalizedEmail, hash]);
-            const newUser = result.rows[0];
-            await server.query('COMMIT');
+            // Gerar código de 6 dígitos
+            const verificationCode = this.generateVerificationCode();
+            const codeExpires = new Date();
+            codeExpires.setMinutes(codeExpires.getMinutes() + 15);
             
-            const verificationToken = this.generateUUID();
-            const expirationDateTime = new Date();
-            expirationDateTime.setHours(expirationDateTime.getHours() + 24);
-            await server.query('INSERT INTO user_sessions (session_key, user_id, expirationdatetime) VALUES ($1::uuid, $2, $3)', [verificationToken, newUser.id, expirationDateTime]);
-            await sendVerificationEmail(normalizedEmail, verificationToken, firstName);
+            const insertQuery = `
+                INSERT INTO users (first_name, last_name, email, password_hash, is_verified, role, provider, verification_code, verification_code_expires) 
+                VALUES ($1, $2, $3, $4, false, 'customer', 'local', $5, $6) 
+                RETURNING id, first_name, last_name, email
+            `;
+            const result = await server.query(insertQuery, [firstName, lastName, normalizedEmail, hash, verificationCode, codeExpires]);
+            const newUser = result.rows[0];
+            
+            // Enviar código por email
+            await this.sendVerificationCodeEmail(normalizedEmail, verificationCode, firstName);
             
             await AuditManager.createLog(newUser.id, 'REGISTER', normalizedEmail, { firstName, lastName });
             logger.info('Utilizador registado', { email: normalizedEmail, userId: newUser.id });
-            return new CreateUserOutputModel("Conta criada com sucesso! Verifique o seu email.", true, undefined);
+            return new CreateUserOutputModel("Conta criada! Verifique o código enviado para o seu email.", true, undefined);
         } catch (error: any) {
-            await server.query('ROLLBACK');
             logger.error('Erro no registo', { error: error.message, stack: error.stack });
             return new CreateUserOutputModel(undefined, false, new ErrorModel("Server", "Erro interno ao criar conta."));
         }
@@ -86,47 +89,29 @@ class UserManager {
         return new LoginOutputModel(sessionKey, user.id, undefined);
     }
     
-    static async VerifyAccount(token: string): Promise<any> {
-        try {
-            await server.query('BEGIN');
-            const tokenQuery = `SELECT user_id FROM user_sessions WHERE session_key = $1 AND expirationdatetime > NOW()`;
-            const tokenResult = await server.query(tokenQuery, [token]);
-            if (tokenResult.rows.length === 0) {
-                await server.query('ROLLBACK');
-                return { HasError: true, Error: { Message: "Token inválido ou expirado." } };
-            }
-            const userId = tokenResult.rows[0].user_id;
-            const userResult = await server.query(`UPDATE users SET is_verified = true, updated_at = NOW() WHERE id = $1 RETURNING first_name, email`, [userId]);
-            await server.query('DELETE FROM user_sessions WHERE session_key = $1::uuid', [token]);
-            await server.query('COMMIT');
-            const user = userResult.rows[0];
-            if (user) await sendWelcomeEmail(user.email, user.first_name || 'User');
-            logger.info('Conta verificada', { userId });
-            return { HasError: false };
-        } catch (error: any) {
-            await server.query('ROLLBACK');
-            logger.error('Erro na verificação de conta', { error: error.message });
-            return { HasError: true, Error: { Message: "Erro interno." } };
-        }
-    }
-    
-    static async ResendVerificationEmail(email: string): Promise<ResendVerificationOutputModel> {
+    static async ResendVerificationCode(email: string): Promise<ResendVerificationOutputModel> {
         const normalizedEmail = email.toLowerCase().trim();
-        const userResult = await server.query('SELECT id, first_name, last_name, is_verified FROM users WHERE email = $1', [normalizedEmail]);
+        const userResult = await server.query('SELECT id, first_name, is_verified FROM users WHERE email = $1', [normalizedEmail]);
         if (userResult.rows.length === 0) return new ResendVerificationOutputModel(undefined, new ErrorModel("Email", "Email não encontrado."));
+        
         const user = userResult.rows[0];
         if (user.is_verified) return new ResendVerificationOutputModel(undefined, new ErrorModel("Account", "Conta já verificada."));
         
-        const verificationToken = this.generateUUID();
-        const expirationDateTime = new Date();
-        expirationDateTime.setHours(expirationDateTime.getHours() + 24);
-        await server.query('DELETE FROM user_sessions WHERE user_id = $1', [user.id]);
-        await server.query('INSERT INTO user_sessions (session_key, user_id, expirationdatetime) VALUES ($1::uuid, $2, $3)', [verificationToken, user.id, expirationDateTime]);
+        // Gerar novo código
+        const verificationCode = this.generateVerificationCode();
+        const codeExpires = new Date();
+        codeExpires.setMinutes(codeExpires.getMinutes() + 15);
         
-        const emailResult = await sendVerificationEmail(normalizedEmail, verificationToken, user.first_name);
-        if (!emailResult.success) return new ResendVerificationOutputModel(undefined, new ErrorModel("Email", emailResult.error || "Falha ao enviar email."));
-        logger.info('Email de verificação reenviado', { email: normalizedEmail });
-        return new ResendVerificationOutputModel("Email de verificação enviado.", undefined);
+        await server.query(
+            'UPDATE users SET verification_code = $1, verification_code_expires = $2 WHERE id = $3',
+            [verificationCode, codeExpires, user.id]
+        );
+        
+        const sent = await this.sendVerificationCodeEmail(normalizedEmail, verificationCode, user.first_name);
+        if (!sent) return new ResendVerificationOutputModel(undefined, new ErrorModel("Email", "Falha ao enviar email."));
+        
+        logger.info('Código de verificação reenviado', { email: normalizedEmail });
+        return new ResendVerificationOutputModel("Código de verificação reenviado.", undefined);
     }
     
     static async ResetPassword(email: string): Promise<ResetPasswordOutputModel> {
@@ -292,6 +277,58 @@ class UserManager {
         } catch (error) {
             return 'customer';
         }
+    }
+
+    static generateVerificationCode(): string {
+        return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+
+    static async sendVerificationCodeEmail(email: string, code: string, firstName: string): Promise<boolean> {
+        const subject = "Código de Verificação - LeiriaDetail";
+        const body = `
+            <!DOCTYPE html>
+            <html>
+            <body style="font-family: Arial, sans-serif; text-align: center;">
+                <h2>Olá ${firstName}!</h2>
+                <p>O teu código de verificação é:</p>
+                <h1 style="font-size: 48px; letter-spacing: 10px; color: #2563EB;">${code}</h1>
+                <p>Insere este código na página de verificação.</p>
+                <p style="color: #666; font-size: 12px;">O código expira em 15 minutos.</p>
+            </body>
+            </html>
+        `;
+        const result = await sendEmail(email, subject, body);
+        return result.success;
+    }
+
+    static async VerifyCode(email: string, code: string): Promise<{ HasError: boolean; Error?: { Message: string } }> {
+        const normalizedEmail = email.toLowerCase().trim();
+        
+        const query = `
+            SELECT id, first_name FROM users 
+            WHERE email = $1 
+            AND verification_code = $2 
+            AND verification_code_expires > NOW()
+        `;
+        const result = await server.query(query, [normalizedEmail, code]);
+        
+        if (result.rows.length === 0) {
+            return { HasError: true, Error: { Message: "Código inválido ou expirado." } };
+        }
+        
+        const user = result.rows[0];
+        
+        // Marcar como verificado
+        await server.query(
+            'UPDATE users SET is_verified = true, verification_code = NULL, verification_code_expires = NULL, updated_at = NOW() WHERE id = $1',
+            [user.id]
+        );
+        
+        // Enviar email de boas-vindas
+        await sendWelcomeEmail(normalizedEmail, user.first_name || 'User');
+        
+        logger.info('Conta verificada por código', { email: normalizedEmail, userId: user.id });
+        return { HasError: false };
     }
 }
 

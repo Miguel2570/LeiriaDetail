@@ -42,6 +42,15 @@
           {{ errorMessage }}
         </div>
 
+        <!-- ✅ Aviso de conta não verificada -->
+        <div v-if="needsVerification" class="mb-4 p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/50 text-yellow-400 text-sm text-center">
+          <p class="font-bold mb-2">Conta não verificada</p>
+          <p class="mb-3">Verifica o teu email para ativar a conta.</p>
+          <button @click="goToVerify" class="px-4 py-2 bg-yellow-500/20 text-yellow-400 font-bold rounded-lg hover:bg-yellow-500/30 transition-all text-sm">
+            Inserir código de verificação
+          </button>
+        </div>
+
         <form @submit.prevent="handleLogin" class="space-y-5">
           <div>
             <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Email</label>
@@ -92,10 +101,17 @@ const email = ref('');
 const password = ref('');
 const errorMessage = ref('');
 const isLoading = ref(false);
+const needsVerification = ref(false);  // ✅ NOVO
+
+// ✅ Redirecionar para verificação
+const goToVerify = () => {
+  router.push(`/verify?email=${encodeURIComponent(email.value)}`);
+};
 
 const handleLogin = async () => {
     isLoading.value = true;
     errorMessage.value = '';
+    needsVerification.value = false;  // ✅ Reset
 
     try {
         const response = await fetch('/Authentication/Login', {
@@ -106,7 +122,20 @@ const handleLogin = async () => {
 
         const data = await response.json();
 
-        if (data.HasError) throw new Error(data.Error?.Message || 'Credenciais inválidas.');
+        if (data.HasError) {
+            // ✅ Verificar se é erro de conta não verificada
+            const errorMsg = data.Error?.Message || '';
+            if (
+                errorMsg.includes('não verificada') || 
+                errorMsg.includes('not verified') ||
+                errorMsg.includes('Conta não verificada')
+            ) {
+                needsVerification.value = true;
+                isLoading.value = false;
+                return;
+            }
+            throw new Error(errorMsg || 'Credenciais inválidas.');
+        }
 
         // Verificar role
         const roleResponse = await fetch('/Authentication/Role', {

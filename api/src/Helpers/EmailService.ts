@@ -133,7 +133,6 @@ export async function sendWelcomeEmail(to: string, firstName: string): Promise<{
             </div>
         </body>
         </html>
-    `;
-    
+    `;   
     return await sendEmail(to, subject, body);
 }

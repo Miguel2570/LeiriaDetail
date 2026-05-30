@@ -917,3 +917,113 @@
 {"duration":"49ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-29T22:55:34.199Z","url":"/Dashboard"}
 {"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-05-30T00:18:17.903Z"}
 {"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-05-30T00:30:37.801Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-05-30T13:36:24.435Z"}
+{"level":"warn","message":"Tentativa de autenticação sem sessionKey","service":"leiriadetail-api","timestamp":"2026-05-30T13:36:40.163Z"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":401,"timestamp":"2026-05-30T13:36:40.165Z","url":"/Profile/"}
+{"level":"warn","message":"Tentativa de autenticação sem sessionKey","service":"leiriadetail-api","timestamp":"2026-05-30T13:36:40.166Z"}
+{"duration":"0ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":401,"timestamp":"2026-05-30T13:36:40.167Z","url":"/Vehicles/List"}
+{"level":"warn","message":"Tentativa de autenticação sem sessionKey","service":"leiriadetail-api","timestamp":"2026-05-30T13:36:41.844Z"}
+{"duration":"1ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":401,"timestamp":"2026-05-30T13:36:41.845Z","url":"/Profile/"}
+{"level":"warn","message":"Tentativa de autenticação sem sessionKey","service":"leiriadetail-api","timestamp":"2026-05-30T13:36:41.845Z"}
+{"duration":"1ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":401,"timestamp":"2026-05-30T13:36:41.846Z","url":"/Vehicles/List"}
+{"duration":"13ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T13:37:37.276Z","url":"/Reviews/"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T13:37:37.277Z","url":"/Faqs/"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T13:37:44.199Z","url":"/Reviews/"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T13:37:44.200Z","url":"/Faqs/"}
+{"duration":"2ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T13:39:32.959Z","url":"/Reviews/"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T13:39:32.960Z","url":"/Faqs/"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T13:39:46.881Z","url":"/Reviews/"}
+{"duration":"2ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T13:39:46.882Z","url":"/Faqs/"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-05-30T13:39:52.115Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-05-30T13:48:35.758Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-05-30T13:48:38.489Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-05-30T13:51:20.869Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-05-30T13:53:48.902Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-05-30T21:43:35.984Z"}
+{"duration":"27ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:43:43.275Z","url":"/Faqs/"}
+{"duration":"35ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:43:43.277Z","url":"/Reviews/"}
+{"duration":"12ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:44:31.792Z","url":"/Reviews/"}
+{"duration":"12ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:44:31.794Z","url":"/Faqs/"}
+{"duration":"10ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:44:32.144Z","url":"/Services/"}
+{"duration":"9ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:44:37.383Z","url":"/Services/"}
+{"duration":"17ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:44:39.039Z","url":"/Portfolio/"}
+{"duration":"18ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:44:39.043Z","url":"/Portfolio/categories"}
+{"duration":"18ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:44:39.045Z","url":"/Services/"}
+{"duration":"12ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:44:43.719Z","url":"/Materials/"}
+{"duration":"9ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:44:45.206Z","url":"/Faqs/"}
+{"duration":"12ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:44:54.769Z","url":"/Reviews/"}
+{"duration":"14ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:44:54.774Z","url":"/Faqs/"}
+{"duration":"10ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:44:55.169Z","url":"/Services/"}
+{"duration":"17ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:49:28.503Z","url":"/Faqs/"}
+{"duration":"17ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:49:28.503Z","url":"/Reviews/"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:49:29.783Z","url":"/Reviews/"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:49:29.784Z","url":"/Faqs/"}
+{"level":"info","message":"Login efetuado","service":"leiriadetail-api","timestamp":"2026-05-30T21:49:38.061Z","userId":1}
+{"duration":"86ms","ip":"::1","level":"info","message":"HTTP Request","method":"POST","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:49:38.062Z","url":"/Authentication/Login"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-05-30T21:49:38.072Z","url":"/Authentication/Role"}
+{"duration":"36ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:49:38.234Z","url":"/Dashboard"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:49:55.210Z","url":"/CRM"}
+{"duration":"9ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:49:55.213Z","url":"/Registos?date=2026-05-30"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:50:08.395Z","url":"/CRM"}
+{"duration":"2ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:50:16.116Z","url":"/Services/"}
+{"duration":"6ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:50:18.332Z","url":"/Registos"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:50:18.343Z","url":"/Registos/Stats"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:50:18.344Z","url":"/CRM"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:50:19.995Z","url":"/Portfolio/categories"}
+{"duration":"7ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:50:19.998Z","url":"/Portfolio/"}
+{"duration":"14ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:50:20.007Z","url":"/Services/"}
+{"duration":"13ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:50:26.627Z","url":"/Financial/"}
+{"duration":"7ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:50:33.031Z","url":"/Inventory/"}
+{"duration":"8ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:50:33.032Z","url":"/Inventory/alerts"}
+{"duration":"7ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:50:38.203Z","url":"/Dashboard"}
+{"duration":"8ms","ip":"::1","level":"info","message":"HTTP Request","method":"POST","service":"leiriadetail-api","status":201,"timestamp":"2026-05-30T21:50:44.974Z","url":"/Inventory/"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:50:44.983Z","url":"/Inventory/"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:50:44.986Z","url":"/Inventory/alerts"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:50:48.043Z","url":"/Staff/"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:50:52.829Z","url":"/Audit"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:50:54.704Z","url":"/Holiday"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:50:56.937Z","url":"/Profile/"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:51:03.982Z","url":"/Reviews/"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:51:03.983Z","url":"/Faqs/"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:51:16.194Z","url":"/Reviews/"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:51:16.196Z","url":"/Faqs/"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:51:17.576Z","url":"/Vehicles/List"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:51:20.164Z","url":"/Profile/"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-05-30T21:51:20.167Z","url":"/Authentication/Role"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:51:20.180Z","url":"/Bookings?user_id=1"}
+{"duration":"6ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:51:20.182Z","url":"/Vehicles/List"}
+{"duration":"15ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:51:20.191Z","url":"/Bookings?user_id=1"}
+{"duration":"2ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:51:29.208Z","url":"/Faqs/"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:51:29.209Z","url":"/Reviews/"}
+{"duration":"2ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:51:31.017Z","url":"/Services/"}
+{"duration":"2ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:51:33.193Z","url":"/Reviews/"}
+{"duration":"2ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:51:33.196Z","url":"/Faqs/"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:51:37.678Z","url":"/Vehicles/List"}
+{"duration":"2ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:51:38.590Z","url":"/Reviews/"}
+{"duration":"2ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:51:38.594Z","url":"/Faqs/"}
+{"duration":"11ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:52:16.183Z","url":"/Services/"}
+{"duration":"2ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:52:20.067Z","url":"/Services/"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:52:21.011Z","url":"/Portfolio/"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:52:21.016Z","url":"/Portfolio/categories"}
+{"duration":"11ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:52:21.025Z","url":"/Services/"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:52:24.316Z","url":"/Materials/"}
+{"duration":"2ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:52:26.362Z","url":"/Faqs/"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-05-30T21:52:35.617Z","url":"/Authentication/Role"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:52:35.623Z","url":"/Profile/"}
+{"duration":"6ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:52:35.630Z","url":"/Bookings?user_id=1"}
+{"duration":"6ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:52:35.631Z","url":"/Vehicles/List"}
+{"duration":"14ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:52:35.641Z","url":"/Bookings?user_id=1"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:52:46.368Z","url":"/Faqs/"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:52:46.369Z","url":"/Reviews/"}
+{"duration":"17ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:53:56.066Z","url":"/Profile/"}
+{"duration":"14ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:53:56.068Z","url":"/Bookings?user_id=1"}
+{"duration":"14ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:53:56.069Z","url":"/Vehicles/List"}
+{"duration":"15ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:53:56.071Z","url":"/Bookings?user_id=1"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-05-30T21:53:56.341Z","url":"/Authentication/Role"}
+{"duration":"2ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:53:56.940Z","url":"/Faqs/"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:53:56.941Z","url":"/Reviews/"}
+{"duration":"13ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:54:57.509Z","url":"/Reviews/"}
+{"duration":"12ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:54:57.510Z","url":"/Faqs/"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:55:05.775Z","url":"/Services/"}
+{"duration":"2ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:55:06.193Z","url":"/Reviews/"}
+{"duration":"2ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:55:06.195Z","url":"/Faqs/"}

@@ -51,15 +51,6 @@ async function ResetPassword(request: Request, response: Response) {
     response.status(200).send(result);
 }
 
-async function ResendVerification(request: Request, response: Response) {
-    if (!request.body.email) {
-        response.status(412).send({ HasError: true, Error: { Field: "Email", Message: "Email não fornecido." } });
-        return;
-    }
-    const result = await AuthenticationManager.ResendVerificationEmail(request.body.email);
-    response.status(200).send(result);
-}
-
 async function ChangePassword(request: Request, response: Response) {
     const { securityToken, password } = request.body;
     if (!securityToken || !password) {
@@ -95,13 +86,6 @@ async function Logout(request: Request, response: Response) {
     } else {
         response.status(401).send("Token inválido.");
     }
-}
-
-async function VerifyAccount(request: Request, response: Response): Promise<void> {
-    const token = request.query.token as string;
-    if (!token) { response.status(200).send({ HasError: true, Error: { Message: "Token não fornecido." } }); return; }
-    const result = await AuthenticationManager.VerifyAccount(token);
-    response.status(200).send(result);
 }
 
 async function ValidateToken(request: Request, response: Response): Promise<void> {
@@ -167,6 +151,25 @@ async function DeleteAccount(request: Request, response: Response) {
     response.status(200).send({ HasError: false, Message: "Conta apagada com sucesso." });
 }
 
+async function VerifyCode(request: Request, response: Response) {
+    const { email, code } = request.body;
+    if (!email || !code) {
+        response.status(400).json({ HasError: true, Error: { Message: "Email e código são obrigatórios." } });
+        return;
+    }
+    const result = await AuthenticationManager.VerifyCode(email, code);
+    response.status(result.HasError ? 400 : 200).json(result);
+}
+
+async function ResendVerificationCode(request: Request, response: Response) {
+    if (!request.body.email) {
+        response.status(400).json({ HasError: true, Error: { Message: "Email é obrigatório." } });
+        return;
+    }
+    const result = await AuthenticationManager.ResendVerificationCode(request.body.email);
+    response.status(200).json(result);
+}
+
 router.delete("/DeleteAccount", DeleteAccount);
 router.post("/Register", Register);
 router.post("/Login", Login);
@@ -174,12 +177,13 @@ router.post("/Logout/:SecurityToken", Logout);
 router.put("/Change-Password", ChangePassword);
 router.put("/Change-Account-Password", ChangeAccountPassword);
 router.post("/Reset-Password", ResetPassword);
-router.post("/Resend-Verification", ResendVerification);
 router.post("/verify-password", VerifyPassword);
-router.get("/Verify", VerifyAccount);
 router.get("/ValidateToken", ValidateToken);
 router.get("/CheckEmail", CheckEmail);
 router.post("/GoogleLogin", GoogleLogin);
 router.post("/AppleLogin", AppleLogin);
 router.get("/Role", GetRole);
+router.post("/Verify-Code", VerifyCode);
+router.post("/Resend-Code", ResendVerificationCode);
+
 export default router;
