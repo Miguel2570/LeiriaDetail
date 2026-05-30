@@ -41,8 +41,13 @@ services:
       ES_HOST: http://elastic:${ES_PASSWORD}@elasticsearch:9200
       SESSION_SECRET: ${SESSION_SECRET}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-https://leiriadetail.pt,https://www.leiriadetail.pt}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL}
+      FRONTEND_URL: ${FRONTEND_URL}
     networks:
       - leiria_network
+    volumes:
+      - api_uploads:/app/uploads
     depends_on:
       postgres:
         condition: service_healthy
@@ -124,7 +129,7 @@ services:
     restart: unless-stopped
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_USERNAME=kibana_system
       - ELASTICSEARCH_PASSWORD=${ES_PASSWORD}
     depends_on:
       - elasticsearch
@@ -211,3 +216,4 @@ volumes:
   redisdata:
   certbot_data:
   certbot_certs:
+  api_uploads:
