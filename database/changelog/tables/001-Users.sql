@@ -15,5 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
     role VARCHAR(50) DEFAULT 'customer',
     avatar_url TEXT,
     avatar_file_id UUID REFERENCES File(Id) ON DELETE SET NULL,
-    provider VARCHAR(20) DEFAULT 'local'
+    provider VARCHAR(20) DEFAULT 'local',
+    verification_code VARCHAR(6),
+    verification_code_expires TIMESTAMP
 );

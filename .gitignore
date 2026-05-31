@@ -1,6 +1,7 @@
 backoffice-frontend/.DS_Store
 /API/node_modules
 /GraphQL/node_modules
+/Frontend/node_modules
 Database/.DS_Store
 /API/dist
 /GraphQL/dist
