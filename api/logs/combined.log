@@ -1027,3 +1027,11 @@
 {"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:55:05.775Z","url":"/Services/"}
 {"duration":"2ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:55:06.193Z","url":"/Reviews/"}
 {"duration":"2ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T21:55:06.195Z","url":"/Faqs/"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-05-30T22:18:56.498Z"}
+{"duration":"18ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T22:19:30.402Z","url":"/Faqs/"}
+{"duration":"25ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T22:19:30.402Z","url":"/Reviews/"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T22:19:32.043Z","url":"/Reviews/"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T22:19:32.044Z","url":"/Faqs/"}
+{"duration":"11ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T22:22:50.348Z","url":"/Faqs/"}
+{"duration":"12ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-05-30T22:22:50.349Z","url":"/Reviews/"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-05-31T14:16:59.415Z"}
