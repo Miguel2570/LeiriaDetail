@@ -1,19 +1,34 @@
-backoffice-frontend/.DS_Store
-/API/node_modules
-/GraphQL/node_modules
-/Frontend/node_modules
-Database/.DS_Store
-/API/dist
-/GraphQL/dist
-/node_modules
-API/tsconfig.tsbuildinfo
+# Dependências
+node_modules/
+api/node_modules/
+graphql/node_modules/
+frontend/node_modules/
 
-# Environment variables - ignorar todos
+# Build
+api/dist/
+graphql/dist/
+frontend/dist/
+.vite/
+
+# TypeScript
+*.tsbuildinfo
+
+# Ambiente
 .env
 .env.*
-.env.development
-.env.staging
-.env.production
-api/.env
-frontend/.env
-graphql/.env
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+logs/
+*.log
+
+# Uploads
+uploads/
