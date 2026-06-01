@@ -1,3 +1,4 @@
+
 type BlockedDate {
     id: ID!
     date: String!
@@ -7,6 +8,13 @@ type BlockedDate {
 
 type HolidayOutput {
     dates: [BlockedDate!]!
+    hasError: Boolean!
+    error: ErrorField
+}
+
+type HolidayMutationOutput {
+    date: BlockedDate
+    message: String
     hasError: Boolean!
     error: ErrorField
 }

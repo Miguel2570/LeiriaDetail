@@ -1,0 +1,34 @@
+# graphql/src/schema/pendingBookings/pendingBookings.types.graphql
+type PendingBooking {
+    id: ID!
+    userId: Int!
+    vehicleId: Int!
+    serviceId: Int!
+    bookingDate: String!
+    bookingTime: String!
+    serviceName: String
+    vehicleName: String
+    vehiclePlate: String
+    price: Float!
+    paymentMethod: String
+    status: String!
+    createdAt: String!
+    expiresAt: String!
+    paidAt: String
+}
+
+type PendingBookingOutput {
+    id: ID
+    expiresAt: String
+    pendingBookings: [PendingBooking]
+    message: String
+    hasError: Boolean!
+    error: ErrorField
+}
+
+type SlotCheckOutput {
+    blocked: Boolean
+    blockedSlots: [String]
+    hasError: Boolean!
+    error: ErrorField
+}

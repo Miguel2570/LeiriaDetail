@@ -80,10 +80,10 @@ onMounted(() => {
 
 const fetchBlockedDates = async () => {
   try {
-    const res = await fetch('/Holiday');
-    const data = await res.json();
-    if (!data.HasError) {
-      blockedDates.value = data.Dates.map((d: any) => d.date);
+    const query = `query { blockedDates { dates { id date reason isRecurring } } }`;
+    const data = await graphql<{ blockedDates: { dates: any[] } }>(query);
+    if (data.blockedDates?.dates) {
+      blockedDates.value = data.blockedDates.dates.map((d: any) => d.date);
     }
   } catch (e) { console.error('Erro ao carregar bloqueios:', e); }
 };
@@ -102,14 +102,15 @@ const fetchSlots = async (date: any) => {
       dateStr = new Date().toISOString().split('T')[0];
     }
     
-    const checkRes = await fetch(`/Holiday/check?date=${dateStr}`);
-    const { blocked } = await checkRes.json();
-    if (blocked) {
+    // ✅ Usa o blockedDates que já foi carregado (não faz query separada)
+    if (blockedDates.value.includes(dateStr)) {
       isBlocked.value = true;
       timeSlots.value = [];
+      isLoadingSlots.value = false;
       return;
     }
     
+    // ✅ Busca slots via GraphQL
     const query = `query($date: String!) { availableSlots(date: $date) { availableSlots occupiedSlots } }`;
     const data = await graphql<{ availableSlots: { availableSlots: string[], occupiedSlots: string[] } }>(query, { date: dateStr });
     
@@ -118,12 +119,20 @@ const fetchSlots = async (date: any) => {
       '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30'
     ];
     
-    timeSlots.value = allSlots.map(time => ({
-      time,
-      available: data.availableSlots?.availableSlots?.includes(time) ?? true
-    }));
+    if (data.availableSlots?.availableSlots) {
+      timeSlots.value = allSlots.map(time => ({
+        time,
+        available: data.availableSlots.availableSlots.includes(time)
+      }));
+    } else {
+      // ✅ Fallback: todos disponíveis
+      timeSlots.value = allSlots.map(time => ({ time, available: true }));
+    }
   } catch (error) {
     console.error('Erro ao carregar slots:', error);
+    // ✅ Fallback em caso de erro
+    const allSlots = ['09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30'];
+    timeSlots.value = allSlots.map(time => ({ time, available: true }));
   } finally {
     isLoadingSlots.value = false;
   }

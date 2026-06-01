@@ -11,10 +11,10 @@
     <div class="flex justify-center mb-6">
       <div class="bg-[#050508] border border-white/10 rounded-full p-1 flex">
         <button 
-          @click="selectedPack = 'Basico'"
+          @click="selectedPack = 'Básico'"
           :class="[
             'px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all',
-            selectedPack === 'Basico' 
+            selectedPack === 'Básico' 
               ? 'bg-gradient-to-r from-[#2563EB] to-[#00D8FF] text-white shadow-lg' 
               : 'text-gray-400 hover:text-white'
           ]"
@@ -41,23 +41,21 @@
     </div>
 
     <!-- Serviços do Pack Selecionado -->
-    <div v-else class="space-y-3">
+    <div v-else-if="filteredServices.length > 0" class="space-y-3">
       <div 
         v-for="service in filteredServices" 
         :key="service.id"
         @click="selectService(service)"
         :class="[
-          'p-5 rounded-2xl border cursor-pointer transition-all group',
+          'p-5 rounded-2xl border-2 cursor-pointer transition-all group',
           selectedServiceId === service.id 
             ? 'border-[#00D8FF] bg-[#00D8FF]/10 shadow-[0_0_20px_rgba(0,216,255,0.1)]' 
-            : 'border-white/5 bg-white/[0.01] hover:border-white/20 hover:bg-white/[0.02]'
+            : 'border-white/10 bg-white/[0.01] hover:border-white/20 hover:bg-white/[0.02]'
         ]"
       >
         <div class="flex items-center justify-between">
           <div class="flex-1">
-            <h4 class="text-white font-bold text-sm">
-              {{ service.name.replace('Pack ' + selectedPack + ' - ', '') }}
-            </h4>
+            <h4 class="text-white font-bold text-sm">{{ service.name }}</h4>
             <p class="text-xs text-gray-500 mt-1">{{ service.description }}</p>
           </div>
           
@@ -73,6 +71,11 @@
           Selecionado
         </div>
       </div>
+    </div>
+
+    <!-- Sem serviços -->
+    <div v-else class="text-center py-12">
+      <p class="text-gray-500 text-sm">Nenhum serviço disponível para {{ selectedPack }}.</p>
     </div>
   </div>
 </template>
@@ -97,11 +100,18 @@ interface Service {
 
 const services = ref<Service[]>([]);
 const isLoading = ref(true);
-const selectedPack = ref<'Basico' | 'Premium'>('Basico');
+const selectedPack = ref<string>('Básico');  // ✅ Com acento
 
-const filteredServices = computed(() => 
-  services.value.filter(s => s.packType === selectedPack.value)
-);
+const filteredServices = computed(() => {
+  // ✅ Comparação normalizada (ignora acentos)
+  return services.value.filter(s => {
+    const normalizedPack = (s.packType || '').toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const normalizedSelected = selectedPack.value.toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    return normalizedPack === normalizedSelected;
+  });
+});
 
 const fetchServices = async () => {
   try {

@@ -1,0 +1,6 @@
+# graphql/src/schema/pendingBookings/pendingBookings.mutations.graphql
+extend type Mutation {
+    createPendingBooking(input: PendingBookingInput!): PendingBookingOutput!
+    markPendingAsPaid(id: ID!, paymentMethod: String!): PendingBookingOutput!
+    cancelPendingBooking(id: ID!): PendingBookingOutput!
+}

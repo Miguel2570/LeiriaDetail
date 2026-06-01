@@ -38,6 +38,7 @@ const router = createRouter({
     { path: '/sobre', component: () => import('@/page/About.vue') },
     { path: '/contacto', component: () => import('@/page/Contact.vue') },
     { path: '/servicos', component: () => import('@/page/services/Services.vue') },
+    { path: '/servicos/:id', name: 'service-detail', component: () => import('@/page/services/ServiceDetail.vue') },
     { path: '/precos', component: () => import('@/page/services/Pricing.vue') },
     { path: '/portfolio', component: () => import('@/page/portfolio/Portfolio.vue') },
     { path: '/materiais', component: () => import('@/page/MaterialsList.vue') },
@@ -71,6 +72,7 @@ const router = createRouter({
         { path: 'holidays', name: 'admin-holidays', component: () => import('@/portaladmin/page/holiday/HolidayManager.vue'), meta: { requiresRole: ['admin', 'superadmin'], title: 'Feriados' } },
         { path: 'portfolio', name: 'admin-portfolio', component: () => import('@/portaladmin/page/portfolio/PortfolioManager.vue'), meta: { requiresRole: ALLOWED_ROLES, title: 'Portfolio' } },
         { path: 'registos', name: 'admin-registos', component: () => import('@/portaladmin/page/Registos/RegisterFlow.vue'), meta: { requiresRole: ALLOWED_ROLES, title: 'Registos' } },
+        { path: 'settings', name: 'admin-settings', component: () => import('@/portaladmin/page/settings/SettingsManager.vue'), meta: { requiresRole: ['superadmin'], title: 'Configurações' } },
       ]
     },
 

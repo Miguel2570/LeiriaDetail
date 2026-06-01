@@ -10,34 +10,51 @@
       <p class="text-gray-400 text-xs mt-1">Por favor, confirme todos os detalhes antes de finalizar a sua reserva.</p>
     </div>
 
-    <!-- Grid: Pagamento (esquerda) + Viatura/Serviço/Data (direita) -->
+    <div v-if="bookingData.isRedeemed" class="bg-[#10B981]/10 border border-[#10B981]/30 rounded-2xl p-4 flex items-center gap-3">
+      <span class="text-2xl">🎁</span>
+      <div>
+        <p class="text-[#10B981] font-bold text-sm">Serviço Resgatado com LeiriaPoints!</p>
+        <p class="text-gray-400 text-xs">{{ bookingData.redeemedReward?.name }} - <span class="text-[#10B981] font-bold">Grátis</span></p>
+      </div>
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       
-      <!-- Detalhes do Pagamento - Esquerda -->
       <div class="bg-white/[0.01] border border-white/5 rounded-3xl p-6 flex flex-col justify-between">
         <div>
           <div class="flex items-center gap-2 text-white text-sm font-black uppercase tracking-wider italic border-b border-white/5 pb-3 mb-4">
             <CreditCard class="w-4 h-4 text-[#00D8FF]" /> Detalhes do Pagamento
           </div>
-          <div class="space-y-4 text-sm">
+          
+          <div v-if="bookingData.isRedeemed" class="text-center py-8">
+            <span class="text-5xl">🎉</span>
+            <p class="text-[#10B981] font-bold text-lg mt-3">Grátis!</p>
+            <p class="text-gray-400 text-sm mt-1">Resgatado com LeiriaPoints</p>
+          </div>
+          
+          <div v-else class="space-y-4 text-sm">
             <div class="flex justify-between text-gray-400">
-              <span>Preço Base (s/ IVA)</span>
-              <span class="text-white font-medium">{{ (basePrice / 1.23).toFixed(2) }}€</span>
+              <span>Preço Base</span>
+              <span class="text-white font-medium">{{ basePrice.toFixed(2) }}€</span>
             </div>
-            <div class="flex justify-between text-gray-400">
-              <span>IVA (23%)</span>
-              <span class="text-white font-medium">{{ iva }}€</span>
+            
+            <div v-if="ivaEnabled" class="flex justify-between text-gray-400">
+              <span>IVA ({{ ivaRate }}%)</span>
+              <span class="text-white font-medium">{{ ivaAmount.toFixed(2) }}€</span>
             </div>
+            
             <div class="border-t border-white/5 pt-4 mt-2 flex justify-between items-center">
-              <span class="text-white font-bold uppercase text-xs tracking-wider">Total Final (c/ IVA)</span>
+              <span class="text-white font-bold uppercase text-xs tracking-wider">Total Final</span>
               <span class="text-2xl font-black bg-gradient-to-r from-[#2563EB] to-[#00D8FF] bg-clip-text text-transparent">
                 {{ total.toFixed(2) }}€
               </span>
             </div>
-            <p class="text-[9px] text-gray-500">Preços em EUR. IVA incluído à taxa legal em vigor (23%).</p>
+            
+            <p v-if="ivaEnabled" class="text-[9px] text-gray-500">Preços em EUR. IVA incluído à taxa legal em vigor ({{ ivaRate }}%).</p>
+            <p v-else class="text-[9px] text-gray-500">Preços em EUR.</p>
           </div>
         </div>
-        <div class="mt-6 pt-4 border-t border-white/5">
+        <div v-if="!bookingData.isRedeemed" class="mt-6 pt-4 border-t border-white/5">
           <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-2">Pagamento seguro via</p>
           <div class="flex gap-2">
             <span class="text-[10px] bg-[#E6007E]/10 text-[#E6007E] px-2 py-1 rounded-lg font-bold">MB Way</span>
@@ -46,60 +63,35 @@
         </div>
       </div>
 
-      <!-- Coluna direita: Viatura + Serviço + Data -->
       <div class="space-y-4">
-        <div class="bg-white/[0.01] border border-white/5 rounded-2xl p-5 hover:border-white/10 transition-all">
-          <div class="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider font-bold mb-3">
-            <Car class="w-4 h-4 text-[#2563EB]" /> Viatura
-          </div>
-          <p class="text-white font-bold text-lg">
-            {{ bookingData.vehicle?.brand || 'N/D' }} {{ bookingData.vehicle?.model || '' }}
-          </p>
-          <p class="text-xs text-gray-400 mt-1">
-            Matrícula: <span class="text-[#00D8FF] font-mono font-bold">{{ bookingData.vehicle?.plate || 'N/D' }}</span>
-          </p>
+        <div class="bg-white/[0.01] border border-white/5 rounded-2xl p-5">
+          <div class="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider font-bold mb-3"><Car class="w-4 h-4 text-[#2563EB]" /> Viatura</div>
+          <p class="text-white font-bold text-lg">{{ bookingData.vehicle?.brand || 'N/D' }} {{ bookingData.vehicle?.model || '' }}</p>
+          <p class="text-xs text-gray-400 mt-1">Matrícula: <span class="text-[#00D8FF] font-mono font-bold">{{ bookingData.vehicle?.licensePlate || bookingData.vehicle?.plate || 'N/D' }}</span></p>
         </div>
-
-        <div class="bg-white/[0.01] border border-white/5 rounded-2xl p-5 hover:border-white/10 transition-all">
-          <div class="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider font-bold mb-3">
-            <Sparkles class="w-4 h-4 text-[#00D8FF]" /> Tratamento
+        <div class="bg-white/[0.01] border border-white/5 rounded-2xl p-5">
+          <div class="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider font-bold mb-3"><Sparkles class="w-4 h-4 text-[#00D8FF]" /> Tratamento</div>
+          <div class="flex items-center justify-between">
+            <p class="text-white font-bold text-lg">{{ bookingData.service?.name || 'N/D' }}</p>
+            <span v-if="bookingData.isRedeemed" class="text-[10px] bg-[#10B981]/20 text-[#10B981] px-2 py-1 rounded-full font-bold">🎁 Resgatado</span>
           </div>
-          <p class="text-white font-bold text-lg">
-            {{ bookingData.service?.name || 'N/D' }}
-          </p>
-          <p class="text-xs text-gray-400 mt-1 line-clamp-2">
-            {{ bookingData.service?.description || 'Serviço de detalhe automóvel.' }}
-          </p>
+          <p class="text-xs text-gray-400 mt-1">{{ bookingData.service?.description || 'Serviço de detalhe automóvel.' }}</p>
         </div>
-
-        <div class="bg-white/[0.01] border border-white/5 rounded-2xl p-5 hover:border-white/10 transition-all">
-          <div class="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider font-bold mb-3">
-            <Calendar class="w-4 h-4 text-[#2563EB]" /> Data e Hora
-          </div>
+        <div class="bg-white/[0.01] border border-white/5 rounded-2xl p-5">
+          <div class="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider font-bold mb-3"><Calendar class="w-4 h-4 text-[#2563EB]" /> Data e Hora</div>
           <p class="text-white font-bold text-lg">{{ formattedDate }}</p>
-          <p class="text-xs text-gray-400 mt-1">
-            Horário: <span class="text-white font-bold">{{ bookingData.time || 'N/D' }}</span>
-          </p>
+          <p class="text-xs text-gray-400 mt-1">Horário: <span class="text-white font-bold">{{ bookingData.time || 'N/D' }}</span></p>
         </div>
       </div>
     </div>
 
-    <!-- Lembretes -->
     <div class="bg-white/[0.01] border border-white/5 rounded-2xl p-5">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-[#00D8FF]/10 flex items-center justify-center">
-            <Bell class="w-5 h-5 text-[#00D8FF]" />
-          </div>
-          <div>
-            <p class="text-white font-bold text-sm">Lembretes Automáticos</p>
-            <p class="text-gray-400 text-xs">Receba notificações por email e SMS antes do serviço</p>
-          </div>
+          <div class="w-10 h-10 rounded-xl bg-[#00D8FF]/10 flex items-center justify-center"><Bell class="w-5 h-5 text-[#00D8FF]" /></div>
+          <div><p class="text-white font-bold text-sm">Lembretes Automáticos</p><p class="text-gray-400 text-xs">Receba notificações por email e SMS antes do serviço</p></div>
         </div>
-        <button 
-          @click="remindersEnabled = !remindersEnabled; showReminders = remindersEnabled"
-          :class="['relative w-12 h-6 rounded-full transition-colors duration-300', remindersEnabled ? 'bg-[#00D8FF]' : 'bg-white/10']"
-        >
+        <button @click="remindersEnabled = !remindersEnabled; showReminders = remindersEnabled" :class="['relative w-12 h-6 rounded-full transition-colors duration-300', remindersEnabled ? 'bg-[#00D8FF]' : 'bg-white/10']">
           <div :class="['absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-300', remindersEnabled ? 'translate-x-6' : 'translate-x-0.5']" />
         </button>
       </div>
@@ -137,31 +129,28 @@
       </div>
     </div>
 
-    <!-- Termos -->
     <div class="flex items-start gap-3 bg-white/[0.01] border border-white/5 rounded-2xl p-4">
       <input type="checkbox" id="terms" class="mt-1 h-4 w-4 rounded border-white/10 bg-white/5 text-[#2563EB] accent-[#2563EB]" required />
       <label for="terms" class="text-xs text-gray-400 leading-relaxed cursor-pointer select-none">
-        Declaro que li e aceito os 
-        <router-link to="/termos" class="text-[#00D8FF] hover:underline font-bold">Termos e Condições</router-link> 
-        e a 
-        <router-link to="/privacidade" class="text-[#00D8FF] hover:underline font-bold">Política de Privacidade</router-link> 
-        da LeiriaDetail, Lda.
+        Declaro que li e aceito os <router-link to="/termos" class="text-[#00D8FF] hover:underline font-bold">Termos e Condições</router-link> e a <router-link to="/privacidade" class="text-[#00D8FF] hover:underline font-bold">Política de Privacidade</router-link> da LeiriaDetail, Lda.
       </label>
     </div>
-
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { Car, Sparkles, Calendar, CreditCard, ShieldCheck, Bell, ChevronDown } from 'lucide-vue-next';
+import { graphql } from '@/graphql';
 
 const props = defineProps<{
   bookingData: {
-    vehicle: { brand?: string; model?: string; plate: string } | null;
+    vehicle: { brand?: string; model?: string; plate?: string; licensePlate?: string } | null;
     service: { id: string; name: string; price?: number; description?: string } | null;
     date: any;
     time: string;
+    isRedeemed?: boolean;
+    redeemedReward?: { name: string } | null;
   }
 }>();
 
@@ -169,14 +158,29 @@ const remindersEnabled = ref(false);
 const showReminders = ref(false);
 const selectedReminders = ref<string[]>(['24h']);
 
+const ivaEnabled = ref(false);
+const ivaRate = ref(23);
+const requireNIF = ref(false);
+
+const fetchSettings = async () => {
+  try {
+    const query = `query { settings { ivaEnabled ivaRate requireNif } }`;
+    const data = await graphql<{ settings: any }>(query);
+    if (data?.settings) {
+      ivaEnabled.value = data.settings.ivaEnabled === true || data.settings.ivaEnabled === 'true';
+      ivaRate.value = parseInt(data.settings.ivaRate) || 23;
+      requireNIF.value = data.settings.requireNif === true || data.settings.requireNif === 'true';
+    }
+  } catch (error: any) {
+    // Silencioso - já usa defaults
+  }
+};
+
 const toggleReminder = (key: string) => {
   if (key === '24h') return;
   const idx = selectedReminders.value.indexOf(key);
-  if (idx >= 0) {
-    selectedReminders.value.splice(idx, 1);
-  } else {
-    selectedReminders.value.push(key);
-  }
+  if (idx >= 0) { selectedReminders.value.splice(idx, 1); }
+  else { selectedReminders.value.push(key); }
 };
 
 const reminderOptions = [
@@ -190,13 +194,18 @@ const reminderOptions = [
 const formattedDate = computed(() => {
   if (!props.bookingData.date) return 'Não selecionada';
   const d = props.bookingData.date;
-  if (d.day && d.month && d.year) {
-    return `${String(d.day).padStart(2, '0')}/${String(d.month).padStart(2, '0')}/${d.year}`;
-  }
+  if (d.day && d.month && d.year) return `${String(d.day).padStart(2, '0')}/${String(d.month).padStart(2, '0')}/${d.year}`;
   return d.toString();
 });
 
 const basePrice = computed(() => props.bookingData.service?.price || 120.00);
-const iva = computed(() => Number((basePrice.value * 0.23).toFixed(2)));
-const total = computed(() => Number((basePrice.value + iva.value).toFixed(2)));
+
+const ivaAmount = computed(() => {
+  if (!ivaEnabled.value) return 0;
+  return Number((basePrice.value * (ivaRate.value / 100)).toFixed(2));
+});
+
+const total = computed(() => Number((basePrice.value + ivaAmount.value).toFixed(2)));
+
+onMounted(fetchSettings);
 </script>

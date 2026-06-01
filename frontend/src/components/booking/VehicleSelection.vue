@@ -7,6 +7,12 @@
       <p class="text-xs text-gray-400 uppercase tracking-widest">Passo 1 de 5</p>
     </div>
 
+    <!-- Mensagem de retorno do agendamento -->
+    <div v-if="showReturnMessage" class="bg-blue-500/10 border border-blue-500/30 rounded-2xl p-4 mb-4 text-center">
+      <p class="text-blue-400 text-sm font-bold mb-1">Veículo adicionado com sucesso!</p>
+      <p class="text-gray-400 text-xs">Selecione o veículo para continuar o agendamento.</p>
+    </div>
+
     <div v-if="isLoading" class="flex justify-center py-12">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00D8FF]"></div>
     </div>
@@ -15,7 +21,7 @@
       <div 
         v-for="car in vehicles" 
         :key="car.id"
-        @click="emit('update:vehicle', car)"
+        @click="selectVehicle(car)"
         :class="[
           'p-6 rounded-[2rem] cursor-pointer transition-all duration-300 border-2 relative overflow-hidden',
           selectedVehicle?.id === car.id 
@@ -31,7 +37,7 @@
         <span v-if="car.isPrimary" class="absolute top-4 right-4 text-[10px] bg-[#00D8FF]/20 text-[#00D8FF] px-2 py-1 rounded-full">Principal</span>
       </div>
 
-      <!-- Se logado → área cliente / Se não → login -->
+      <!-- Botão para adicionar nova viatura -->
       <button 
         @click="handleAddVehicle"
         class="p-6 rounded-[2rem] border-2 border-dashed border-white/10 flex flex-col items-center justify-center text-center hover:border-[#2563EB] hover:bg-[#2563EB]/5 transition-all group w-full"
@@ -54,7 +60,10 @@ import { Cache } from '@/services/cachemanager';
 
 const router = useRouter();
 const props = defineProps<{ selectedVehicle: any }>();
-const emit = defineEmits(['update:vehicle']);
+const emit = defineEmits<{
+  'update:vehicle': [value: any];
+  'saveBookingState': [];
+}>();
 
 interface Vehicle {
   id: string;
@@ -67,6 +76,7 @@ interface Vehicle {
 
 const vehicles = ref<Vehicle[]>([]);
 const isLoading = ref(true);
+const showReturnMessage = ref(false);
 
 const fetchVehicles = async () => {
   try {
@@ -86,6 +96,28 @@ const fetchVehicles = async () => {
     `;
     const data = await graphql<{ userVehicles: { vehicles: Vehicle[] } }>(query);
     vehicles.value = data.userVehicles.vehicles;
+    
+    // Verificar se voltou de adicionar veículo
+    const vehicleAdded = localStorage.getItem('vehicle_added_for_booking');
+    if (vehicleAdded === 'true') {
+      showReturnMessage.value = true;
+      localStorage.removeItem('vehicle_added_for_booking');
+      
+      // Auto-selecionar o último veículo adicionado se houver
+      const lastVehicleId = localStorage.getItem('last_added_vehicle_id');
+      if (lastVehicleId && vehicles.value.length > 0) {
+        const lastVehicle = vehicles.value.find(v => v.id === lastVehicleId);
+        if (lastVehicle) {
+          emit('update:vehicle', lastVehicle);
+        }
+        localStorage.removeItem('last_added_vehicle_id');
+      }
+      
+      // Esconder mensagem após 5 segundos
+      setTimeout(() => {
+        showReturnMessage.value = false;
+      }, 5000);
+    }
   } catch (error) {
     console.error("Erro ao carregar veículos:", error);
   } finally {
@@ -93,9 +125,17 @@ const fetchVehicles = async () => {
   }
 };
 
+const selectVehicle = (car: Vehicle) => {
+  emit('update:vehicle', car);
+  showReturnMessage.value = false;
+};
+
 const handleAddVehicle = () => {
   if (Cache.Session.value && Cache.Session.value !== '1234') {
-    router.push('/client-area');
+    // Guardar o estado do booking antes de sair
+    emit('saveBookingState');
+    // Redirecionar para a área de cliente com parâmetros
+    router.push('/client-area?tab=vehicles&addVehicle=true&returnTo=booking');
   } else {
     router.push('/login');
   }

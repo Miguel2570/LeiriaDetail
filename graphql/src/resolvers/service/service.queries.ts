@@ -67,10 +67,17 @@ function mapService(s: any) {
         id: s.id?.toString(),
         name: s.name,
         description: s.description,
+        longDescription: s.long_description || null,
         priceAB: parseFloat(s.price_ab) || 0,
         priceC: parseFloat(s.price_c) || 0,
         priceDE: parseFloat(s.price_de) || 0,
         durationMinutes: s.duration_minutes,
-        packType: s.pack_type || 'Básico'
+        durationDetails: s.duration_details || null,
+        packType: s.pack_type || 'Básico',
+        icon: s.icon || null,
+        includes: s.includes || [],
+        processSteps: typeof s.process_steps === 'string' 
+            ? JSON.parse(s.process_steps) 
+            : (s.process_steps || [])
     };
 }

@@ -1,0 +1,9 @@
+# src/graphql/loyalty/loyalty.queries.graphql
+
+extend type Query {
+    loyaltyDashboard: LoyaltyDashboard!
+    loyaltyBalance: LoyaltyBalance!
+    loyaltyRewards: [LoyaltyReward!]!
+    loyaltyHistory: [CreditTransaction!]!
+    loyaltyRedemptions: [RewardRedemption!]!
+}

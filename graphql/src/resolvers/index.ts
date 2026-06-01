@@ -53,6 +53,15 @@ import { holidayQueries } from './holiday/holiday.queries';
 import { registosMutations } from './registo/registos.mutations';
 import { registosQueries } from './registo/registos.queries';
 
+import { loyaltyMutations } from './loyalty/loyalty.mutations';
+import { loyaltyQueries } from './loyalty/loyalty.queries';
+
+import { settingsMutations } from './settings/settings.mutations';
+import { settingsQueries } from './settings/settings.queries';
+
+import { pendingBookingsMutations } from './payment/pending/pendingBookings.mutations';
+import { pendingBookingsQueries } from './payment/pending/pendingBookings.queries';
+
 const resolvers = {
     Query: {
         ...serviceQueries,
@@ -73,7 +82,10 @@ const resolvers = {
         ...paymentQueries,
         ...auditQueries,
         ...holidayQueries,
-        ...registosQueries
+        ...registosQueries,
+        ...loyaltyQueries,
+        ...settingsQueries,
+        ...pendingBookingsQueries
     },
     Mutation: {
         ...authMutations,
@@ -92,7 +104,10 @@ const resolvers = {
         ...inventoryMutations,
         ...paymentMutations,
         ...holidayMutations,
-        ...registosMutations
+        ...registosMutations,
+        ...loyaltyMutations,
+        ...settingsMutations,
+        ...pendingBookingsMutations
     }
 };
 

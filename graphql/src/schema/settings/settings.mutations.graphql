@@ -1,0 +1,5 @@
+# graphql/src/schema/settings/settings.mutations.graphql
+
+extend type Mutation {
+    updateSettings(input: SettingsInput!): SettingsOutput!
+}

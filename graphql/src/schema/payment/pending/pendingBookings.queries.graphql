@@ -1,0 +1,7 @@
+# graphql/src/schema/pendingBookings/pendingBookings.queries.graphql
+extend type Query {
+    pendingBooking(id: ID!): PendingBookingOutput!
+    userPendingBookings(userId: Int!): PendingBookingOutput!
+    checkSlotBlocked(date: String!, time: String!): SlotCheckOutput!
+    blockedSlotsForDate(date: String!): SlotCheckOutput!
+}

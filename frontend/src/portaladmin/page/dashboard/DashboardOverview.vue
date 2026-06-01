@@ -11,7 +11,7 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
       <div 
         v-for="(card, i) in metricCards" 
         :key="i"
@@ -68,7 +68,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { TrendingUp, Clock, CalendarCheck, Users } from 'lucide-vue-next'
+import { TrendingUp, Clock, CalendarCheck, Users, CreditCard } from 'lucide-vue-next'
 import { Line } from 'vue-chartjs'
 import { graphql } from '@/graphql'
 import {
@@ -97,6 +97,7 @@ ChartJS.register(
 const metricCards = ref([
   { title: "Faturação Hoje", value: "€0", trend: "A carregar...", icon: TrendingUp, color: "from-[#3B82F6] to-[#06B6D4]" },
   { title: "Marcações Pendentes", value: "0", trend: "A carregar...", icon: Clock, color: "from-[#F59E0B] to-[#EF4444]" },
+  { title: "Pagamentos por Concluir", value: "0", trend: "A carregar...", icon: CreditCard, color: "from-[#F59E0B] to-[#F97316]" },
   { title: "Carros Concluídos", value: "0", trend: "Hoje", icon: CalendarCheck, color: "from-[#10B981] to-[#34D399]" },
   { title: "Staff Ativo", value: "0/0", trend: "A carregar...", icon: Users, color: "from-[#8B5CF6] to-[#EC4899]" },
 ])
@@ -146,15 +147,33 @@ const fetchDashboardData = async () => {
     if (!d?.metrics) return
     
     const cards = metricCards.value
-    if (!cards[0] || !cards[1] || !cards[2] || !cards[3]) return
     
+    // Card 0 - Faturação Hoje
     cards[0].value = `€${d.metrics.faturacaoHoje.toFixed(0)}`
     cards[0].trend = d.metrics.faturacaoHoje > 0 ? 'Hoje' : 'Sem dados'
+    
+    // Card 1 - Marcações Pendentes (backend)
     cards[1].value = String(d.metrics.marcacoesPendentes)
     cards[1].trend = d.metrics.marcacoesPendentes > 0 ? `${d.metrics.marcacoesPendentes} pendentes` : 'Nenhuma'
-    cards[2].value = String(d.metrics.carrosConcluidos)
-    cards[3].value = `${d.metrics.staffAtivo.ativo}/${d.metrics.staffAtivo.total}`
-    cards[3].trend = d.metrics.staffAtivo.total - d.metrics.staffAtivo.ativo > 0 ? `${d.metrics.staffAtivo.total - d.metrics.staffAtivo.ativo} ausente(s)` : 'Todos ativos'
+    
+    // Card 2 - Pagamentos por Concluir (localStorage)
+    const pendingStorage = localStorage.getItem('pending_booking')
+    let pendingLocal = 0
+    if (pendingStorage) {
+      try {
+        const pending = JSON.parse(pendingStorage)
+        if (pending && pending.bookingId) pendingLocal = 1
+      } catch {}
+    }
+    cards[2].value = String(pendingLocal)
+    cards[2].trend = pendingLocal > 0 ? 'Por pagar' : 'Nenhum'
+    
+    // Card 3 - Carros Concluídos
+    cards[3].value = String(d.metrics.carrosConcluidos)
+    
+    // Card 4 - Staff Ativo
+    cards[4].value = `${d.metrics.staffAtivo.ativo}/${d.metrics.staffAtivo.total}`
+    cards[4].trend = d.metrics.staffAtivo.total - d.metrics.staffAtivo.ativo > 0 ? `${d.metrics.staffAtivo.total - d.metrics.staffAtivo.ativo} ausente(s)` : 'Todos ativos'
     
     if (d.revenue && d.revenue.length > 0) {
       const chart = chartData.value

@@ -2,11 +2,22 @@ type Service {
     id: ID!
     name: String!
     description: String
+    longDescription: String
     priceAB: Float!
     priceC: Float!
     priceDE: Float!
     durationMinutes: Int
+    durationDetails: String
     packType: String
+    icon: String
+    includes: [String!]
+    processSteps: [ProcessStep!]
+}
+
+type ProcessStep {
+    step: Int!
+    title: String!
+    description: String!
 }
 
 type ErrorField {

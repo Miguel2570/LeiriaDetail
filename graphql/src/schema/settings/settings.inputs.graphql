@@ -1,0 +1,7 @@
+input SettingsInput {
+    ivaEnabled: Boolean
+    ivaRate: Int
+    requireNif: Boolean
+    companyName: String
+    companyAddress: String
+}

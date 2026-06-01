@@ -106,6 +106,19 @@ const registoQueries = loadGraphQL("./registo/registos.queries.graphql");
 const registoMutations = loadGraphQL("./registo/registos.mutations.graphql");
 const registoInputs = loadGraphQL("./registo/registos.inputs.graphql");
 
+const loyaltyTypes = loadGraphQL("./loyalty/loyalty.types.graphql");
+const loyaltyMutations = loadGraphQL("./loyalty/loyalty.mutations.graphql");
+const loyaltyQueries = loadGraphQL("./loyalty/loyalty.queries.graphql");
+
+const settingsTypes = loadGraphQL("./settings/settings.types.graphql");
+const settingsQueries = loadGraphQL("./settings/settings.queries.graphql");
+const settingsMutations = loadGraphQL("./settings/settings.mutations.graphql");
+const settingsInputs = loadGraphQL("./settings/settings.inputs.graphql");
+
+const pendingBookingQueries = loadGraphQL("./payment/pending/pendingBookings.queries.graphql");
+const pendingBookingTypes = loadGraphQL("./payment/pending/pendingBookings.types.graphql");
+const pendingBookingMutations = loadGraphQL("./payment/pending/pendingBookings.mutations.graphql");
+const pendingBookingInputs = loadGraphQL("./payment/pending/pendingBookings.inputs.graphql");
 
 /**
  * Interpolação e combinação de todos os módulos de schemas.
@@ -207,6 +220,19 @@ const typeDefs = `
   ${registoMutations}
   ${registoInputs}
 
+  ${loyaltyTypes}
+  ${loyaltyQueries}
+  ${loyaltyMutations}
+
+  ${settingsInputs}
+  ${settingsMutations}
+  ${settingsQueries}
+  ${settingsTypes}
+
+  ${pendingBookingInputs}
+  ${pendingBookingMutations}
+  ${pendingBookingQueries}
+  ${pendingBookingTypes}
 `;
 
 export default typeDefs;

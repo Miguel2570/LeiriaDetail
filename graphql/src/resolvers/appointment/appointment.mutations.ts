@@ -3,7 +3,7 @@ import { API } from '../../proxy/serviceproxy/api';
 export const appointmentMutations = {
   createBooking: async (_: any, { input }: any, context: any) => {
     try {
-      const data: any = await API.POST<any>(context, "/Appointments", input);
+      const data: any = await API.POST<any>(context, "/Bookings", input);
       
       return {
         hasError: data.HasError || false,

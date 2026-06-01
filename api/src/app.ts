@@ -27,7 +27,10 @@ import { httpLogger } from './Helpers/HttpLogger';
 import logger from './Helpers/Logger';
 import holidayRoutes from "./Holiday/HolidayRoutes";
 import registosRoutes from "./Registos/RegistosRoutes";
-
+import loyaltyRoutes from "./Loyalty/LoyaltyRoutes";
+import settingsRoutes from "./Settings/SettingsRoutes";
+import pendingBookingsRoutes from "./Payment/Pending/PendingBookingRoutes";
+import { startCleanupCron } from "./Cron/CleanupPendingBookings";
 
 dotenv.config();
 
@@ -62,10 +65,19 @@ const publicRoutes = [
     '/Authentication/Login', '/Authentication/Register', '/Authentication/register',
     '/Authentication/CheckEmail', '/Authentication/Verify', '/Authentication/Resend-Verification',
     '/Authentication/Reset-Password', '/Authentication/ValidateToken',
-    '/Materials', '/Services', '/Portfolio', '/Faqs', '/Reviews', '/Payment/Webhook',
+    '/Materials', '/Services', '/Portfolio', '/Faqs', '/Reviews', '/Payment/Webhook', '/Loyalty',
+    '/Bookings', '/Holiday', '/PendingBookings', '/Settings/public',
 ];
 
 app.use(LoginValidationMiddleware(publicRoutes));
+
+// ============================================
+// ✅ ROTAS PÚBLICAS (Clientes / GraphQL)
+// ============================================
+app.use("/Holiday", holidayRoutes);
+app.use("/Loyalty", loyaltyRoutes);
+app.use("/Settings/public", settingsRoutes);
+app.use("/PendingBookings", pendingBookingsRoutes);
 
 app.use('/Authentication', authenticationRouters);
 app.use("/Profile", profileRoutes);
@@ -77,20 +89,24 @@ app.use("/Reviews", reviewRoutes);
 app.use("/Faqs", faqRoutes);
 app.use("/Materials", materialRoutes);
 app.use("/Payment", paymentRoutes);
-// Todos podem aceder
-app.use('/Agenda', Authentication, registosRoutes);  // ou agendaRoutes
+app.use("/Appointments", appointmentRoutes);
 
+
+// ============================================
+// ✅ ROTAS ADMIN (Portal - Autenticado + Role)
+// ============================================
 // Operator+
 app.use('/Registos', Authentication, requireRole('operator', 'manager', 'admin', 'superadmin'), registosRoutes);
 app.use('/Agenda', Authentication, requireRole('operator', 'manager', 'admin', 'superadmin'), appointmentRoutes);
 
 // Manager+
 app.use('/CRM', Authentication, requireRole('manager', 'admin', 'superadmin'), crmRoutes);
-app.use('/Services', Authentication, requireRole('manager', 'admin', 'superadmin'), serviceRoutes);
-app.use('/Portfolio', Authentication, requireRole('manager', 'admin', 'superadmin'), portfolioRoutes);
-app.use('/Materials', Authentication, requireRole('manager', 'admin', 'superadmin'), materialRoutes);
+app.use('/Admin/Services', Authentication, requireRole('manager', 'admin', 'superadmin'), serviceRoutes);
+app.use('/Admin/Portfolio', Authentication, requireRole('manager', 'admin', 'superadmin'), portfolioRoutes);
+app.use('/Admin/Materials', Authentication, requireRole('manager', 'admin', 'superadmin'), materialRoutes);
 app.use('/Inventory', Authentication, requireRole('manager', 'admin', 'superadmin'), inventoryRoutes);
-app.use('/Holiday', Authentication, requireRole('manager', 'admin', 'superadmin'), holidayRoutes);
+app.use('/Admin/Holiday', Authentication, requireRole('manager', 'admin', 'superadmin'), holidayRoutes);
+app.use('/Admin/Loyalty', Authentication, requireRole('manager', 'admin', 'superadmin'), loyaltyRoutes);
 
 // Admin+
 app.use('/Dashboard', Authentication, requireRole('admin', 'superadmin'), dashboardRoutes);
@@ -99,10 +115,11 @@ app.use('/Staff', Authentication, requireRole('admin', 'superadmin'), staffRoute
 
 // Superadmin only
 app.use('/Audit', Authentication, requireRole('superadmin'), auditRoutes);
+app.use('/Settings', Authentication, requireRole('superadmin'), settingsRoutes); 
 
-// Todos autenticados
-app.use("/Profile", profileRoutes);
-
+// ============================================
+// OUTRAS ROTAS
+// ============================================
 app.get("/", (req, res) => {
     res.send(`LeiriaDetail API - ${process.env.NODE_ENV || 'development'}`);
 });
@@ -129,6 +146,9 @@ app.get("/Holiday/check", async (req, res) => {
         res.json({ blocked: false });
     }
 });
+
+// ✅ Iniciar cron job de limpeza
+startCleanupCron();
 
 const PORT: number = Number(process.env.API_PORT) || 3001;
 

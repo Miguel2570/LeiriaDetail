@@ -1,0 +1,5 @@
+# graphql/src/schema/settings/settings.queries.graphql
+
+extend type Query {
+    settings: SettingsOutput!
+}

@@ -1,0 +1,16 @@
+# graphql/src/schema/settings/settings.types.graphql
+
+type Settings {
+    ivaEnabled: Boolean
+    ivaRate: Int
+    requireNif: Boolean
+    companyName: String
+    companyAddress: String
+}
+
+type SettingsOutput {
+    settings: Settings
+    message: String
+    hasError: Boolean!
+    error: ErrorField
+}

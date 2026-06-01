@@ -1,0 +1,59 @@
+# src/graphql/loyalty/loyalty.types.graphql
+
+type LoyaltyBalance {
+    totalEarned: Int!
+    availableCredits: Int!
+}
+
+type CreditTransaction {
+    id: ID!
+    userId: Int!
+    amount: Int!
+    type: String!
+    description: String
+    referenceType: String
+    referenceId: Int
+    createdAt: String
+}
+
+type LoyaltyReward {
+    id: ID!
+    name: String!
+    description: String
+    serviceId: Int
+    requiredCredits: Int!
+    isActive: Boolean!
+    imageUrl: String
+    sortOrder: Int
+}
+
+type RewardRedemption {
+    id: ID!
+    userId: Int!
+    rewardId: Int!
+    rewardName: String
+    rewardDescription: String
+    creditsSpent: Int!
+    status: String!
+    redemptionCode: String!
+    expiresAt: String
+    createdAt: String
+    usedAt: String
+}
+
+type LoyaltyDashboard {
+    balance: LoyaltyBalance
+    rewards: [LoyaltyReward!]
+    redemptions: [RewardRedemption!]
+    message: String
+    hasError: Boolean!
+    error: ErrorField
+}
+
+type RedeemOutput {
+    success: Boolean!
+    redemptionCode: String
+    message: String
+    hasError: Boolean!
+    error: ErrorField
+}

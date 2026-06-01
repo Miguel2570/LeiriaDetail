@@ -20,6 +20,7 @@
     "google-auth-library": "^10.6.2",
     "helmet": "^8.2.0",
     "jsonwebtoken": "^9.0.3",
+    "node-cron": "^4.2.1",
     "pg": "^8.20.0",
     "resend": "^6.12.3",
     "tailwindcss": "^4.3.0",

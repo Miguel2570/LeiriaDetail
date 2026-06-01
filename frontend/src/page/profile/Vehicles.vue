@@ -112,8 +112,8 @@ const handlePlateInput = () => {
   if (result.isValid) {
     plateStatus.class = 'bg-green-500/5 border-green-500/50';
     plateStatus.message = result.estimatedYear 
-      ? `✅ Matrícula válida • Ano estimado: ${result.estimatedYear}`
-      : '✅ Matrícula válida';
+      ? `Matrícula válida • Ano estimado: ${result.estimatedYear}`
+      : 'Matrícula válida';
     plateStatus.messageClass = 'text-green-400';
     
     if (result.estimatedYear) {
