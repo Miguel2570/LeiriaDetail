@@ -6,6 +6,7 @@ input CreateServiceInput {
     priceDE: Float!
     durationMinutes: Int
     packType: String
+    loyaltyPoints: Int
 }
 
 input UpdateServiceInput {
@@ -16,4 +17,5 @@ input UpdateServiceInput {
     priceDE: Float
     durationMinutes: Int
     packType: String
+    loyaltyPoints: Int
 }

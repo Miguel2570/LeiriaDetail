@@ -37,7 +37,7 @@ class ProfileManager {
             let avatarData: string | null = null;
             let avatarExtension: string | null = null;
 
-            // ✅ Carregar avatar do sistema File
+            // Carregar avatar do sistema File
             if (user.avatar_file_id) {
                 const fileResult = await FileManager.GetFileById(user.avatar_file_id);
                 if (fileResult.File) {
@@ -168,7 +168,23 @@ class ProfileManager {
     }
 
     /**
-     * ✅ Atualizar avatar usando sistema File (sem perda de qualidade)
+     * Buscar UUID do utilizador pelo ID (para usar como createUser/changeUser no File)
+     */
+    static async GetUserUuid(userId: number): Promise<string | null> {
+        try {
+            const query = 'SELECT uuid FROM users WHERE id = $1';
+            const result = await server.query(query, [userId]);
+            
+            if (result.rows.length === 0) return null;
+            return result.rows[0].uuid || result.rows[0].id?.toString() || null;
+        } catch (error) {
+            console.error('GetUserUuid error:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Atualizar avatar usando sistema File
      */
     static async UpdateAvatar(
         sessionKey: string, 
@@ -190,19 +206,23 @@ class ProfileManager {
             
             const userId = tokenResult.rows[0].user_id;
             
+            // ✅ Buscar UUID do utilizador (ou fallback para o ID como string)
+            const userUuid = await this.GetUserUuid(userId);
+            const createUser = userUuid || userId.toString();
+            
             // Buscar avatar antigo para apagar
             const oldUser = await server.query(
                 'SELECT avatar_file_id FROM users WHERE id = $1', [userId]
             );
             const oldFileId = oldUser.rows[0]?.avatar_file_id;
             
-            // ✅ Criar novo ficheiro (qualidade original)
+            // ✅ Criar novo ficheiro com UUID do utilizador
             const fileResult = await FileManager.CreateFile(
                 imageData,
                 `avatar_${userId}_${Date.now()}`,
                 imageSize,
                 imageExtension,
-                userId.toString(),
+                createUser,  // ← UUID ou ID como string
                 'user_avatar',
                 userId,
                 ['avatar', 'profile']
@@ -221,7 +241,7 @@ class ProfileManager {
             
             // Apagar avatar antigo
             if (oldFileId) {
-                await FileManager.DeleteFile(oldFileId, userId.toString());
+                await FileManager.DeleteFile(oldFileId, createUser);
             }
             
             return new ProfileOutputModel({

@@ -1,5 +1,6 @@
 extend type Mutation {
-  addReview(input: AddReviewInput!): ReviewMutationOutput!
-  approveReview(id: ID!): ReviewDeleteOutput!
-  deleteReview(id: ID!): ReviewDeleteOutput!
+    addReview(input: AddReviewInput!): ReviewMutationOutput!
+    approveReview(id: ID!): ReviewDeleteOutput!
+    deleteReview(id: ID!): ReviewDeleteOutput!
+    submitReviewByToken(token: String!, text: String!, rating: Int!): ReviewDeleteOutput!  # ✅ NOVO
 }

@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS services (
     process_steps JSONB DEFAULT '[]',
     icon VARCHAR(50),
     is_active BOOLEAN DEFAULT TRUE,
+    loyalty_points INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

@@ -126,14 +126,24 @@ const companyAddress = ref('Leiria, Portugal');
 
 const fetchSettings = async () => {
   try {
-    const query = `query { settings { ivaEnabled ivaRate requireNif companyName companyAddress } }`;
-    const data = await graphql<{ settings: any }>(query);
-    if (data.settings) {
-      ivaEnabled.value = data.settings.ivaEnabled === true || data.settings.ivaEnabled === 'true';
-      ivaRate.value = parseInt(data.settings.ivaRate) || 23;
-      requireNIF.value = data.settings.requireNif === true || data.settings.requireNif === 'true';
-      companyName.value = data.settings.companyName || 'LeiriaDetail';
-      companyAddress.value = data.settings.companyAddress || 'Leiria, Portugal';
+    const query = `query { 
+      settings { 
+        settings { 
+          ivaEnabled 
+          ivaRate 
+          requireNif 
+          companyName 
+          companyAddress 
+        } 
+      } 
+    }`;
+    const data = await graphql<{ settings: { settings: any } }>(query);
+    if (data.settings?.settings) {
+      ivaEnabled.value = data.settings.settings.ivaEnabled === true || data.settings.settings.ivaEnabled === 'true';
+      ivaRate.value = parseInt(data.settings.settings.ivaRate) || 23;
+      requireNIF.value = data.settings.settings.requireNif === true || data.settings.settings.requireNif === 'true';
+      companyName.value = data.settings.settings.companyName || 'LeiriaDetail';
+      companyAddress.value = data.settings.settings.companyAddress || 'Leiria, Portugal';
     }
   } catch (error) {
     console.error('Erro ao carregar configurações:', error);
@@ -159,10 +169,14 @@ const saveSettings = async () => {
   try {
     const mutation = `
       mutation UpdateSettings($input: SettingsInput!) {
-        updateSettings(input: $input) { success message }
+        updateSettings(input: $input) { 
+          settings { ivaEnabled ivaRate requireNif companyName companyAddress }
+          message 
+          hasError 
+        }
       }
     `;
-    await graphql(mutation, {
+    const data = await graphql<{ updateSettings: any }>(mutation, {
       input: {
         ivaEnabled: ivaEnabled.value,
         ivaRate: ivaRate.value,
@@ -172,8 +186,13 @@ const saveSettings = async () => {
       }
     });
     
-    message.value = 'Configurações guardadas com sucesso!';
-    messageType.value = 'success';
+    if (data.updateSettings?.hasError) {
+      message.value = 'Erro ao guardar configurações.';
+      messageType.value = 'error';
+    } else {
+      message.value = data.updateSettings?.message || 'Configurações guardadas com sucesso!';
+      messageType.value = 'success';
+    }
   } catch (error) {
     message.value = 'Erro ao guardar configurações.';
     messageType.value = 'error';

@@ -1,110 +1,144 @@
+<!-- src/page/review/SubmitReview.vue -->
+<template>
+  <div class="min-h-screen bg-[#020204] text-white flex items-center justify-center px-4">
+    <div class="max-w-lg w-full bg-[#050508] border border-white/10 rounded-2xl p-8 text-center">
+      
+      <!-- Loading -->
+      <div v-if="isLoading" class="py-12">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00D8FF] mx-auto"></div>
+        <p class="text-gray-400 mt-4">A carregar...</p>
+      </div>
+
+      <!-- Já submetida -->
+      <div v-else-if="alreadySubmitted" class="py-8">
+        <span class="text-5xl">✅</span>
+        <h2 class="text-2xl font-black text-white mt-4">Review já submetida!</h2>
+        <p class="text-gray-400 mt-2">Obrigado pelo seu feedback.</p>
+      </div>
+
+      <!-- Token inválido -->
+      <div v-else-if="invalidToken" class="py-8">
+        <span class="text-5xl">❌</span>
+        <h2 class="text-2xl font-black text-white mt-4">Link inválido</h2>
+        <p class="text-gray-400 mt-2">Este link já não está disponível.</p>
+      </div>
+
+      <!-- Formulário -->
+      <div v-else>
+        <span class="text-4xl">⭐</span>
+        <h2 class="text-2xl font-black text-white mt-4">Como foi a sua experiência?</h2>
+        <p class="text-gray-400 text-sm mt-2">{{ reviewData?.car }}</p>
+
+        <!-- Estrelas -->
+        <div class="flex justify-center gap-2 my-6">
+          <button 
+            v-for="n in 5" :key="n" 
+            @click="rating = n"
+            class="text-3xl transition-all hover:scale-125"
+          >
+            {{ n <= rating ? '⭐' : '☆' }}
+          </button>
+        </div>
+
+        <!-- Texto -->
+        <textarea 
+          v-model="text" 
+          placeholder="Conte-nos a sua experiência..." 
+          rows="4"
+          class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-[#00D8FF] resize-none mb-4"
+        ></textarea>
+
+        <!-- Submeter -->
+        <button 
+          @click="submitReview" 
+          :disabled="isSubmitting || !text.trim()"
+          class="w-full py-3 bg-gradient-to-r from-[#2563EB] to-[#00D8FF] text-white font-bold rounded-xl disabled:opacity-50"
+        >
+          {{ isSubmitting ? 'A enviar...' : 'Enviar Review ⭐' }}
+        </button>
+
+        <p v-if="success" class="text-green-400 text-sm mt-4">✅ Review enviada! Obrigado!</p>
+        <p v-if="error" class="text-red-400 text-sm mt-4">{{ error }}</p>
+      </div>
+
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-vue-next';
-import { Swiper, SwiperSlide } from 'swiper/vue';
-import { Navigation, Autoplay } from 'swiper/modules';
+import { useRoute } from 'vue-router';
 import { graphql } from '@/graphql';
 
-import 'swiper/css';
-import 'swiper/css/navigation';
+const route = useRoute();
+const token = route.params.token as string;
 
-const modules = [Navigation, Autoplay];
-
-interface Review {
-  id: string;
-  name: string;
-  car: string;
-  text: string;
-  rating: number;
-}
-
-const reviews = ref<Review[]>([]);
 const isLoading = ref(true);
+const alreadySubmitted = ref(false);
+const invalidToken = ref(false);
+const reviewData = ref<any>(null);
+const rating = ref(5);
+const text = ref('');
+const isSubmitting = ref(false);
+const success = ref(false);
+const error = ref('');
 
-const fetchReviews = async () => {
+const fetchReview = async () => {
   try {
     const query = `
-      query {
-        reviews {
-          reviews { id name car text rating }
+      query GetReviewByToken($token: String!) {
+        reviewByToken(token: $token) {
+          reviews { id name car text rating submitted }
+          hasError
         }
       }
     `;
-    const data = await graphql<{ reviews: { reviews: Review[] } }>(query);
-    reviews.value = data.reviews.reviews;
-  } catch (error) {
-    console.error("Erro ao carregar reviews:", error);
+    const data = await graphql<{ reviewByToken: any }>(query, { token });
+    
+    if (data.reviewByToken?.reviews?.length > 0) {
+      const review = data.reviewByToken.reviews[0];
+      if (review.submitted) {
+        alreadySubmitted.value = true;
+      } else {
+        reviewData.value = review;
+      }
+    } else {
+      invalidToken.value = true;
+    }
+  } catch {
+    invalidToken.value = true;
   } finally {
     isLoading.value = false;
   }
 };
 
-onMounted(fetchReviews);
+const submitReview = async () => {
+  isSubmitting.value = true;
+  error.value = '';
+  
+  try {
+    const mutation = `
+      mutation SubmitReviewByToken($token: String!, $text: String!, $rating: Int!) {
+        submitReviewByToken(token: $token, text: $text, rating: $rating) {
+          success
+          message
+          hasError
+        }
+      }
+    `;
+    const data = await graphql<{ submitReviewByToken: any }>(mutation, { token, text: text.value, rating: rating.value });
+    
+    if (data.submitReviewByToken?.hasError) {
+      error.value = data.submitReviewByToken.message || 'Erro ao enviar.';
+    } else {
+      success.value = true;
+    }
+  } catch {
+    error.value = 'Erro de conexão.';
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+onMounted(fetchReview);
 </script>
-
-<template>
-  <section class="py-24 px-4 relative z-10 bg-white/50">
-    <div class="container mx-auto max-w-7xl relative">
-      
-      <div class="text-center mb-16">
-        <h2 class="text-sm font-bold text-[#3B82F6] tracking-[0.3em] uppercase mb-3">O que dizem de nós</h2>
-        <h3 class="text-4xl md:text-6xl font-black text-gray-900 uppercase italic tracking-tighter drop-shadow-sm">
-          Clientes <span class="text-leiria-gradient">Satisfeitos</span>
-        </h3>
-      </div>
-
-      <!-- Loading -->
-      <div v-if="isLoading" class="flex justify-center py-12">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#3B82F6]"></div>
-      </div>
-
-      <div v-else class="relative px-4 md:px-12">
-        <swiper
-          :modules="modules"
-          :slides-per-view="1"
-          :space-between="30"
-          :loop="true"
-          :autoplay="{ delay: 5000, disableOnInteraction: false }"
-          :navigation="{ prevEl: '.prev-rev', nextEl: '.next-rev' }"
-          :breakpoints="{ '768': { slidesPerView: 2 }, '1024': { slidesPerView: 3 } }"
-          class="!pb-12"
-        >
-          <swiper-slide v-for="review in reviews" :key="review.id" class="h-auto">
-            <div class="bg-[#0A0A0F]/95 backdrop-blur-xl border border-white/10 p-8 rounded-3xl relative shadow-xl h-full flex flex-col hover:border-[#3B82F6]/30 transition-colors duration-300">
-              
-              <Quote class="absolute top-6 right-6 h-10 w-10 text-white/5" />
-
-              <div class="flex gap-1 mb-6">
-                <Star v-for="n in review.rating" :key="n" class="h-5 w-5 fill-[#06B6D4] text-[#06B6D4]" />
-              </div>
-
-              <p class="text-gray-300 text-sm leading-relaxed mb-8 italic flex-grow">"{{ review.text }}"</p>
-
-              <div class="mt-auto border-t border-white/10 pt-4 flex items-center gap-3">
-                <div class="h-10 w-10 rounded-full bg-gradient-to-br from-[#3B82F6] to-[#06B6D4] flex items-center justify-center font-bold text-white shrink-0">
-                  {{ review.name.charAt(0) }}
-                </div>
-                <div>
-                  <h4 class="text-white font-bold text-sm">{{ review.name }}</h4>
-                  <p class="text-gray-400 text-xs">{{ review.car }}</p>
-                </div>
-              </div>
-            </div>
-          </swiper-slide>
-        </swiper>
-
-        <button class="prev-rev absolute left-0 top-1/2 -translate-y-1/2 z-30 p-2 text-gray-400 hover:text-[#3B82F6] transition-colors hidden md:block">
-          <ChevronLeft :size="48" stroke-width="1" />
-        </button>
-        <button class="next-rev absolute right-0 top-1/2 -translate-y-1/2 z-30 p-2 text-gray-400 hover:text-[#3B82F6] transition-colors hidden md:block">
-          <ChevronRight :size="48" stroke-width="1" />
-        </button>
-      </div>
-    </div>
-  </section>
-</template>
-
-<style scoped>
-.swiper-slide { height: auto !important; }
-@media (max-width: 768px) { .prev-rev, .next-rev { display: none; } }
-</style>

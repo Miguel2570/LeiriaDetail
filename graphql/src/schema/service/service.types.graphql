@@ -12,6 +12,7 @@ type Service {
     icon: String
     includes: [String!]
     processSteps: [ProcessStep!]
+    loyaltyPoints: Int
 }
 
 type ProcessStep {

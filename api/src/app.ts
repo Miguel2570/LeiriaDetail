@@ -66,7 +66,7 @@ const publicRoutes = [
     '/Authentication/CheckEmail', '/Authentication/Verify', '/Authentication/Resend-Verification',
     '/Authentication/Reset-Password', '/Authentication/ValidateToken',
     '/Materials', '/Services', '/Portfolio', '/Faqs', '/Reviews', '/Payment/Webhook', '/Loyalty',
-    '/Bookings', '/Holiday', '/PendingBookings', '/Settings/public',
+    '/Bookings', '/Holiday', '/PendingBookings', '/Reviews/token',
 ];
 
 app.use(LoginValidationMiddleware(publicRoutes));
@@ -76,7 +76,6 @@ app.use(LoginValidationMiddleware(publicRoutes));
 // ============================================
 app.use("/Holiday", holidayRoutes);
 app.use("/Loyalty", loyaltyRoutes);
-app.use("/Settings/public", settingsRoutes);
 app.use("/PendingBookings", pendingBookingsRoutes);
 
 app.use('/Authentication', authenticationRouters);
@@ -92,9 +91,7 @@ app.use("/Payment", paymentRoutes);
 app.use("/Appointments", appointmentRoutes);
 
 
-// ============================================
-// ✅ ROTAS ADMIN (Portal - Autenticado + Role)
-// ============================================
+// ROTAS ADMIN (Portal - Autenticado + Role)
 // Operator+
 app.use('/Registos', Authentication, requireRole('operator', 'manager', 'admin', 'superadmin'), registosRoutes);
 app.use('/Agenda', Authentication, requireRole('operator', 'manager', 'admin', 'superadmin'), appointmentRoutes);
@@ -115,7 +112,7 @@ app.use('/Staff', Authentication, requireRole('admin', 'superadmin'), staffRoute
 
 // Superadmin only
 app.use('/Audit', Authentication, requireRole('superadmin'), auditRoutes);
-app.use('/Settings', Authentication, requireRole('superadmin'), settingsRoutes); 
+app.use('/Settings', Authentication, requireRole('superadmin'), settingsRoutes);
 
 // ============================================
 // OUTRAS ROTAS

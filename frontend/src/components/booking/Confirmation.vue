@@ -18,6 +18,15 @@
       </div>
     </div>
 
+    <!-- ✅ LeiriaPoints que vai ganhar -->
+    <div v-if="!bookingData.isRedeemed && bookingData.service?.loyaltyPoints > 0" class="bg-[#10B981]/10 border border-[#10B981]/30 rounded-2xl p-4 flex items-center gap-3">
+      <span class="text-2xl">🪙</span>
+      <div>
+        <p class="text-[#10B981] font-bold text-sm">Vai ganhar {{ bookingData.service.loyaltyPoints }} LeiriaPoints!</p>
+        <p class="text-gray-400 text-xs">Estes pontos serão adicionados à sua conta após o serviço.</p>
+      </div>
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       
       <div class="bg-white/[0.01] border border-white/5 rounded-3xl p-6 flex flex-col justify-between">
@@ -59,6 +68,7 @@
           <div class="flex gap-2">
             <span class="text-[10px] bg-[#E6007E]/10 text-[#E6007E] px-2 py-1 rounded-lg font-bold">MB Way</span>
             <span class="text-[10px] bg-[#FF6600]/10 text-[#FF6600] px-2 py-1 rounded-lg font-bold">Multibanco</span>
+            <span class="text-[10px] bg-[#10B981]/10 text-[#10B981] px-2 py-1 rounded-lg font-bold">Dinheiro</span>
           </div>
         </div>
       </div>
@@ -85,6 +95,7 @@
       </div>
     </div>
 
+    <!-- Lembretes ... (mantém igual) -->
     <div class="bg-white/[0.01] border border-white/5 rounded-2xl p-5">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
@@ -146,7 +157,7 @@ import { graphql } from '@/graphql';
 const props = defineProps<{
   bookingData: {
     vehicle: { brand?: string; model?: string; plate?: string; licensePlate?: string } | null;
-    service: { id: string; name: string; price?: number; description?: string } | null;
+    service: { id: string; name: string; price?: number; description?: string; loyaltyPoints?: number } | null;
     date: any;
     time: string;
     isRedeemed?: boolean;
@@ -160,7 +171,6 @@ const selectedReminders = ref<string[]>(['24h']);
 
 const ivaEnabled = ref(false);
 const ivaRate = ref(23);
-const requireNIF = ref(false);
 
 const fetchSettings = async () => {
   try {
@@ -169,11 +179,8 @@ const fetchSettings = async () => {
     if (data?.settings) {
       ivaEnabled.value = data.settings.ivaEnabled === true || data.settings.ivaEnabled === 'true';
       ivaRate.value = parseInt(data.settings.ivaRate) || 23;
-      requireNIF.value = data.settings.requireNif === true || data.settings.requireNif === 'true';
     }
-  } catch (error: any) {
-    // Silencioso - já usa defaults
-  }
+  } catch (error: any) { /* defaults */ }
 };
 
 const toggleReminder = (key: string) => {

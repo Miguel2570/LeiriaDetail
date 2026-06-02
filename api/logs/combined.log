@@ -2745,3 +2745,224 @@
 {"duration":"33ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-01T01:18:12.265Z","url":"/Dashboard"}
 {"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-01T01:18:37.572Z","url":"/Reviews/"}
 {"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-01T01:18:37.574Z","url":"/Faqs/"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T15:08:19.817Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T15:08:19.820Z"}
+{"level":"error","message":"Erro ao limpar pending bookings:","service":"leiriadetail-api","timestamp":"2026-06-02T15:08:19.833Z"}
+{"duration":"11ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:08:37.426Z","url":"/Reviews/"}
+{"duration":"11ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:08:37.428Z","url":"/Faqs/"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T15:08:47.918Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T15:08:47.921Z"}
+{"level":"error","message":"Erro ao limpar pending bookings:","service":"leiriadetail-api","timestamp":"2026-06-02T15:08:47.932Z"}
+{"duration":"10ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:08:56.543Z","url":"/Services/"}
+{"duration":"11ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:08:57.312Z","url":"/Reviews/"}
+{"duration":"11ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:08:57.315Z","url":"/Faqs/"}
+{"duration":"9ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":500,"timestamp":"2026-06-02T15:09:00.195Z","url":"/PendingBookings/user?userId=1"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T15:22:51.033Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T15:22:51.036Z"}
+{"level":"error","message":"Erro ao limpar pending bookings:","service":"leiriadetail-api","timestamp":"2026-06-02T15:22:51.041Z"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T15:24:17.315Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T15:24:17.318Z"}
+{"level":"error","message":"Erro ao limpar pending bookings:","service":"leiriadetail-api","timestamp":"2026-06-02T15:24:17.324Z"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T15:25:40.319Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T15:25:40.322Z"}
+{"level":"error","message":"Erro ao limpar pending bookings:","service":"leiriadetail-api","timestamp":"2026-06-02T15:25:40.327Z"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T15:26:11.886Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T15:26:11.889Z"}
+{"level":"info","message":"Login efetuado","service":"leiriadetail-api","timestamp":"2026-06-02T15:26:28.166Z","userId":1}
+{"duration":"69ms","ip":"::1","level":"info","message":"HTTP Request","method":"POST","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:26:28.169Z","url":"/Authentication/Login"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:26:28.178Z","url":"/Authentication/Role"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:26:28.369Z","url":"/Authentication/Role"}
+{"duration":"29ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:26:28.469Z","url":"/Dashboard"}
+{"duration":"20ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:27:28.412Z","url":"/Dashboard"}
+{"duration":"20ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:28:28.411Z","url":"/Dashboard"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:28:31.992Z","url":"/Profile/"}
+{"duration":"54ms","ip":"::1","level":"info","message":"HTTP Request","method":"PUT","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:28:34.260Z","url":"/Profile/Avatar"}
+{"duration":"22ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:29:28.415Z","url":"/Dashboard"}
+{"duration":"24ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:30:28.415Z","url":"/Dashboard"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T15:31:21.547Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T15:31:21.550Z"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T15:31:23.531Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T15:31:23.534Z"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T15:31:26.498Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T15:31:26.501Z"}
+{"duration":"34ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:31:28.430Z","url":"/Dashboard"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T15:31:36.093Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T15:31:36.096Z"}
+{"duration":"40ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:32:29.269Z","url":"/Dashboard"}
+{"duration":"20ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:33:39.250Z","url":"/Dashboard"}
+{"duration":"21ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:34:40.250Z","url":"/Dashboard"}
+{"duration":"24ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:35:41.254Z","url":"/Dashboard"}
+{"duration":"14ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:36:42.243Z","url":"/Dashboard"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T15:36:47.911Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T15:36:47.914Z"}
+{"duration":"35ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:37:43.265Z","url":"/Dashboard"}
+{"duration":"22ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:38:44.250Z","url":"/Dashboard"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T15:39:26.064Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T15:39:26.067Z"}
+{"duration":"36ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:39:45.268Z","url":"/Dashboard"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T15:40:42.731Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T15:40:42.734Z"}
+{"duration":"29ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:40:46.265Z","url":"/Dashboard"}
+{"duration":"33ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:41:33.489Z","url":"/Dashboard"}
+{"duration":"8ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:41:35.220Z","url":"/Profile/"}
+{"duration":"7ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:41:35.221Z","url":"/Authentication/Role"}
+{"duration":"103ms","ip":"::1","level":"info","message":"HTTP Request","method":"PUT","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:41:40.190Z","url":"/Profile/Avatar"}
+{"duration":"7ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:41:45.814Z","url":"/Staff/"}
+{"duration":"22ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:41:46.467Z","url":"/Profile/"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:41:56.702Z","url":"/Authentication/Role"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:01.471Z","url":"/Reviews/"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:01.472Z","url":"/Faqs/"}
+{"duration":"2ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:02.652Z","url":"/Faqs/"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:02.652Z","url":"/Reviews/"}
+{"level":"info","message":"Login efetuado","service":"leiriadetail-api","timestamp":"2026-06-02T15:42:11.186Z","userId":1}
+{"duration":"52ms","ip":"::1","level":"info","message":"HTTP Request","method":"POST","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:11.186Z","url":"/Authentication/Login"}
+{"duration":"2ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:42:11.387Z","url":"/Authentication/Role"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:42:11.519Z","url":"/Authentication/Role"}
+{"duration":"14ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:11.545Z","url":"/Dashboard"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:42:14.892Z","url":"/Authentication/Role"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:42:15.347Z","url":"/Authentication/Role"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:42:15.710Z","url":"/Authentication/Role"}
+{"duration":"2ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:19.182Z","url":"/Reviews/"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:19.182Z","url":"/Faqs/"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:20.317Z","url":"/PendingBookings/user?userId=1"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:42:20.318Z","url":"/Authentication/Role"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:20.329Z","url":"/Bookings?user_id=1"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:20.330Z","url":"/Bookings?user_id=1"}
+{"duration":"7ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:20.333Z","url":"/Vehicles/List"}
+{"duration":"30ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:20.345Z","url":"/Profile/"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:42:21.019Z","url":"/Authentication/Role"}
+{"duration":"9ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:21.028Z","url":"/Dashboard"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:31.964Z","url":"/CRM"}
+{"duration":"8ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:31.968Z","url":"/Registos?date=2026-06-02"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:33.079Z","url":"/CRM"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:33.894Z","url":"/Services/"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:44.203Z","url":"/Registos"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:44.203Z","url":"/CRM"}
+{"duration":"6ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:44.204Z","url":"/Registos/Stats"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:45.035Z","url":"/Portfolio/categories"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:45.036Z","url":"/Services/"}
+{"duration":"6ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:45.037Z","url":"/Portfolio/"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:46.376Z","url":"/Financial/"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:47.205Z","url":"/Inventory/"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:47.205Z","url":"/Inventory/alerts"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:48.055Z","url":"/Staff/"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:48.919Z","url":"/Audit"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:42:49.980Z","url":"/Holiday/"}
+{"duration":"27ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:43:21.049Z","url":"/Dashboard"}
+{"duration":"24ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:44:21.048Z","url":"/Dashboard"}
+{"duration":"22ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:45:21.045Z","url":"/Dashboard"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T15:45:43.944Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T15:45:43.948Z"}
+{"duration":"39ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:46:21.065Z","url":"/Dashboard"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T15:46:47.371Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T15:46:47.374Z"}
+{"duration":"11ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:46:52.316Z","url":"/Authentication/Role"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:46:52.739Z","url":"/Authentication/Role"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:46:53.023Z","url":"/Authentication/Role"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:46:56.638Z","url":"/PendingBookings/user?userId=1"}
+{"duration":"12ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:46:56.647Z","url":"/Bookings?user_id=1"}
+{"duration":"13ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:46:56.649Z","url":"/Vehicles/List"}
+{"duration":"13ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:46:56.649Z","url":"/Bookings?user_id=1"}
+{"duration":"38ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:46:56.672Z","url":"/Profile/"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:46:56.903Z","url":"/Authentication/Role"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:46:59.927Z","url":"/Authentication/Role"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:46:59.935Z","url":"/PendingBookings/user?userId=1"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:46:59.935Z","url":"/Bookings?user_id=1"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:46:59.936Z","url":"/Bookings?user_id=1"}
+{"duration":"6ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:46:59.938Z","url":"/Vehicles/List"}
+{"duration":"42ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:46:59.973Z","url":"/Profile/"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:47:02.248Z","url":"/PendingBookings/user?userId=1"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:47:02.249Z","url":"/Bookings?user_id=1"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:47:02.252Z","url":"/Authentication/Role"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:47:02.253Z","url":"/Bookings?user_id=1"}
+{"duration":"8ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:47:02.255Z","url":"/Vehicles/List"}
+{"duration":"42ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:47:02.287Z","url":"/Profile/"}
+{"duration":"2ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:47:04.292Z","url":"/Authentication/Role"}
+{"duration":"21ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:47:04.333Z","url":"/Dashboard"}
+{"level":"warn","message":"Tentativa de autenticação sem sessionKey","service":"leiriadetail-api","timestamp":"2026-06-02T15:48:00.203Z"}
+{"duration":"1ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":401,"timestamp":"2026-06-02T15:48:00.204Z","url":"/Settings/public"}
+{"duration":"22ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:48:04.338Z","url":"/Dashboard"}
+{"level":"warn","message":"Tentativa de autenticação sem sessionKey","service":"leiriadetail-api","timestamp":"2026-06-02T15:48:08.764Z"}
+{"duration":"0ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":401,"timestamp":"2026-06-02T15:48:08.764Z","url":"/Settings/public"}
+{"level":"warn","message":"Tentativa de autenticação sem sessionKey","service":"leiriadetail-api","timestamp":"2026-06-02T15:48:42.088Z"}
+{"duration":"1ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":401,"timestamp":"2026-06-02T15:48:42.089Z","url":"/Settings/public"}
+{"duration":"23ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:49:04.339Z","url":"/Dashboard"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T15:49:57.715Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T15:49:57.718Z"}
+{"duration":"31ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:50:04.391Z","url":"/Dashboard"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T15:50:06.003Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T15:50:06.006Z"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T15:50:11.704Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T15:50:11.708Z"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T15:50:15.751Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T15:50:15.754Z"}
+{"duration":"8ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:50:21.643Z","url":"/Authentication/Role"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:50:24.438Z","url":"/Reviews/"}
+{"duration":"10ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:50:24.444Z","url":"/Faqs/"}
+{"level":"info","message":"Login efetuado","service":"leiriadetail-api","timestamp":"2026-06-02T15:50:41.961Z","userId":1}
+{"duration":"65ms","ip":"::1","level":"info","message":"HTTP Request","method":"POST","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:50:41.962Z","url":"/Authentication/Login"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:50:41.975Z","url":"/Authentication/Role"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:50:41.996Z","url":"/Authentication/Role"}
+{"duration":"28ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:50:42.038Z","url":"/Dashboard"}
+{"duration":"14ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:51:42.496Z","url":"/Authentication/Role"}
+{"duration":"16ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:51:42.501Z","url":"/Settings/"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:51:50.704Z","url":"/Authentication/Role"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:51:50.706Z","url":"/Settings/"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:51:52.972Z","url":"/Authentication/Role"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:51:52.973Z","url":"/Settings/"}
+{"duration":"15ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:54:15.848Z","url":"/Authentication/Role"}
+{"duration":"15ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:54:15.851Z","url":"/Settings/"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:54:27.423Z","url":"/Authentication/Role"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:54:27.427Z","url":"/Settings/"}
+{"duration":"9ms","ip":"::1","level":"info","message":"HTTP Request","method":"PUT","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:54:28.706Z","url":"/Settings/"}
+{"duration":"10ms","ip":"::1","level":"info","message":"HTTP Request","method":"PUT","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:54:29.530Z","url":"/Settings/"}
+{"duration":"10ms","ip":"::1","level":"info","message":"HTTP Request","method":"PUT","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:54:30.257Z","url":"/Settings/"}
+{"duration":"8ms","ip":"::1","level":"info","message":"HTTP Request","method":"PUT","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:54:30.932Z","url":"/Settings/"}
+{"duration":"35ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:54:52.887Z","url":"/Profile/"}
+{"duration":"16ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:57:13.401Z","url":"/Authentication/Role"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:57:16.530Z","url":"/Reviews/"}
+{"duration":"13ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:57:16.541Z","url":"/Faqs/"}
+{"duration":"6ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T15:57:20.634Z","url":"/Authentication/Role"}
+{"duration":"29ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T15:57:20.659Z","url":"/Profile/"}
+{"duration":"11ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T16:08:29.934Z","url":"/Services/"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T16:10:41.565Z","url":"/Authentication/Role"}
+{"duration":"12ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T16:10:41.575Z","url":"/Services/"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T16:10:45.011Z","url":"/Authentication/Role"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T16:10:45.012Z","url":"/Services/"}
+{"duration":"14ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T16:12:29.970Z","url":"/Authentication/Role"}
+{"duration":"14ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T16:13:57.244Z","url":"/Authentication/Role"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T16:13:57.648Z","url":"/Authentication/Role"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T16:18:26.846Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T16:18:26.849Z"}
+{"duration":"9ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T16:18:31.699Z","url":"/Services/"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T16:18:31.948Z","url":"/Authentication/Role"}
+{"duration":"15ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T16:20:19.383Z","url":"/Services/"}
+{"duration":"20ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T16:20:19.385Z","url":"/Authentication/Role"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T16:20:21.730Z","url":"/Services/"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T16:20:21.731Z","url":"/Authentication/Role"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T16:20:38.325Z","url":"/Authentication/Role"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T16:20:38.326Z","url":"/Services/"}
+{"duration":"3ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T16:20:56.539Z","url":"/Authentication/Role"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T16:20:56.541Z","url":"/Services/"}
+{"duration":"5ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":304,"timestamp":"2026-06-02T16:20:59.912Z","url":"/Authentication/Role"}
+{"duration":"4ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T16:20:59.914Z","url":"/Services/"}
+{"duration":"12ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T16:22:38.415Z","url":"/Faqs/"}
+{"duration":"13ms","ip":"::1","level":"info","message":"HTTP Request","method":"GET","service":"leiriadetail-api","status":200,"timestamp":"2026-06-02T16:22:38.416Z","url":"/Reviews/"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T16:25:10.907Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T16:25:10.911Z"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T16:25:21.044Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T16:25:21.049Z"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T16:25:24.753Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T16:25:24.757Z"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T16:26:18.733Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T16:26:18.736Z"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T16:26:20.276Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T16:26:20.280Z"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T16:26:22.774Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T16:26:22.778Z"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T16:26:36.241Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T16:26:36.244Z"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T16:27:55.500Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T16:27:55.503Z"}
+{"level":"info","message":"⏰ Cron de limpeza de pending bookings iniciado (a cada 5 minuto(s))","service":"leiriadetail-api","timestamp":"2026-06-02T16:28:31.073Z"}
+{"level":"info","message":"API a correr em development na porta 3001","service":"leiriadetail-api","timestamp":"2026-06-02T16:28:31.077Z"}

@@ -1,3 +1,4 @@
+<!-- src/portaladmin/page/services/ServiceManager.vue -->
 <template>
   <div class="backdrop-blur-[30px] p-8 h-full flex flex-col relative card-admin">
     <div class="flex items-center justify-between mb-8">
@@ -32,14 +33,25 @@
         <h4 class="font-bold text-[#000000] text-lg mb-4">{{ service.name }}</h4>
         <div class="flex items-center justify-between pt-4 border-t border-black/5">
           <div class="text-[#0284C7] font-bold text-xl">€{{ service.price_c }}</div>
-          <div class="text-[#475569] font-semibold text-sm bg-black/5 px-2 py-1 rounded">{{ service.duration_minutes }}min</div>
+          <div class="flex items-center gap-2">
+            <div class="text-[#475569] font-semibold text-sm bg-black/5 px-2 py-1 rounded">{{ service.duration_minutes }}min</div>
+          </div>
+        </div>
+
+        <!-- ✅ Badge de pontos em baixo, separada -->
+        <div v-if="service.loyalty_points > 0" class="mt-3 pt-3 border-t border-[#10B981]/20">
+          <div class="flex items-center gap-1.5">
+            <span class="text-[#10B981] text-xs font-bold flex items-center gap-1">
+              🪙 +{{ service.loyalty_points }} LeiriaPoints
+            </span>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Modal -->
     <div v-if="isModalOpen" class="absolute inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm rounded-[16px]">
-      <div class="w-full max-w-sm bg-white/90 backdrop-blur-xl border border-white/50 p-8 rounded-2xl shadow-2xl">
+      <div class="w-full max-w-sm bg-white/90 backdrop-blur-xl border border-white/50 p-8 rounded-2xl shadow-2xl overflow-y-auto max-h-[90vh]">
         <div class="flex justify-between items-center mb-6">
           <h3 class="text-2xl font-bold text-[#000000]">{{ editingService ? 'Edit Service' : 'New Service' }}</h3>
           <button @click="closeModal" class="p-2 hover:bg-black/5 rounded-full"><X class="w-6 h-6 text-[#334155]" /></button>
@@ -81,6 +93,12 @@
               </select>
             </div>
           </div>
+          <!-- ✅ NOVO: LeiriaPoints -->
+          <div>
+            <label class="block text-sm font-bold text-[#334155] mb-1">🪙 LeiriaPoints</label>
+            <input type="number" v-model="form.loyaltyPoints" min="0" class="w-full px-4 py-3 rounded-xl bg-white/60 border border-[#06B6D4]/30 focus:outline-none focus:ring-2 focus:ring-[#06B6D4]/20 text-[#000000] font-medium" />
+            <p class="text-[10px] text-[#64748B] mt-1">Pontos que o cliente ganha ao adquirir este serviço</p>
+          </div>
           <button type="submit" :disabled="isSubmitting" class="w-full mt-6 py-4 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white rounded-xl font-bold shadow-[0_0_12px_rgba(59,130,246,0.4)] hover:shadow-[0_0_20px_rgba(59,130,246,0.6)] transition-all disabled:opacity-50">
             {{ isSubmitting ? 'A guardar...' : (editingService ? 'Update Service' : 'Save Service') }}
           </button>
@@ -96,7 +114,7 @@ import { Edit, Trash2, Plus, X } from 'lucide-vue-next'
 import { graphql } from '@/graphql'
 
 interface Service {
-  id: number; name: string; description: string; price_ab: number; price_c: number; price_de: number; duration_minutes: number; pack_type: string
+  id: number; name: string; description: string; price_ab: number; price_c: number; price_de: number; duration_minutes: number; pack_type: string; loyalty_points: number
 }
 
 const services = ref<Service[]>([])
@@ -104,11 +122,11 @@ const isLoading = ref(true)
 const isSubmitting = ref(false)
 const isModalOpen = ref(false)
 const editingService = ref<Service | null>(null)
-const form = ref({ name: '', description: '', priceAB: 0, priceC: 0, priceDE: 0, durationMinutes: 60, packType: 'Básico' })
+const form = ref({ name: '', description: '', priceAB: 0, priceC: 0, priceDE: 0, durationMinutes: 60, packType: 'Básico', loyaltyPoints: 0 })
 
 const fetchServices = async () => {
   try {
-    const query = `query { services { services { id name description priceAB priceC priceDE durationMinutes packType } } }`
+    const query = `query { services { services { id name description priceAB priceC priceDE durationMinutes packType loyaltyPoints } } }`
     const data = await graphql<{ services: { services: any[] } }>(query)
     if (data.services?.services) {
       services.value = data.services.services.map((s: any) => ({
@@ -119,7 +137,8 @@ const fetchServices = async () => {
         price_c: s.priceC,
         price_de: s.priceDE,
         duration_minutes: s.durationMinutes,
-        pack_type: s.packType
+        pack_type: s.packType,
+        loyalty_points: s.loyaltyPoints || 0
       }))
     }
   } catch (error) { console.error('Erro ao carregar serviços:', error) }
@@ -128,13 +147,13 @@ const fetchServices = async () => {
 
 const openCreateModal = () => {
   editingService.value = null
-  form.value = { name: '', description: '', priceAB: 0, priceC: 0, priceDE: 0, durationMinutes: 60, packType: 'Básico' }
+  form.value = { name: '', description: '', priceAB: 0, priceC: 0, priceDE: 0, durationMinutes: 60, packType: 'Básico', loyaltyPoints: 0 }
   isModalOpen.value = true
 }
 
 const openEditModal = (service: Service) => {
   editingService.value = service
-  form.value = { name: service.name, description: service.description || '', priceAB: service.price_ab, priceC: service.price_c, priceDE: service.price_de, durationMinutes: service.duration_minutes, packType: service.pack_type }
+  form.value = { name: service.name, description: service.description || '', priceAB: service.price_ab, priceC: service.price_c, priceDE: service.price_de, durationMinutes: service.duration_minutes, packType: service.pack_type, loyaltyPoints: service.loyalty_points || 0 }
   isModalOpen.value = true
 }
 
@@ -144,9 +163,9 @@ const handleSubmit = async () => {
   isSubmitting.value = true
   try {
     if (editingService.value) {
-      await graphql(`mutation { updateService(id: "${editingService.value.id}", input: { name: "${form.value.name}", description: "${form.value.description}", priceAB: ${form.value.priceAB}, priceC: ${form.value.priceC}, priceDE: ${form.value.priceDE}, durationMinutes: ${form.value.durationMinutes}, packType: "${form.value.packType}" }) { hasError } }`)
+      await graphql(`mutation { updateService(id: "${editingService.value.id}", input: { name: "${form.value.name}", description: "${form.value.description}", priceAB: ${form.value.priceAB}, priceC: ${form.value.priceC}, priceDE: ${form.value.priceDE}, durationMinutes: ${form.value.durationMinutes}, packType: "${form.value.packType}", loyaltyPoints: ${form.value.loyaltyPoints} }) { hasError } }`)
     } else {
-      await graphql(`mutation { createService(input: { name: "${form.value.name}", description: "${form.value.description}", priceAB: ${form.value.priceAB}, priceC: ${form.value.priceC}, priceDE: ${form.value.priceDE}, durationMinutes: ${form.value.durationMinutes}, packType: "${form.value.packType}" }) { hasError } }`)
+      await graphql(`mutation { createService(input: { name: "${form.value.name}", description: "${form.value.description}", priceAB: ${form.value.priceAB}, priceC: ${form.value.priceC}, priceDE: ${form.value.priceDE}, durationMinutes: ${form.value.durationMinutes}, packType: "${form.value.packType}", loyaltyPoints: ${form.value.loyaltyPoints} }) { hasError } }`)
     }
     await fetchServices()
     closeModal()

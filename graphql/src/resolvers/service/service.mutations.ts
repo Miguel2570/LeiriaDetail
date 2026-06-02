@@ -10,7 +10,8 @@ export const serviceMutations = {
                 priceC: input.priceC,
                 priceDE: input.priceDE,
                 durationMinutes: input.durationMinutes,
-                packType: input.packType
+                packType: input.packType,
+                loyaltyPoints: input.loyaltyPoints
             });
 
             return {
@@ -38,7 +39,8 @@ export const serviceMutations = {
                 priceC: input.priceC,
                 priceDE: input.priceDE,
                 durationMinutes: input.durationMinutes,
-                packType: input.packType
+                packType: input.packType,
+                loyaltyPoints: input.loyaltyPoints
             });
 
             return {
@@ -87,6 +89,7 @@ function mapService(s: any) {
         priceC: parseFloat(s.price_c) || 0,
         priceDE: parseFloat(s.price_de) || 0,
         durationMinutes: s.duration_minutes,
-        packType: s.pack_type || 'Básico'
+        packType: s.pack_type || 'Básico',
+        loyaltyPoints: parseInt(s.loyalty_points) || 0
     };
 }

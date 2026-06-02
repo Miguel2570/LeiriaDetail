@@ -3,6 +3,7 @@
 
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
+    uuid UUID DEFAULT gen_random_uuid() UNIQUE NOT NULL,
     first_name VARCHAR(255),
     last_name VARCHAR(255),
     phone VARCHAR(20),

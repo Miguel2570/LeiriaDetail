@@ -85,7 +85,15 @@
       </div>
     </nav>
     
-    <div class="pt-4 border-t border-gray-200 mt-4">
+    <div class="pt-4 border-t border-gray-200 mt-4 space-y-2">
+      <!-- ✅ NOVO: Voltar ao Site -->
+      <a 
+        href="/" 
+        class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-[#0284C7] hover:bg-[#E0F2FE] transition-colors"
+      >
+        <ArrowLeft class="w-4 h-4" /> Voltar ao Site
+      </a>
+      
       <button @click="logout" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 transition-colors">
         <LogOut class="w-4 h-4" /> Terminar Sessão
       </button>
@@ -99,7 +107,7 @@ import { useRouter } from 'vue-router'
 import { Cache } from '@/services/cachemanager'
 import { 
   LayoutDashboard, Calendar, Users, Wrench, Database, 
-  Package, DollarSign, LogOut, User, ShieldAlert, CalendarOff, Camera, ClipboardList, Settings
+  Package, DollarSign, LogOut, User, ShieldAlert, CalendarOff, Camera, ClipboardList, Settings, ArrowLeft
 } from 'lucide-vue-next'
 
 const router = useRouter()

@@ -53,5 +53,22 @@ export const reviewsMutations = {
                 error: { field: "server", message: error.message }
             };
         }
+    },
+    submitReviewByToken: async (_: any, { token, text, rating }: any, context: any) => {
+        try {
+            const data: any = await API.POST<any>(context, `/Reviews/token/${token}/submit`, { text, rating });
+            return {
+                success: !data.HasError,
+                message: data.Message,
+                hasError: data.HasError || false,
+                error: data.Error || null
+            };
+        } catch (error: any) {
+            return {
+                success: false,
+                hasError: true,
+                error: { field: "server", message: error.message }
+            };
+        }
     }
 };

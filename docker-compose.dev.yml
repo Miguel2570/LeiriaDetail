@@ -10,11 +10,12 @@ services:
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "5432:5432"
+      - "5434:5434"  # ← Ambos 5434
+    command: -p 5434  # ← Força PostgreSQL a usar porta 5434
     volumes:
       - pgdata_dev:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      test: ["CMD-SHELL", "pg_isready -p 5434 -U ${DB_USER:-postgres}"]  # ← healthcheck na 5434
       interval: 10s
       timeout: 5s
       retries: 5
@@ -27,7 +28,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@leiriadetail.pt
       PGADMIN_DEFAULT_PASSWORD: dev_pgadmin_123
     ports:
-      - "5051:80"
+      - "5052:80"
     depends_on:
       - postgres
 
@@ -61,9 +62,10 @@ services:
     image: liquibase/liquibase:4.25
     container_name: leiriadetail-dev-liquibase
     environment:
-      LIQUIBASE_COMMAND_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-leiriadetail}
+      LIQUIBASE_COMMAND_URL: jdbc:postgresql://postgres:5434/${DB_NAME:-leiriadetail}
       LIQUIBASE_COMMAND_USERNAME: ${DB_USER:-postgres}
       LIQUIBASE_COMMAND_PASSWORD: ${DB_PASSWORD}
+      LIQUIBASE_COMMAND_CHANGELOG_FILE: changelog.yaml
     depends_on:
       postgres:
         condition: service_healthy

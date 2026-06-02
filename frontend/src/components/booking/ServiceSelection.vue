@@ -1,3 +1,4 @@
+<!-- src/components/booking/ServiceSelection.vue -->
 <template>
   <div class="space-y-8">
     <div class="flex flex-col space-y-2 mb-8">
@@ -57,6 +58,10 @@
           <div class="flex-1">
             <h4 class="text-white font-bold text-sm">{{ service.name }}</h4>
             <p class="text-xs text-gray-500 mt-1">{{ service.description }}</p>
+            <!-- ✅ LeiriaPoints -->
+            <div v-if="service.loyaltyPoints > 0" class="flex items-center gap-1 mt-2">
+              <span class="text-[#10B981] text-xs font-bold">🪙 +{{ service.loyaltyPoints }} LeiriaPoints</span>
+            </div>
           </div>
           
           <div class="text-right ml-4">
@@ -96,14 +101,14 @@ interface Service {
   priceDE: number;
   durationMinutes: number;
   packType: string;
+  loyaltyPoints: number;
 }
 
 const services = ref<Service[]>([]);
 const isLoading = ref(true);
-const selectedPack = ref<string>('Básico');  // ✅ Com acento
+const selectedPack = ref<string>('Básico');
 
 const filteredServices = computed(() => {
-  // ✅ Comparação normalizada (ignora acentos)
   return services.value.filter(s => {
     const normalizedPack = (s.packType || '').toLowerCase()
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -127,6 +132,7 @@ const fetchServices = async () => {
             priceDE
             durationMinutes
             packType
+            loyaltyPoints
           }
         }
       }
@@ -153,7 +159,8 @@ const selectService = (service: Service) => {
     name: service.name, 
     price: getPrice(service), 
     duration: service.durationMinutes,
-    packType: service.packType
+    packType: service.packType,
+    loyaltyPoints: service.loyaltyPoints || 0
   });
 };
 

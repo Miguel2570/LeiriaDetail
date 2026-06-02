@@ -78,6 +78,7 @@ function mapService(s: any) {
         includes: s.includes || [],
         processSteps: typeof s.process_steps === 'string' 
             ? JSON.parse(s.process_steps) 
-            : (s.process_steps || [])
+            : (s.process_steps || []),
+        loyaltyPoints: parseInt(s.loyalty_points) || 0 
     };
 }

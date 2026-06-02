@@ -2,6 +2,35 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { Cache } from '@/services/cachemanager'
 
+// ===== IMPORTS DE COMPONENTES =====
+import Home from '@/page/Home.vue'
+import Login from '@/page/auth/Login.vue'
+import Register from '@/page/auth/Register.vue'
+import ForgotPassword from '@/page/auth/ForgotPassword.vue'
+import ResetPassword from '@/page/auth/ResetPassword.vue'
+import VerifyCode from '@/page/auth/VerifyCode.vue'
+import PaymentPage from '@/page/payment/PaymentPage.vue'
+import Booking from '@/page/agenda/Booking.vue'
+import ClientArea from '@/page/profile/ClientArea.vue'
+import ErrorPage from '@/page/Error.vue'
+
+// Admin
+import DashboardLayout from '@/portaladmin/page/components/layout/DashboardLayout.vue'
+import AuthPage from '@/portaladmin/page/auth/AuthPage.vue'
+import DashboardOverview from '@/portaladmin/page/dashboard/DashboardOverview.vue'
+import CRMManager from '@/portaladmin/page/crm/CRMManager.vue'
+import Financial from '@/portaladmin/page/financial/Financial.vue'
+import MasterSlotControl from '@/portaladmin/page/appointments/MasterSlotControl.vue'
+import ServiceManager from '@/portaladmin/page/services/ServiceManager.vue'
+import StaffManagement from '@/portaladmin/page/staff/StaffManagement.vue'
+import InventoryDashboard from '@/portaladmin/page/inventory/InventoryDashboard.vue'
+import ProfilePage from '@/portaladmin/page/profile/ProfilePage.vue'
+import AuditLogs from '@/portaladmin/page/audit/AuditLogs.vue'
+import HolidayManager from '@/portaladmin/page/holiday/HolidayManager.vue'
+import PortfolioManager from '@/portaladmin/page/portfolio/PortfolioManager.vue'
+import RegisterFlow from '@/portaladmin/page/Registos/RegisterFlow.vue'
+import SettingsManager from '@/portaladmin/page/settings/SettingsManager.vue'
+
 const ALLOWED_ROLES = ['superadmin', 'admin', 'manager', 'operator']
 
 const router = createRouter({
@@ -9,32 +38,32 @@ const router = createRouter({
   scrollBehavior: () => ({ top: 0 }),
   routes: [
     // ===== ROTAS PÚBLICAS (CLIENTES) =====
-    { path: '/', name: 'home', component: () => import('@/page/Home.vue') },
+    { path: '/', name: 'home', component: Home },
     
     // Auth - Clientes
-    { path: '/login', name: 'login', component: () => import('@/page/auth/Login.vue') },
-    { path: '/registar', name: 'register', component: () => import('@/page/auth/Register.vue') },
+    { path: '/login', name: 'login', component: Login },
+    { path: '/registar', name: 'register', component: Register },
     
     // Recuperação de password
-    { path: '/recuperar-password', name: 'forgot-password', component: () => import('@/page/auth/ForgotPassword.vue') },
-    { path: '/reset-password', name: 'reset-password', component: () => import('@/page/auth/ResetPassword.vue') },
+    { path: '/recuperar-password', name: 'forgot-password', component: ForgotPassword },
+    { path: '/reset-password', name: 'reset-password', component: ResetPassword },
 
     // Verificar conta
-    { path: '/verify', name: 'VerifyCode', component: () => import('@/page/auth/VerifyCode.vue') },
+    { path: '/verify', name: 'VerifyCode', component: VerifyCode },
 
     // Pagamento
-    { path: '/pagamento/:bookingId', name: 'payment', component: () => import('@/page/payment/PaymentPage.vue') },
+    { path: '/pagamento/:bookingId', name: 'payment', component: PaymentPage },
 
     // Agendamento
-    { path: '/agenda', alias: ['/booking', '/marcacao'], name: 'booking', component: () => import('@/page/agenda/Booking.vue') },
+    { path: '/agenda', alias: ['/booking', '/marcacao'], name: 'booking', component: Booking },
     
     // Área Cliente
-    { path: '/client-area', alias: ['/clientarea'], name: 'client-area', component: () => import('@/page/profile/ClientArea.vue') },
+    { path: '/client-area', alias: ['/clientarea'], name: 'client-area', component: ClientArea },
 
     // Portfolio
     { path: '/portfolio/:id', name: 'portfolio-detail', component: () => import('@/page/portfolio/PortfolioDetail.vue') },
     
-    // Páginas Públicas
+    // Páginas Públicas (menos críticas - lazy load)
     { path: '/sobre', component: () => import('@/page/About.vue') },
     { path: '/contacto', component: () => import('@/page/Contact.vue') },
     { path: '/servicos', component: () => import('@/page/services/Services.vue') },
@@ -50,29 +79,29 @@ const router = createRouter({
     { path: '/cookies', component: () => import('@/page/legal/Cookies.vue') },
 
     // Erro
-    { path: '/error', name: 'error', component: () => import('@/page/Error.vue'), props: true },
-    { path: '/error-page', name: 'ErrorPage', component: () => import('@/page/Error.vue'), props: true },
+    { path: '/error', name: 'error', component: ErrorPage, props: true },
+    { path: '/error-page', name: 'ErrorPage', component: ErrorPage, props: true },
 
     // ===== ROTAS ADMIN =====
     {
       path: '/admin',
-      component: () => import('@/portaladmin/page/components/layout/DashboardLayout.vue'),
+      component: DashboardLayout,
       children: [
-        { path: 'login', component: () => import('@/portaladmin/page/auth/AuthPage.vue') },
+        { path: 'login', component: AuthPage },
         { path: '', redirect: '/admin/dashboard' },
-        { path: 'dashboard', name: 'admin-dashboard', component: () => import('@/portaladmin/page/dashboard/DashboardOverview.vue'), meta: { requiresRole: ALLOWED_ROLES, title: 'Dashboard' } },
-        { path: 'crm', name: 'admin-crm', component: () => import('@/portaladmin/page/crm/CRMManager.vue'), meta: { requiresRole: ALLOWED_ROLES, title: 'CRM' } },
-        { path: 'financial', name: 'admin-financial', component: () => import('@/portaladmin/page/financial/Financial.vue'), meta: { requiresRole: ALLOWED_ROLES, title: 'Financeiro' } },
-        { path: 'appointments', name: 'admin-appointments', component: () => import('@/portaladmin/page/appointments/MasterSlotControl.vue'), meta: { requiresRole: ALLOWED_ROLES, title: 'Agendamentos' } },
-        { path: 'services', name: 'admin-services', component: () => import('@/portaladmin/page/services/ServiceManager.vue'), meta: { requiresRole: ALLOWED_ROLES, title: 'Serviços' } },
-        { path: 'staff', name: 'admin-staff', component: () => import('@/portaladmin/page/staff/StaffManagement.vue'), meta: { requiresRole: ALLOWED_ROLES, title: 'Funcionários' } },
-        { path: 'inventory', name: 'admin-inventory', component: () => import('@/portaladmin/page/inventory/InventoryDashboard.vue'), meta: { requiresRole: ALLOWED_ROLES, title: 'Inventário' } },
-        { path: 'profile', name: 'admin-profile', component: () => import('@/portaladmin/page/profile/ProfilePage.vue'), meta: { requiresRole: ALLOWED_ROLES, title: 'Perfil' } },
-        { path: 'audit', name: 'admin-audit', component: () => import('@/portaladmin/page/audit/AuditLogs.vue'), meta: { requiresRole: ['admin', 'superadmin'], title: 'Auditoria' } },
-        { path: 'holidays', name: 'admin-holidays', component: () => import('@/portaladmin/page/holiday/HolidayManager.vue'), meta: { requiresRole: ['admin', 'superadmin'], title: 'Feriados' } },
-        { path: 'portfolio', name: 'admin-portfolio', component: () => import('@/portaladmin/page/portfolio/PortfolioManager.vue'), meta: { requiresRole: ALLOWED_ROLES, title: 'Portfolio' } },
-        { path: 'registos', name: 'admin-registos', component: () => import('@/portaladmin/page/Registos/RegisterFlow.vue'), meta: { requiresRole: ALLOWED_ROLES, title: 'Registos' } },
-        { path: 'settings', name: 'admin-settings', component: () => import('@/portaladmin/page/settings/SettingsManager.vue'), meta: { requiresRole: ['superadmin'], title: 'Configurações' } },
+        { path: 'dashboard', name: 'admin-dashboard', component: DashboardOverview, meta: { requiresRole: ALLOWED_ROLES, title: 'Dashboard' } },
+        { path: 'crm', name: 'admin-crm', component: CRMManager, meta: { requiresRole: ALLOWED_ROLES, title: 'CRM' } },
+        { path: 'financial', name: 'admin-financial', component: Financial, meta: { requiresRole: ALLOWED_ROLES, title: 'Financeiro' } },
+        { path: 'appointments', name: 'admin-appointments', component: MasterSlotControl, meta: { requiresRole: ALLOWED_ROLES, title: 'Agendamentos' } },
+        { path: 'services', name: 'admin-services', component: ServiceManager, meta: { requiresRole: ALLOWED_ROLES, title: 'Serviços' } },
+        { path: 'staff', name: 'admin-staff', component: StaffManagement, meta: { requiresRole: ALLOWED_ROLES, title: 'Funcionários' } },
+        { path: 'inventory', name: 'admin-inventory', component: InventoryDashboard, meta: { requiresRole: ALLOWED_ROLES, title: 'Inventário' } },
+        { path: 'profile', name: 'admin-profile', component: ProfilePage, meta: { requiresRole: ALLOWED_ROLES, title: 'Perfil' } },
+        { path: 'audit', name: 'admin-audit', component: AuditLogs, meta: { requiresRole: ['admin', 'superadmin'], title: 'Auditoria' } },
+        { path: 'holidays', name: 'admin-holidays', component: HolidayManager, meta: { requiresRole: ['admin', 'superadmin'], title: 'Feriados' } },
+        { path: 'portfolio', name: 'admin-portfolio', component: PortfolioManager, meta: { requiresRole: ALLOWED_ROLES, title: 'Portfolio' } },
+        { path: 'registos', name: 'admin-registos', component: RegisterFlow, meta: { requiresRole: ALLOWED_ROLES, title: 'Registos' } },
+        { path: 'settings', name: 'admin-settings', component: SettingsManager, meta: { requiresRole: ['superadmin'], title: 'Configurações' } },
       ]
     },
 
