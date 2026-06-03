@@ -32,3 +32,5 @@ logs/
 
 # Uploads
 uploads/
+
+api/logs/
