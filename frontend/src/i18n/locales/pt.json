@@ -2,12 +2,7 @@
   "nav": {
     "home": "Home",
     "services": "Serviços",
-    "prices": "Preços",
     "portfolio": "Portfólio",
-    "materials": "Materiais",
-    "faq": "FAQ",
-    "about": "Sobre",
-    "contact": "Contactos",
     "profile": "Perfil",
     "login": "Entrar",
     "logout": "Sair",
@@ -29,7 +24,6 @@
     },
     "links": {
       "services": "Serviços",
-      "prices": "Tabela de Preços",
       "schedule": "Agendar Agora",
       "terms": "Termos e Condições",
       "privacy": "Política de Privacidade",

@@ -64,14 +64,9 @@ const router = createRouter({
     { path: '/portfolio/:id', name: 'portfolio-detail', component: () => import('@/page/portfolio/PortfolioDetail.vue') },
     
     // Páginas Públicas (menos críticas - lazy load)
-    { path: '/sobre', component: () => import('@/page/About.vue') },
-    { path: '/contacto', component: () => import('@/page/Contact.vue') },
     { path: '/servicos', component: () => import('@/page/services/Services.vue') },
-    { path: '/servicos/:id', name: 'service-detail', component: () => import('@/page/services/ServiceDetail.vue') },
-    { path: '/precos', component: () => import('@/page/services/Pricing.vue') },
     { path: '/portfolio', component: () => import('@/page/portfolio/Portfolio.vue') },
     { path: '/materiais', component: () => import('@/page/MaterialsList.vue') },
-    { path: '/faq', component: () => import('@/components/sections/FAQ.vue') },
     
     // Legal
     { path: '/privacidade', component: () => import('@/page/legal/Privacy.vue') },

@@ -3,8 +3,14 @@
 :root {
   --primary: #3B82F6;
   --secondary: #06B6D4;
-  --background: #ffffff;
-  --foreground: #030213;
+  --background: #0A0A0F;
+  --surface: #111115;
+  --surface-hover: #1A1A20;
+  --border: #22222A;
+  --border-light: #2A2A35;
+  --text-primary: #FFFFFF;
+  --text-secondary: #9CA3AF;
+  --text-muted: #6B7280;
   --radius: 1rem;
 }
 
@@ -14,19 +20,16 @@
 }
 
 body {
-  color: var(--foreground);
+  color: var(--text-primary);
   font-family: 'Inter', sans-serif;
   min-height: 100vh;
-  background-color: #FFFFFF; /* Fundo sólido base */
+  background-color: #0A0A0F;
   margin: 0;
-  /* Melhora a suavidade do texto e performance de renderização */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* 2. O TRUQUE PARA ELIMINAR O LAG: Fundo fixo numa camada separada */
-/* Ao usar body::before com transform: translateZ(0), forçamos a GPU (placa gráfica) 
-   a processar o gradiente, libertando o processador para o scroll e a Navbar */
+/* 2. PREMIUM GRADIENT BACKGROUND */
 body::before {
   content: "";
   position: fixed;
@@ -34,46 +37,144 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(83, 189, 238, 0.308);
+  background: radial-gradient(circle at 20% 30%, rgba(59,130,246,0.08), rgba(6,182,212,0.02), #0A0A0F);
   z-index: -1;
   pointer-events: none;
-  transform: translateZ(0); 
+  transform: translateZ(0);
   backface-visibility: hidden;
 }
 
-@layer components {
-  /* O teu gradiente de assinatura (Azul -> Ciano) */
-  .bg-leiria-gradient {
-    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
-  }
-
-  /* Texto com gradiente */
-  .text-leiria-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#3B82F6] to-[#06B6D4];
-  }
-  
-  /* Estilo base para botões com o teu gradiente */
-  .btn-primary-gradient {
-    @apply bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white font-bold py-3 px-8 rounded-2xl 
-           transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(59,130,246,0.4)];
-  }
+/* 3. GLOW EFFECTS FOR SECTIONS */
+.glow-blue {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(59,130,246,0.12), transparent 70%);
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
 }
 
-/* 3. MODO ESCURO EXCLUSIVO PARA O BOOKING / AGENDA */
-/* Quando o componente Booking.vue é montado, ele deve adicionar esta classe ao body */
-body.booking-dark-mode {
-  background-color: #0A0A0F !important;
-  color: white !important;
+.glow-cyan {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(6,182,212,0.08), transparent 70%);
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
 }
 
-/* Esconde o gradiente azul quando estamos no modo escuro */
-body.booking-dark-mode::before {
-  opacity: 0;
-  visibility: hidden;
+/* 4. PREMIUM CARD STYLES */
+.card-premium {
+  background: linear-gradient(135deg, #111115 0%, #0D0D12 100%);
+  border: 1px solid #22222A;
+  border-radius: 24px;
+  transition: all 0.3s ease;
 }
 
-/* 4. OTIMIZAÇÃO DE ELEMENTOS COM BLUR */
-/* Se sentires lag em cartões específicos, esta classe ajuda */
+.card-premium:hover {
+  border-color: rgba(59,130,246,0.3);
+  box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.8);
+  transform: translateY(-2px);
+}
+
+.card-glass {
+  background: rgba(17, 17, 21, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(34, 34, 42, 0.5);
+  border-radius: 24px;
+}
+
+/* 5. GRADIENTES DE TEXTO E BOTÕES */
+.bg-leiria-gradient {
+  background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+}
+
+.text-leiria-gradient {
+  background: linear-gradient(90deg, #3B82F6 0%, #06B6D4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.btn-primary-gradient {
+  background: linear-gradient(90deg, #3B82F6 0%, #06B6D4 100%);
+  color: white;
+  font-weight: 700;
+  padding: 12px 32px;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(59,130,246,0.3);
+}
+
+.btn-primary-gradient:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(59,130,246,0.5);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid #33333D;
+  color: white;
+  font-weight: 700;
+  padding: 12px 32px;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  border-color: #3B82F6;
+  background: rgba(59,130,246,0.1);
+}
+
+/* 6. STATS CARD SPECIFIC */
+.stats-card {
+  background: linear-gradient(135deg, #0D0D12 0%, #09090E 100%);
+  border: 1px solid #1A1A22;
+  border-radius: 28px;
+  padding: 28px;
+}
+
+.stats-value {
+  font-size: 2.5rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #FFFFFF, #9CA3AF);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* 7. SECTION SEPARATORS */
+.section-separator {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #22222A, transparent);
+  margin: 0;
+}
+
+/* 8. SCROLLBAR (Premium look) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #111115;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2A2A35;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3B82F6;
+}
+
+/* 9. UTILITÁRIOS */
 .backdrop-blur-md, .backdrop-blur-xl {
   transform: translateZ(0);
   -webkit-backface-visibility: hidden;
@@ -81,17 +182,11 @@ body.booking-dark-mode::before {
 
 select {
   color-scheme: dark;
+  background-color: #111115;
+  border-color: #22222A;
+  color: white;
 }
 
-/* Fallback para browsers que não suportam color-scheme */
-@supports not (color-scheme: dark) {
-  select option {
-    background-color: #1a1a1a;
-    color: white;
-  }
-}
-
-/* Garante que opções são legíveis em qualquer situação */
 select option {
   background-color: #1a1a1a;
   color: white;

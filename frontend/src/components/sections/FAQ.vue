@@ -1,108 +1,90 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { ChevronDown, HelpCircle, Mail } from 'lucide-vue-next';
-import { graphql } from '@/graphql';
+import { ref } from 'vue'
+import { ChevronDown } from 'lucide-vue-next'
 
-interface Faq {
-  id: string;
-  question: string;
-  answer: string;
-  orderIndex: number;
-}
+const faqs = [
+  {
+    question: 'Quanto tempo demora o serviço?',
+    answer: 'O tempo varia consoante o serviço escolhido. A lavagem exterior demora cerca de 1h30, o detalhe interior 2h, e o tratamento premium pode demorar 4-6 horas, dependendo do estado do veículo.'
+  },
+  {
+    question: 'Onde fazem o serviço?',
+    answer: 'Somos totalmente móveis! Fazemos o serviço na sua casa, local de trabalho, ou qualquer lugar com acesso ao veículo dentro da região de Leiria e arredores.'
+  },
+  {
+    question: 'Que produtos utilizam?',
+    answer: 'Utilizamos apenas produtos certificados e de alta qualidade, incluindo marcas como Gyeon, Koch Chemie, CarPro e Menzerna. Todos os produtos são testados e seguros para todo o tipo de pinturas e materiais.'
+  },
+  {
+    question: 'É necessário marcar com antecedência?',
+    answer: 'Sim, recomendamos marcação com pelo menos 48h de antecedência para garantir a melhor disponibilidade. Pode agendar diretamente através do nosso site.'
+  },
+  {
+    question: 'Têm garantia?',
+    answer: 'Sim, oferecemos garantia de satisfação em todos os serviços. O tratamento premium tem garantia de 12 meses na proteção cerâmica aplicada.'
+  },
+  {
+    question: 'Qual é a área de cobertura?',
+    answer: 'Atendemos todo o distrito de Leiria, incluindo Leiria cidade, Marinha Grande, Batalha, Porto de Mós, Ourém e Fátima. Para outras localizações, contacte-nos para verificar disponibilidade.'
+  },
+  {
+    question: 'Como posso pagar?',
+    answer: 'Aceitamos pagamentos por MB Way, transferência bancária, numerário e cartão de crédito/débito (via terminal móvel).'
+  },
+  {
+    question: 'O serviço inclui limpeza interior completa?',
+    answer: 'Depende do pack escolhido. O pack de Lavagem Exterior inclui apenas exterior. O pack Detalhe Interior inclui limpeza profunda do habitáculo. O pack Completo inclui ambos.'
+  }
+]
 
-const faqs = ref<Faq[]>([]);
-const isLoading = ref(true);
-const openIndex = ref<number | null>(null);
+const openIndex = ref<number | null>(null)
 
 const toggleFaq = (index: number) => {
-  openIndex.value = openIndex.value === index ? null : index;
-};
-
-const fetchFaqs = async () => {
-  try {
-    const query = `
-      query {
-        faqs {
-          faqs { id question answer orderIndex }
-        }
-      }
-    `;
-    const data = await graphql<{ faqs: { faqs: Faq[] } }>(query);
-    faqs.value = data.faqs.faqs;
-  } catch (error) {
-    console.error("Erro ao carregar FAQs:", error);
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-onMounted(fetchFaqs);
+  openIndex.value = openIndex.value === index ? null : index
+}
 </script>
 
 <template>
-  <section class="py-24 bg-[#020204] relative overflow-hidden">
-    <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-[#2563EB]/8 blur-[120px] rounded-full pointer-events-none"></div>
-
-    <div class="container mx-auto max-w-3xl px-4 relative z-10">
+  <section class="py-24 px-4 relative z-10 bg-white/50">
+    <div class="container mx-auto max-w-4xl">
       
-      <!-- Header -->
       <div class="text-center mb-16">
         <div class="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2 mb-6">
-          <HelpCircle class="w-4 h-4 text-[#00D8FF]" />
-          <span class="text-[10px] font-black text-[#00D8FF] uppercase tracking-[0.3em]">Perguntas Frequentes</span>
+          <span class="text-[10px] font-black text-[#00D8FF] uppercase tracking-[0.3em]">Dúvidas Frequentes</span>
         </div>
-        <h2 class="text-4xl md:text-5xl font-black text-white uppercase italic tracking-tighter">
-          Tudo o que <span class="text-leiria-gradient">precisas</span> de saber
+        <h2 class="text-4xl md:text-6xl font-black text-gray-900 uppercase italic tracking-tighter drop-shadow-sm">
+          Perguntas <span class="bg-gradient-to-r from-[#2563EB] to-[#00D8FF] bg-clip-text text-transparent">Frequentes</span>
         </h2>
+        <p class="text-gray-500 mt-4 max-w-xl mx-auto">
+          Tire todas as suas dúvidas sobre os nossos serviços
+        </p>
       </div>
 
-      <!-- Loading -->
-      <div v-if="isLoading" class="flex justify-center py-12">
-        <div class="animate-spin rounded-full h-8 w-8 border-2 border-[#00D8FF] border-t-transparent"></div>
-      </div>
-
-      <!-- FAQ List -->
-      <div v-else class="space-y-3">
+      <div class="space-y-4">
         <div 
-          v-for="(faq, i) in faqs" 
-          :key="faq.id"
-          class="bg-[#050508] border rounded-2xl overflow-hidden transition-all duration-300"
-          :class="openIndex === i ? 'border-[#00D8FF]/30' : 'border-white/5'"
+          v-for="(faq, index) in faqs" 
+          :key="index"
+          class="bg-[#0A0A0F]/95 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:border-[#3B82F6]/30 transition-all duration-300"
         >
           <button 
-            @click="toggleFaq(i)" 
-            class="w-full px-6 py-5 flex items-center justify-between text-left gap-4"
+            @click="toggleFaq(index)"
+            class="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-white/5 transition-colors"
           >
-            <span class="text-sm font-bold text-white pr-4">
-              {{ faq.question }}
-            </span>
-            
+            <span class="text-white font-bold text-base">{{ faq.question }}</span>
             <ChevronDown 
-              class="w-5 h-5 shrink-0 transition-transform duration-300"
-              :class="openIndex === i ? 'text-[#00D8FF] rotate-180' : 'text-gray-500'"
+              class="w-5 h-5 text-[#00D8FF] transition-transform duration-300" 
+              :class="{ 'rotate-180': openIndex === index }" 
             />
           </button>
-
+          
           <div 
-            class="grid transition-all duration-300"
-            :style="{ gridTemplateRows: openIndex === i ? '1fr' : '0fr' }"
+            v-show="openIndex === index"
+            class="px-6 pb-5 text-gray-400 text-sm leading-relaxed border-t border-white/10 pt-4"
           >
-            <div class="min-h-0 overflow-hidden">
-              <p class="px-6 pb-5 text-sm text-gray-400 leading-relaxed">
-                {{ faq.answer }}
-              </p>
-            </div>
+            {{ faq.answer }}
           </div>
         </div>
       </div>
     </div>
   </section>
 </template>
-
-<style scoped>
-.text-leiria-gradient {
-  background: linear-gradient(to right, #2563EB, #00D8FF);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-</style>

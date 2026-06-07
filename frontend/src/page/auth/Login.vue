@@ -3,7 +3,7 @@
     <div class="max-w-md w-full">
       
       <div class="text-center mb-8">
-        <h1 class="text-4xl font-black mb-2 text-gray-900 uppercase italic tracking-tighter drop-shadow-sm">
+        <h1 class="text-4xl font-black mb-2 text-white uppercase italic tracking-tighter drop-shadow-sm">
           Bem-vindo de <span class="bg-gradient-to-r from-[#2563EB] to-[#00D8FF] bg-clip-text text-transparent">volta</span>
         </h1>
         <p class="text-gray-600 font-medium">Acede à tua área de cliente LeiriaDetail</p>
