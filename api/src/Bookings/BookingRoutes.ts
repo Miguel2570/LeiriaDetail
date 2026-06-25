@@ -31,6 +31,19 @@ async function CalculatePrice(request: Request, response: Response) {
     response.status(200).send(await BookingManager.CalculatePrice(vehicleId, serviceId));
 }
 
+async function CreatePendingBooking(request: Request, response: Response) {
+    try {
+        const result = await BookingManager.CreatePendingBooking(request.body);
+        response.status(result.HasError ? 500 : 200).send(result);
+    } catch (error: any) {
+        response.status(500).send({ 
+            HasError: true, 
+            Error: { Message: error.message } 
+        });
+    }
+}
+
+router.post("/", CreatePendingBooking);
 router.post("/", CreateBooking);
 router.get("/", GetUserBookings);
 router.get("/slots", GetAvailableSlots);

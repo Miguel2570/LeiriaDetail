@@ -36,6 +36,35 @@ class ServiceManager {
         }
     }
 
+    static async GetPackExtras(packId: number): Promise<ServiceOutputModel> {
+        try {
+            const query = `
+                SELECT s.* FROM services s
+                JOIN pack_available_extras pae ON s.id = pae.extra_id
+                WHERE pae.pack_id = $1
+                ORDER BY pae.display_order ASC
+            `;
+            const result = await server.query(query, [packId]);
+            return new ServiceOutputModel(result.rows, "Extras carregados com sucesso.");
+        } catch (error: any) {
+            return new ServiceOutputModel(undefined, "Erro ao carregar extras.", { Field: "Server", Message: error?.message ?? "Internal Server Error" });
+        }
+    }
+
+    static async GetServiceSteps(serviceId: number): Promise<ServiceOutputModel> {
+        try {
+            const query = `
+                SELECT * FROM service_steps
+                WHERE service_id = $1
+                ORDER BY step_order ASC
+            `;
+            const result = await server.query(query, [serviceId]);
+            return new ServiceOutputModel(result.rows, "Passos carregados com sucesso.");
+        } catch (error: any) {
+            return new ServiceOutputModel(undefined, "Erro ao carregar passos.", { Field: "Server", Message: error?.message ?? "Internal Server Error" });
+        }
+    }
+
     static async CreateService(service: Service): Promise<ServiceOutputModel> {
         try {
             const query = `INSERT INTO services (name, description, price_ab, price_c, price_de, duration_minutes, pack_type) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`;
@@ -68,6 +97,32 @@ class ServiceManager {
             return new ServiceOutputModel(undefined, "Serviço eliminado com sucesso.");
         } catch (error: any) {
             return new ServiceOutputModel(undefined, "Erro ao eliminar serviço.", { Field: "Server", Message: error?.message ?? "Internal Server Error" });
+        }
+    }
+    static async GetFullPackDetails(packId: number): Promise<ServiceOutputModel> {
+        try {
+            // 1. Buscar dados base do Pack
+            const serviceResult = await server.query('SELECT * FROM services WHERE id = $1', [packId]);
+            if (serviceResult.rows.length === 0) return new ServiceOutputModel(undefined, "Pack não encontrado.");
+
+            const pack = serviceResult.rows[0];
+
+            // 2. Buscar Passos ordenados
+            const stepsResult = await server.query('SELECT * FROM service_steps WHERE service_id = $1 ORDER BY step_order ASC', [packId]);
+            pack.steps = stepsResult.rows;
+
+            // 3. Buscar Extras permitidos
+            const extrasQuery = `
+                SELECT s.* FROM services s
+                JOIN pack_available_extras pae ON s.id = pae.extra_id
+                WHERE pae.pack_id = $1 ORDER BY pae.display_order ASC
+            `;
+            const extrasResult = await server.query(extrasQuery, [packId]);
+            pack.extras = extrasResult.rows;
+
+            return new ServiceOutputModel([pack], "Detalhes do pack carregados.");
+        } catch (error: any) {
+            return new ServiceOutputModel(undefined, "Erro ao carregar detalhes.", { Field: "Server", Message: error.message });
         }
     }
 }

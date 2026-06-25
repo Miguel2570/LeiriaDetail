@@ -5,7 +5,7 @@
 CREATE TABLE IF NOT EXISTS pending_bookings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    vehicle_id INTEGER NOT NULL REFERENCES vehicles(id) ON DELETE CASCADE,
+    vehicle_id INTEGER NOT NULL REFERENCES user_vehicles(id) ON DELETE CASCADE,
     service_id INTEGER NOT NULL REFERENCES services(id) ON DELETE CASCADE,
     booking_date DATE NOT NULL,
     booking_time TIME NOT NULL,
@@ -22,6 +22,6 @@ CREATE TABLE IF NOT EXISTS pending_bookings (
     expires_at TIMESTAMP NOT NULL,
     paid_at TIMESTAMP,
     CONSTRAINT fk_pending_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT fk_pending_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE,
+    CONSTRAINT fk_pending_vehicle FOREIGN KEY (vehicle_id) REFERENCES user_vehicles(id) ON DELETE CASCADE,
     CONSTRAINT fk_pending_service FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE
 );

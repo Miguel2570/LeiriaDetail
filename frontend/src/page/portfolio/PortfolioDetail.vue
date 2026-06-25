@@ -149,7 +149,7 @@
             Pronto para <span class="bg-gradient-to-r from-[#2563EB] to-[#00D8FF] bg-clip-text text-transparent">transformar</span> o seu carro?
           </h2>
           <p class="text-gray-400 text-sm mb-6">Agende já e tenha o carro que sempre mereceu.</p>
-          <router-link to="/agenda" class="inline-flex px-8 py-4 bg-gradient-to-r from-[#2563EB] to-[#00D8FF] text-white font-black uppercase tracking-widest text-sm rounded-xl hover:shadow-[0_10px_30px_rgba(37,99,235,0.4)] transition-all hover:-translate-y-1">
+          <router-link to="/servicos" class="inline-flex px-8 py-4 bg-gradient-to-r from-[#2563EB] to-[#00D8FF] text-white font-black uppercase tracking-widest text-sm rounded-xl hover:shadow-[0_10px_30px_rgba(37,99,235,0.4)] transition-all hover:-translate-y-1">
             Agendar Agora
           </router-link>
         </div>

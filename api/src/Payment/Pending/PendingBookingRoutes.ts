@@ -8,14 +8,24 @@ const router = Router();
 async function Create(request: Request, response: Response) {
     try {
         const data = request.body;
+        console.log('📥 POST /PendingBookings - Body:', JSON.stringify(data, null, 2));
+        
         const pending = await PendingBookingsManager.create(data);
+        
+        console.log('✅ Resultado:', JSON.stringify(pending, null, 2));
+        
         response.status(201).json({ 
-            pendingBooking: pending, 
+            PendingBooking: pending,
             message: "Pagamento pendente criado.", 
             HasError: false 
         });
     } catch (error: any) {
-        response.status(500).json({ HasError: true, Error: { Message: "Erro ao criar pagamento pendente." } });
+        console.error('💥 ERRO 500:', error.message);
+        console.error('Stack:', error.stack);
+        response.status(500).json({ 
+            HasError: true, 
+            Error: { Message: error.message || "Erro ao criar pagamento pendente." } 
+        });
     }
 }
 

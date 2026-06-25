@@ -47,7 +47,6 @@
           <!-- ✅ BANNER DE RETORNO AO AGENDAMENTO -->
           <div v-if="showReturnToBookingBanner" class="bg-blue-500/10 border border-blue-500/30 rounded-2xl p-4 mb-6 flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <span class="text-2xl">🔄</span>
               <div>
                 <p class="text-blue-400 font-bold text-sm">Agendamento em Progresso</p>
                 <p class="text-gray-400 text-xs">Tem um agendamento por concluir. Volte para continuar.</p>
@@ -134,7 +133,7 @@
           <!-- ============ MARCAÇÕES ============ -->
           <div v-if="activeTab === 'bookings'">
             <div v-if="isLoading" class="flex justify-center py-20"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00D8FF]"></div></div>
-            <div v-else-if="bookings.length === 0" class="bg-[#050508] border border-white/10 rounded-2xl p-12 text-center"><Calendar class="w-12 h-12 text-gray-600 mx-auto mb-4" /><h4 class="text-white font-bold mb-1">{{ t('clientArea.bookings.empty') }}</h4><router-link to="/agenda" class="text-[#00D8FF] text-sm font-bold hover:underline">{{ t('clientArea.bookings.scheduleNow') }} →</router-link></div>
+            <div v-else-if="bookings.length === 0" class="bg-[#050508] border border-white/10 rounded-2xl p-12 text-center"><Calendar class="w-12 h-12 text-gray-600 mx-auto mb-4" /><h4 class="text-white font-bold mb-1">{{ t('clientArea.bookings.empty') }}</h4><router-link to="/servicos" class="text-[#00D8FF] text-sm font-bold hover:underline">{{ t('clientArea.bookings.scheduleNow') }} →</router-link></div>
             <div v-else class="space-y-4">
               <div v-for="b in bookings" :key="b.id" class="bg-[#050508] border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all">
                 <div class="flex justify-between items-start mb-3"><div><h4 class="font-bold text-white">{{ b.serviceName }}</h4><p class="text-xs text-gray-400">🚗 {{ b.vehicleName }} • {{ b.vehiclePlate }}</p></div><span :class="['text-[10px] font-black uppercase px-3 py-1.5 rounded-full', b.status === 'PENDENTE' ? 'bg-amber-500/10 text-amber-500' : 'bg-emerald-500/10 text-emerald-500']">● {{ b.status }}</span></div>
@@ -226,10 +225,11 @@ const vehicleError = ref('');
 const newVehicle = ref({ license_plate: '', brand: '', model: '', year: null as number | null, fuel_type: '', size_category: 'C' });
 const plateStatus = reactive({ isValid: false, class: 'bg-white/5 border-white/10 focus:border-[#3B82F6]', message: '', messageClass: '' });
 
-// ✅ Pagamento Pendente
+const pageReady = ref(false);
+const pageError = ref('');
+
 const pendingBooking = ref<any>(null);
 const checkPendingBooking = async () => {
-  // ✅ 1. Tentar buscar da API primeiro
   const userId = Cache.UserId.value;
   if (userId) {
     try {
@@ -256,7 +256,6 @@ const checkPendingBooking = async () => {
       if (data.userPendingBookings?.pendingBookings?.length > 0 && !data.userPendingBookings.hasError) {
         const pb = data.userPendingBookings.pendingBookings[0];
         
-        // Verificar expiração
         const expiresAt = new Date(pb.expiresAt).getTime();
         if (Date.now() < expiresAt) {
           pendingBooking.value = {
@@ -269,12 +268,10 @@ const checkPendingBooking = async () => {
             price: pb.price
           };
           
-          // Atualizar localStorage
           localStorage.setItem('pending_booking', JSON.stringify(pendingBooking.value));
           localStorage.setItem('pending_booking_id', pb.id);
           return;
         } else {
-          // Expirado - limpar
           localStorage.removeItem('pending_booking');
           localStorage.removeItem('pending_booking_id');
           pendingBooking.value = null;
@@ -286,13 +283,11 @@ const checkPendingBooking = async () => {
     }
   }
   
-  // ✅ 2. Fallback para localStorage
   const stored = localStorage.getItem('pending_booking');
   if (stored) { 
     try { 
       const booking = JSON.parse(stored);
       
-      // Verificar expiração
       if (booking.expiresAt) {
         const expiresAt = new Date(booking.expiresAt).getTime();
         if (Date.now() > expiresAt) {
@@ -333,7 +328,6 @@ const continuePayment = () => {
 
 const formatPendingDate = (date: any) => { if (!date) return ''; try { return new Date(date).toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' }); } catch { return date; } };
 
-// ✅ Retorno ao Agendamento
 const showReturnToBookingBanner = ref(false);
 
 const returnToBooking = () => {
@@ -418,13 +412,26 @@ const handlePlateInput = () => {
 };
 
 const handleAddVehicle = async () => {
-  vehicleError.value = ''; vehicleSubmitting.value = true;
+  vehicleError.value = ''; 
+  vehicleSubmitting.value = true;
   try {
     const mutation = `mutation AddVehicle($input: AddVehicleInput!) { addUserVehicle(input: $input) { vehicle { id } hasError error { field message } } }`;
-    const data = await graphql<{ addUserVehicle: any }>(mutation, { input: { licensePlate: newVehicle.value.license_plate, brand: newVehicle.value.brand, model: newVehicle.value.model, year: newVehicle.value.year, fuelType: newVehicle.value.fuel_type || null, sizeCategory: newVehicle.value.size_category } });
-    if (data.addUserVehicle.hasError) { vehicleError.value = data.addUserVehicle.error?.message || 'Erro.'; return; }
+    const data = await graphql<{ addUserVehicle: any }>(mutation, { 
+      input: { 
+        licensePlate: newVehicle.value.license_plate, 
+        brand: newVehicle.value.brand, 
+        model: newVehicle.value.model, 
+        year: newVehicle.value.year, 
+        fuelType: newVehicle.value.fuel_type || null, 
+        sizeCategory: newVehicle.value.size_category 
+      } 
+    });
     
-    // Guardar ID do veículo adicionado para auto-seleção
+    if (data.addUserVehicle.hasError) { 
+      vehicleError.value = data.addUserVehicle.error?.message || 'Erro.'; 
+      return; 
+    }
+    
     if (data.addUserVehicle.vehicle?.id) {
       localStorage.setItem('last_added_vehicle_id', data.addUserVehicle.vehicle.id);
     }
@@ -437,17 +444,17 @@ const handleAddVehicle = async () => {
     showAddVehicleForm.value = false; 
     await loadVehicles();
     
-    // Se houver booking pendente, perguntar se quer voltar
     const hasBookingState = localStorage.getItem('booking_state');
     if (hasBookingState) {
-      showReturnToBookingBanner.value = true;
       setTimeout(() => {
-        if (confirm('Veículo adicionado com sucesso! Deseja voltar ao agendamento?')) {
-          returnToBooking();
-        }
-      }, 300);
+        router.push('/agenda');
+      }, 500);
     }
-  } catch (error: any) { vehicleError.value = error.message; } finally { vehicleSubmitting.value = false; }
+  } catch (error: any) { 
+    vehicleError.value = error.message; 
+  } finally { 
+    vehicleSubmitting.value = false; 
+  }
 };
 
 const handleSetPrimary = async (vehicleId: string) => { try { await graphql(`mutation { setPrimaryVehicle(vehicleId: "${vehicleId}") { hasError } }`); await loadVehicles(); } catch (error) { console.error(error); } };
@@ -465,38 +472,44 @@ const handleDeleteAccount = async () => {
   } catch (error: any) { deleteMessage.value = error.message; deleteError.value = true; } finally { isDeleting.value = false; }
 };
 
-onMounted(() => {
-  checkPendingBooking();
-  loadProfile();
-  loadBookings();
-  loadVehicles();
-  loadHistory();
-  checkAdminRole();
-  
-  // Verificar parâmetros da URL para retorno do booking
-  const tabParam = route.query.tab as string;
-  const addVehicleParam = route.query.addVehicle as string;
-  const returnToParam = route.query.returnTo as string;
-  
-  if (tabParam) {
-    activeTab.value = tabParam as any;
-  }
-  
-  if (addVehicleParam === 'true') {
-    showAddVehicleForm.value = true;
-    // Limpar parâmetros da URL
-    const newUrl = window.location.pathname + '?tab=vehicles';
-    window.history.replaceState({}, '', newUrl);
-  }
-  
-  if (returnToParam === 'booking') {
-    showReturnToBookingBanner.value = true;
-  }
-  
-  // Verificar se há estado de booking guardado
-  const hasBookingState = localStorage.getItem('booking_state');
-  if (hasBookingState) {
-    showReturnToBookingBanner.value = true;
+onMounted(async () => {
+  try {
+    await checkPendingBooking();
+    await Promise.all([
+      loadProfile(),
+      loadBookings(),
+      loadVehicles(),
+      loadHistory(),
+    ]);
+    checkAdminRole();
+    
+    const tabParam = route.query.tab as string;
+    const addVehicleParam = route.query.addVehicle as string;
+    const returnToParam = route.query.returnTo as string;
+    
+    if (tabParam) activeTab.value = tabParam as any;
+    if (addVehicleParam === 'true') {
+      showAddVehicleForm.value = true;
+      activeTab.value = 'vehicles';
+    }
+    if (returnToParam === 'booking' || returnToParam === 'agenda') {
+      showReturnToBookingBanner.value = true;
+    }
+    
+    const hasBookingState = localStorage.getItem('booking_state');
+    if (hasBookingState && !returnToParam) {
+      showReturnToBookingBanner.value = true;
+    }
+    
+    if (addVehicleParam || returnToParam) {
+      const newUrl = window.location.pathname + (tabParam ? `?tab=${tabParam}` : '');
+      window.history.replaceState({}, '', newUrl);
+    }
+    
+    pageReady.value = true;
+  } catch (error) {
+    console.error('Erro ao carregar área de cliente:', error);
+    pageError.value = 'Erro ao carregar. Tente novamente.';
   }
 });
 </script>

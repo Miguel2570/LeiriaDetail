@@ -19,7 +19,9 @@ class PendingBookingsManager {
         invoiceAddress?: string;
         expiresInMinutes?: number;
     }): Promise<any> {
-        const expiresInMinutes = data.expiresInMinutes || 30; // ✅ 30 minutos por defeito
+        console.log('📥 Manager recebeu:', JSON.stringify(data, null, 2));
+        const expiresInMinutes = data.expiresInMinutes || 30
+        console.log('⏱ Expira em:', expiresInMinutes, 'minutos');
         
         const result = await server.query(
             `INSERT INTO pending_bookings 

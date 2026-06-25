@@ -134,8 +134,8 @@ const handleAddVehicle = () => {
   if (Cache.Session.value && Cache.Session.value !== '1234') {
     // Guardar o estado do booking antes de sair
     emit('saveBookingState');
-    // Redirecionar para a área de cliente com parâmetros
-    router.push('/client-area?tab=vehicles&addVehicle=true&returnTo=booking');
+    // ✅ Corrigido: returnTo=agenda (nome correto da rota)
+    router.push('/client-area?tab=vehicles&addVehicle=true&returnTo=agenda');
   } else {
     router.push('/login');
   }

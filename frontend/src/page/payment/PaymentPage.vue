@@ -20,14 +20,12 @@
       </div>
 
       <template v-else-if="booking">
-        <!-- Empresa -->
         <div class="bg-[#050508] border border-white/10 rounded-2xl p-4 mb-4 text-center">
           <p class="text-[10px] text-gray-500 uppercase tracking-wider">
             LeiriaDetail, Lda. | Rua do Detalhe, 123, 2400-000 Leiria | geral@leiriadetail.pt
           </p>
         </div>
 
-        <!-- Resumo -->
         <div class="bg-[#050508] border border-white/10 rounded-2xl p-6 mb-6">
           <h3 class="text-sm font-bold text-[#00D8FF] uppercase tracking-wider mb-4">Resumo da Marcação</h3>
           <div class="space-y-3 text-sm">
@@ -36,100 +34,32 @@
             <div class="flex justify-between"><span class="text-gray-400">Data</span><span class="text-white">{{ formatDate(booking.bookingDate) }} às {{ booking.bookingTime }}</span></div>
             <div class="border-t border-white/5 pt-3">
               <div class="flex justify-between text-xs text-gray-400 mb-1"><span>Subtotal</span><span>{{ subtotal }}€</span></div>
-              
-              <!-- IVA condicional -->
-              <div v-if="ivaEnabled" class="flex justify-between text-xs text-gray-400 mb-1"><span>IVA ({{ ivaRate }}%)</span><span>{{ ivaAmount }}€</span></div>
-              
               <div class="flex justify-between mt-2 pt-2 border-t border-white/5"><span class="text-gray-400 font-bold">Total</span><span class="text-2xl font-black text-[#00D8FF]">{{ total }}€</span></div>
-              
-              <p v-if="ivaEnabled" class="text-[9px] text-gray-500 mt-1">Preços em EUR. IVA incluído à taxa legal em vigor ({{ ivaRate }}%).</p>
-              <p v-else class="text-[9px] text-gray-500 mt-1">Preços em EUR.</p>
+              <p class="text-[9px] text-gray-500 mt-1">Preços em EUR.</p>
             </div>
           </div>
         </div>
 
-        <!-- Dados de Faturação -->
-        <div class="bg-[#050508] border border-white/10 rounded-2xl p-6 mb-6">
-          <h3 class="text-sm font-bold text-[#00D8FF] uppercase tracking-wider mb-4">Dados de Faturação</h3>
-          
-          <!-- NIF obrigatório -->
-          <div v-if="requireNIF" class="bg-[#00D8FF]/10 border border-[#00D8FF]/20 rounded-xl p-3 mb-4">
-            <p class="text-[#00D8FF] text-xs font-bold">📋 NIF obrigatório para emissão de fatura</p>
-          </div>
-          
-          <div v-if="requireNIF || wantInvoice" class="space-y-3">
-            <!-- Checkbox só aparece se NÃO for obrigatório -->
-            <div v-if="!requireNIF" class="flex items-center gap-3 mb-4">
-              <input type="checkbox" v-model="wantInvoice" id="wantInvoice" class="w-4 h-4 rounded border-gray-600 bg-white/5" />
-              <label for="wantInvoice" class="text-sm text-gray-400">Solicitar fatura com NIF</label>
-            </div>
-            
-            <div>
-              <label class="block text-xs font-bold text-gray-400 uppercase mb-2">
-                NIF {{ requireNIF ? '*' : '' }}
-              </label>
-              <input 
-                v-model="invoiceNIF" 
-                type="text" 
-                placeholder="123456789" 
-                maxlength="9" 
-                class="w-full px-4 py-3 bg-white/5 border rounded-xl text-white outline-none focus:border-[#00D8FF] transition-colors"
-                :class="requireNIF && triedSubmit && (!invoiceNIF || invoiceNIF.length !== 9) ? 'border-red-500/50' : 'border-white/10'"
-              />
-              <p v-if="requireNIF && triedSubmit && (!invoiceNIF || invoiceNIF.length !== 9)" class="text-red-400 text-[10px] mt-1">NIF deve ter 9 dígitos</p>
-            </div>
-            
-            <div>
-              <label class="block text-xs font-bold text-gray-400 uppercase mb-2">
-                Nome para fatura {{ requireNIF ? '*' : '' }}
-              </label>
-              <input 
-                v-model="invoiceName" 
-                type="text" 
-                placeholder="Nome completo ou empresa" 
-                class="w-full px-4 py-3 bg-white/5 border rounded-xl text-white outline-none focus:border-[#00D8FF] transition-colors"
-                :class="requireNIF && triedSubmit && !invoiceName.trim() ? 'border-red-500/50' : 'border-white/10'"
-              />
-              <p v-if="requireNIF && triedSubmit && !invoiceName.trim()" class="text-red-400 text-[10px] mt-1">Nome é obrigatório para fatura</p>
-            </div>
-            
-            <div>
-              <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Morada para fatura</label>
-              <textarea 
-                v-model="invoiceAddress" 
-                placeholder="Morada completa" 
-                rows="2" 
-                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-[#00D8FF] resize-none"
-              ></textarea>
-            </div>
-          </div>
-        </div>
-
-        <!-- Método de Pagamento -->
         <div class="bg-[#050508] border border-white/10 rounded-2xl p-6 mb-6">
           <h3 class="text-sm font-bold text-[#00D8FF] uppercase tracking-wider mb-4">Método de Pagamento</h3>
           <div class="space-y-3">
             
-            <!-- MB Way -->
             <button @click="method = 'mbway'" :class="['w-full p-4 rounded-xl border text-left transition-all flex items-center gap-4', method === 'mbway' ? 'border-[#00D8FF] bg-[#00D8FF]/5' : 'border-white/5 hover:border-white/20']">
               <div class="w-10 h-10 rounded-lg bg-[#E6007E]/20 flex items-center justify-center shrink-0"><Smartphone class="w-5 h-5 text-[#E6007E]" /></div>
               <div><p class="font-bold text-white text-sm">MB Way</p><p class="text-xs text-gray-400">Pagamento imediato via app</p></div>
             </button>
             
-            <!-- Multibanco -->
             <button @click="method = 'multibanco'" :class="['w-full p-4 rounded-xl border text-left transition-all flex items-center gap-4', method === 'multibanco' ? 'border-[#00D8FF] bg-[#00D8FF]/5' : 'border-white/5 hover:border-white/20']">
               <div class="w-10 h-10 rounded-lg bg-[#FF6600]/20 flex items-center justify-center shrink-0"><CreditCard class="w-5 h-5 text-[#FF6600]" /></div>
               <div><p class="font-bold text-white text-sm">Multibanco</p><p class="text-xs text-gray-400">Entidade + Referência • Válido 72h</p></div>
             </button>
 
-            <!-- Dinheiro -->
             <button @click="method = 'cash'" :class="['w-full p-4 rounded-xl border text-left transition-all flex items-center gap-4', method === 'cash' ? 'border-[#00D8FF] bg-[#00D8FF]/5' : 'border-white/5 hover:border-white/20']">
               <div class="w-10 h-10 rounded-lg bg-[#10B981]/20 flex items-center justify-center shrink-0"><Banknote class="w-5 h-5 text-[#10B981]" /></div>
               <div><p class="font-bold text-white text-sm">Dinheiro</p><p class="text-xs text-gray-400">Pague em mão no dia do serviço</p></div>
             </button>
           </div>
 
-          <!-- Campo MB Way -->
           <div v-if="method === 'mbway'" class="mt-4 pt-4 border-t border-white/5">
             <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Nº Telemóvel MB Way</label>
             <div class="flex gap-3">
@@ -139,7 +69,6 @@
             <p v-if="triedSubmit && mbwayPhone.length !== 9" class="text-red-400 text-[10px] mt-1">Número de telemóvel inválido</p>
           </div>
 
-          <!-- Referências Multibanco -->
           <div v-if="method === 'multibanco' && paymentData" class="mt-4 pt-4 border-t border-white/5 space-y-3">
             <p class="text-[10px] text-gray-500 mb-2">Referência válida por 72 horas.</p>
             <div class="bg-[#0A0A0F] p-4 rounded-xl"><p class="text-xs text-gray-400 mb-1">Entidade</p><p class="text-xl font-mono font-bold text-white tracking-widest">{{ paymentData.entity }}</p></div>
@@ -147,7 +76,6 @@
             <div class="bg-[#0A0A0F] p-4 rounded-xl"><p class="text-xs text-gray-400 mb-1">Valor</p><p class="text-xl font-mono font-bold text-[#00D8FF]">{{ paymentData.amount }}€</p></div>
           </div>
 
-          <!-- Mensagem para Dinheiro -->
           <div v-if="method === 'cash'" class="mt-4 pt-4 border-t border-white/5">
             <div class="bg-[#10B981]/10 border border-[#10B981]/30 rounded-xl p-4 text-center">
               <p class="text-[#10B981] font-bold text-sm mb-1">💵 Pagamento em Dinheiro</p>
@@ -157,7 +85,6 @@
           </div>
         </div>
 
-        <!-- Termos -->
         <div class="bg-[#050508] border border-white/10 rounded-2xl p-6 mb-6">
           <h3 class="text-sm font-bold text-[#00D8FF] uppercase tracking-wider mb-4">Termos e Condições</h3>
           <div class="space-y-3">
@@ -177,7 +104,6 @@
           <p v-if="triedSubmit && (!acceptedPrivacy || !acceptedTerms || !acceptedCancellation)" class="text-red-400 text-[10px] mt-3">Aceite todos os termos para continuar.</p>
         </div>
 
-        <!-- Legal -->
         <div class="bg-[#050508] border border-white/10 rounded-2xl p-4 mb-6">
           <p class="text-[10px] text-gray-500">DL n.º 24/2014: 14 dias para livre resolução. Perde o direito após execução completa do serviço.</p>
         </div>
@@ -188,7 +114,6 @@
           <a href="https://www.livroreclamacoes.pt" target="_blank" class="text-[10px] text-gray-500 hover:text-[#00D8FF] underline">📖 Livro de Reclamações Eletrónico</a>
         </div>
 
-        <!-- Botão Pagar -->
         <button @click="handlePayment" :disabled="isSubmitting || !canPay" class="w-full py-4 bg-gradient-to-r from-[#2563EB] to-[#00D8FF] text-white font-black uppercase tracking-widest text-sm rounded-xl shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
           {{ buttonText }}
         </button>
@@ -217,35 +142,24 @@ const mbwayPhone = ref('')
 const isSubmitting = ref(false)
 const triedSubmit = ref(false)
 const paymentData = ref<{ entity: string; reference: string; amount: string } | null>(null)
-const wantInvoice = ref(false)
-const invoiceNIF = ref('')
-const invoiceName = ref('')
-const invoiceAddress = ref('')
 const acceptedPrivacy = ref(false)
 const acceptedTerms = ref(false)
 const acceptedCancellation = ref(false)
 const sessionTimeout = ref(false)
 
+// ✅ Valores padrão (sem chamada à API)
 const ivaEnabled = ref(false)
 const ivaRate = ref(23)
-const requireNIF = ref(false)
 
 let timeoutTimer: ReturnType<typeof setTimeout> | null = null
 
-// Reset do estado de tentativa quando muda o método
 watch(method, () => { triedSubmit.value = false })
 
-const fetchSettings = async () => {
-  try {
-    const query = `query { settings { ivaEnabled ivaRate requireNif } }`
-    const data = await graphql<{ settings: any }>(query)
-    if (data.settings) {
-      ivaEnabled.value = data.settings.ivaEnabled === true || data.settings.ivaEnabled === 'true'
-      ivaRate.value = parseInt(data.settings.ivaRate) || 23
-      requireNIF.value = data.settings.requireNif === true || data.settings.requireNif === 'true'
-      if (requireNIF.value) { wantInvoice.value = true }
-    }
-  } catch (error) { /* usa defaults */ }
+// ✅ CORRIGIDO: já não chama a API
+const fetchSettings = () => {
+  // Valores padrão
+  ivaEnabled.value = false
+  ivaRate.value = 23
 }
 
 const subtotal = computed(() => (booking.value?.servicePrice || 0).toFixed(2))
@@ -264,12 +178,6 @@ const total = computed(() => {
 const canPay = computed(() => {
   if (!acceptedPrivacy.value || !acceptedTerms.value || !acceptedCancellation.value) return false
   if (method.value === 'mbway' && mbwayPhone.value.length !== 9) return false
-  if (requireNIF.value) {
-    if (!invoiceNIF.value || invoiceNIF.value.length !== 9) return false
-    if (!invoiceName.value.trim()) return false
-  } else if (wantInvoice.value) {
-    if (!invoiceNIF.value || invoiceNIF.value.length !== 9) return false
-  }
   return true
 })
 
@@ -294,15 +202,7 @@ const fetchBooking = async () => {
       query GetPendingBooking($id: ID!) {
         pendingBooking(id: $id) {
           pendingBookings {
-            id
-            serviceName
-            vehicleName
-            vehiclePlate
-            bookingDate
-            bookingTime
-            price
-            status
-            expiresAt
+            id serviceName vehicleName vehiclePlate bookingDate bookingTime price status expiresAt
           }
           hasError
         }
@@ -314,7 +214,6 @@ const fetchBooking = async () => {
     if (data.pendingBooking?.pendingBookings?.length > 0 && !data.pendingBooking.hasError) {
       const pb = data.pendingBooking.pendingBookings[0];
       
-      // Verificar se não expirou
       const expiresAt = new Date(pb.expiresAt).getTime();
       if (Date.now() > expiresAt) {
         clearPendingData();
@@ -324,36 +223,25 @@ const fetchBooking = async () => {
       }
       
       booking.value = {
-        id: pb.id,
-        serviceName: pb.serviceName || 'Serviço',
-        vehicleName: pb.vehicleName || 'Veículo',
-        vehiclePlate: pb.vehiclePlate || 'AA-00-BB',
-        bookingDate: pb.bookingDate,
-        bookingTime: pb.bookingTime,
-        servicePrice: pb.price || 0
+        id: pb.id, serviceName: pb.serviceName || 'Serviço',
+        vehicleName: pb.vehicleName || 'Veículo', vehiclePlate: pb.vehiclePlate || 'AA-00-BB',
+        bookingDate: pb.bookingDate, bookingTime: pb.bookingTime, servicePrice: pb.price || 0
       };
       isLoading.value = false;
       return;
     }
-  } catch (error) {
-    console.warn('Erro ao buscar pending booking da API, a usar fallback:', error);
-  }
+  } catch (error) { console.warn('Erro ao buscar pending booking:', error); }
 
   const storedBooking = localStorage.getItem('pending_booking');
   if (storedBooking) {
     try {
       const pb = JSON.parse(storedBooking);
-      
-      if (pb.expiresAt) {
-        const expiresAt = new Date(pb.expiresAt).getTime();
-        if (Date.now() > expiresAt) {
-          clearPendingData();
-          alert('⏰ Esta marcação expirou. Por favor, faça uma nova.');
-          router.push('/agenda');
-          return;
-        }
+      if (pb.expiresAt && Date.now() > new Date(pb.expiresAt).getTime()) {
+        clearPendingData();
+        alert('⏰ Esta marcação expirou.');
+        router.push('/agenda');
+        return;
       }
-      
       booking.value = {
         id: pb.bookingId || bookingId,
         serviceName: localStorage.getItem('last_service') || pb.serviceName || 'Serviço',
@@ -394,33 +282,16 @@ const handlePayment = async () => {
         reference: `${Math.floor(Math.random() * 900000000) + 100000000}`,
         amount: total.value
       };
-      
-      // ✅ Marcar como pago na API
-      try {
-        await markAsPaid(bookingId, 'multibanco');
-      } catch (e) { /* fallback */ }
-      
+      try { await markAsPaid(bookingId, 'multibanco'); } catch (e) { /* fallback */ }
     } else if (method.value === 'cash') {
       await new Promise(r => setTimeout(r, 800));
-      
-      // ✅ Marcar como pago na API
-      try {
-        await markAsPaid(bookingId, 'cash');
-      } catch (e) { /* fallback */ }
-      
+      try { await markAsPaid(bookingId, 'cash'); } catch (e) { /* fallback */ }
       clearPendingData();
       alert('✅ Marcação confirmada! Pagamento em dinheiro no dia do serviço.');
       router.push('/client-area');
-      
     } else {
-      // MB Way
       await new Promise(r => setTimeout(r, 1500));
-      
-      // ✅ Marcar como pago na API
-      try {
-        await markAsPaid(bookingId, 'mbway');
-      } catch (e) { /* fallback */ }
-      
+      try { await markAsPaid(bookingId, 'mbway'); } catch (e) { /* fallback */ }
       clearPendingData();
       alert('✅ Pagamento MB Way confirmado!');
       router.push('/client-area');
@@ -437,25 +308,17 @@ const handlePayment = async () => {
 const markAsPaid = async (id: string, paymentMethod: string) => {
   const mutation = `
     mutation MarkPendingAsPaid($id: ID!, $paymentMethod: String!) {
-      markPendingAsPaid(id: $id, paymentMethod: $paymentMethod) {
-        message
-        hasError
-      }
+      markPendingAsPaid(id: $id, paymentMethod: $paymentMethod) { message hasError }
     }
   `;
-  
   await graphql(mutation, { id, paymentMethod });
 };
 
 const clearPendingData = () => {
-  localStorage.removeItem('pending_booking');
-  localStorage.removeItem('pending_booking_id');
-  localStorage.removeItem('last_service');
-  localStorage.removeItem('last_vehicle');
-  localStorage.removeItem('last_plate');
-  localStorage.removeItem('last_date');
-  localStorage.removeItem('last_time');
-  localStorage.removeItem('last_price');
+  localStorage.removeItem('pending_booking'); localStorage.removeItem('pending_booking_id');
+  localStorage.removeItem('last_service'); localStorage.removeItem('last_vehicle');
+  localStorage.removeItem('last_plate'); localStorage.removeItem('last_date');
+  localStorage.removeItem('last_time'); localStorage.removeItem('last_price');
 };
 
 onMounted(async () => {
@@ -472,11 +335,9 @@ onMounted(async () => {
     setTimeout(() => { router.push('/client-area') }, 3000)
   }, 30 * 60 * 1000)
 
-  await fetchSettings()
+  fetchSettings()
   fetchBooking()
 })
 
-onUnmounted(() => {
-  if (timeoutTimer) clearTimeout(timeoutTimer)
-})
+onUnmounted(() => { if (timeoutTimer) clearTimeout(timeoutTimer) })
 </script>

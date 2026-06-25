@@ -18,7 +18,7 @@
       </div>
     </div>
 
-    <!-- ✅ LeiriaPoints que vai ganhar -->
+    <!-- LeiriaPoints que vai ganhar -->
     <div v-if="!bookingData.isRedeemed && bookingData.service?.loyaltyPoints > 0" class="bg-[#10B981]/10 border border-[#10B981]/30 rounded-2xl p-4 flex items-center gap-3">
       <span class="text-2xl">🪙</span>
       <div>
@@ -67,7 +67,6 @@
           <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-2">Pagamento seguro via</p>
           <div class="flex gap-2">
             <span class="text-[10px] bg-[#E6007E]/10 text-[#E6007E] px-2 py-1 rounded-lg font-bold">MB Way</span>
-            <span class="text-[10px] bg-[#FF6600]/10 text-[#FF6600] px-2 py-1 rounded-lg font-bold">Multibanco</span>
             <span class="text-[10px] bg-[#10B981]/10 text-[#10B981] px-2 py-1 rounded-lg font-bold">Dinheiro</span>
           </div>
         </div>
@@ -95,7 +94,7 @@
       </div>
     </div>
 
-    <!-- Lembretes ... (mantém igual) -->
+    <!-- Lembretes -->
     <div class="bg-white/[0.01] border border-white/5 rounded-2xl p-5">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
@@ -140,8 +139,14 @@
       </div>
     </div>
 
+    <!-- ✅ Termos e Condições (obrigatório) -->
     <div class="flex items-start gap-3 bg-white/[0.01] border border-white/5 rounded-2xl p-4">
-      <input type="checkbox" id="terms" class="mt-1 h-4 w-4 rounded border-white/10 bg-white/5 text-[#2563EB] accent-[#2563EB]" required />
+      <input 
+        id="terms" 
+        v-model="termsAccepted"
+        type="checkbox" 
+        class="mt-1 h-4 w-4 rounded border-white/10 bg-white/5 text-[#2563EB] accent-[#2563EB] cursor-pointer" 
+      />
       <label for="terms" class="text-xs text-gray-400 leading-relaxed cursor-pointer select-none">
         Declaro que li e aceito os <router-link to="/termos" class="text-[#00D8FF] hover:underline font-bold">Termos e Condições</router-link> e a <router-link to="/privacidade" class="text-[#00D8FF] hover:underline font-bold">Política de Privacidade</router-link> da LeiriaDetail, Lda.
       </label>
@@ -150,9 +155,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { Car, Sparkles, Calendar, CreditCard, ShieldCheck, Bell, ChevronDown } from 'lucide-vue-next';
-import { graphql } from '@/graphql';
 
 const props = defineProps<{
   bookingData: {
@@ -165,23 +169,20 @@ const props = defineProps<{
   }
 }>();
 
+const emit = defineEmits(['update:termsAccepted']);
+
 const remindersEnabled = ref(false);
 const showReminders = ref(false);
 const selectedReminders = ref<string[]>(['24h']);
+const termsAccepted = ref(false);
 
 const ivaEnabled = ref(false);
 const ivaRate = ref(23);
 
-const fetchSettings = async () => {
-  try {
-    const query = `query { settings { ivaEnabled ivaRate requireNif } }`;
-    const data = await graphql<{ settings: any }>(query);
-    if (data?.settings) {
-      ivaEnabled.value = data.settings.ivaEnabled === true || data.settings.ivaEnabled === 'true';
-      ivaRate.value = parseInt(data.settings.ivaRate) || 23;
-    }
-  } catch (error: any) { /* defaults */ }
-};
+// ✅ Emitir quando o checkbox muda
+watch(termsAccepted, (val) => {
+  emit('update:termsAccepted', val);
+});
 
 const toggleReminder = (key: string) => {
   if (key === '24h') return;
@@ -213,6 +214,4 @@ const ivaAmount = computed(() => {
 });
 
 const total = computed(() => Number((basePrice.value + ivaAmount.value).toFixed(2)));
-
-onMounted(fetchSettings);
 </script>

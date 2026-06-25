@@ -1,3 +1,11 @@
+export interface ServiceStep {
+    id: number;
+    service_id: number;
+    step_order: number;
+    title: string;
+    duration_minutes: number;
+}
+
 export interface Service {
     id?: number;
     name: string;
@@ -7,6 +15,8 @@ export interface Service {
     price_de: number;
     duration_minutes?: number;
     pack_type?: string;
+    steps?: ServiceStep[];
+    extras?: Service[];
 }
 
 export class ErrorField {

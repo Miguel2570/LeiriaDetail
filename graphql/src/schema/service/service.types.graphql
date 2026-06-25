@@ -13,6 +13,27 @@ type Service {
     includes: [String!]
     processSteps: [ProcessStep!]
     loyaltyPoints: Int
+    availableExtras: [Service]
+    steps: [ServiceStep]
+}
+
+type ServiceStep {
+  stepOrder: Int!
+  title: String!
+  durationMinutes: Int!
+}
+
+type FullServiceDetails {
+    id: ID
+    name: String
+    description: String
+    priceAB: Float
+    priceC: Float
+    priceDE: Float
+    durationMinutes: Int
+    packType: String
+    steps: [ServiceStep]
+    extras: [Service]
 }
 
 type ProcessStep {

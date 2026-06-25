@@ -1,111 +1,524 @@
 -- liquibase formatted sql
--- changeset leiria:003-seed-services
+-- changeset leiria:003-seed-services-v3
 
-INSERT INTO services (name, description, long_description, price_ab, price_c, price_de, duration_minutes, duration_details, pack_type, includes, process_steps, icon)
-SELECT 'Lavagem Exterior', 'Lavagem à mão + secar com pano de microfibra', 
-       'Lavagem exterior profissional que remove toda a sujidade acumulada, preparando a pintura para receber tratamentos mais profundos.',
-       20, 30, 40, 30, '30 a 45 minutos dependendo do tamanho do veículo', 'Básico',
-       ARRAY['Pré-lavagem com snow foam', 'Lavagem à mão com técnica 2 baldes', 'Secagem com pano de microfibra', 'Limpeza de vidros exteriores'],
-       '[{"step":1,"title":"Pré-lavagem","description":"Aplicação de snow foam para remover partículas soltas sem riscar a pintura."},{"step":2,"title":"Lavagem à mão","description":"Utilizamos a técnica dos 2 baldes com luvas de microfibra."},{"step":3,"title":"Secagem","description":"Secagem completa com panos de microfibra que não largam pelos."}]',
-       '🧼'
-WHERE NOT EXISTS (SELECT 1 FROM services WHERE name = 'Lavagem Exterior' AND pack_type = 'Básico');
+-- ============================================================
+-- TIPOS DE pack_type USADOS:
+--   'Basico'   → serviços avulso (Lavagem Ext / Int standalone)
+--   'Pack'     → packs completos (Essencial, Premium, Showroom)
+--   'Extra'    → extras adicionáveis a qualquer pack
+--   'Bancos'   → limpeza de bancos por material
+-- ============================================================
 
-INSERT INTO services (name, description, long_description, price_ab, price_c, price_de, duration_minutes, duration_details, pack_type, includes, process_steps, icon)
-SELECT 'Lavagem Interior', 'Aspiração, limpeza de plásticos (pano de microfibra)',
-       'Limpeza profunda do interior do seu veículo, removendo pó, areias e sujidade de todas as superfícies.',
-       25, 35, 50, 45, '45 a 60 minutos', 'Básico',
-       ARRAY['Aspiração completa', 'Limpeza de plásticos e superfícies', 'Limpeza de vidros interiores', 'Hidratação de borrachas'],
-       '[{"step":1,"title":"Aspiração","description":"Aspiração profunda de tapetes, carpetes, bancos e bagageira."},{"step":2,"title":"Superfícies","description":"Limpeza de todas as superfícies plásticas com produtos específicos."},{"step":3,"title":"Vidros","description":"Limpeza de vidros interiores sem deixar marcas."}]',
-       '🪣'
-WHERE NOT EXISTS (SELECT 1 FROM services WHERE name = 'Lavagem Interior' AND pack_type = 'Básico');
+-- ============================================
+-- SERVIÇOS AVULSO (BÁSICO)
+-- ============================================
 
-INSERT INTO services (name, description, long_description, price_ab, price_c, price_de, duration_minutes, duration_details, pack_type, includes, process_steps, icon)
-SELECT 'Lavagem Exterior e Interior', 'Junção dos dois serviços',
-       'O pacote completo para o seu veículo. Combinação da lavagem exterior e interior para um resultado impecável.',
-       40, 55, 75, 60, '60 a 90 minutos', 'Básico',
-       ARRAY['Tudo da Lavagem Exterior', 'Tudo da Lavagem Interior', 'Ambientador oferta'],
-       '[]',
-       '🚗'
-WHERE NOT EXISTS (SELECT 1 FROM services WHERE name = 'Lavagem Exterior e Interior' AND pack_type = 'Básico');
+INSERT INTO services (
+  name, description, long_description,
+  price_ab, price_c, price_de,
+  duration_minutes, duration_details,
+  pack_type, includes, process_steps, icon, loyalty_points
+)
+SELECT
+  'Lavagem Exterior',
+  'Lavagem à mão + secar com pano de microfibra',
+  'Lavagem exterior profissional que remove toda a sujidade acumulada. Inclui pré-lavagem com espuma, lavagem manual técnica 2 baldes e secagem com panos de microfibra.',
+  35, 45, 55,
+  90, '1h30 a 2h',
+  'Basico',
+  ARRAY[
+    'Pré-lavagem com espuma',
+    'Lavagem manual (técnica 2 baldes)',
+    'Secagem com panos microfibra',
+    'Limpeza de vidros',
+    'Brilho nos pneus'
+  ],
+  '[
+    {"step":1,"title":"Pré-lavagem","description":"Aplicação de espuma para remover partículas soltas."},
+    {"step":2,"title":"Lavagem à mão","description":"Técnica dos 2 baldes com luvas de microfibra."},
+    {"step":3,"title":"Secagem","description":"Secagem completa com panos que não largam pelos."}
+  ]',
+  '🧼', 5
+WHERE NOT EXISTS (
+  SELECT 1 FROM services WHERE name = 'Lavagem Exterior' AND pack_type = 'Basico'
+);
 
-INSERT INTO services (name, description, long_description, price_ab, price_c, price_de, duration_minutes, duration_details, pack_type, includes, process_steps, icon)
-SELECT 'Lavagem Jantes e Pneus', 'Lavagem à mão',
-       'Limpeza detalhada das jantes e pneus para remover pó de travão e sujidade acumulada.',
-       15, 20, 25, 20, '20 a 30 minutos', 'Básico',
-       ARRAY['Limpeza de jantes', 'Limpeza de pneus', 'Aplicação de brilho'],
-       '[]',
-       '🛞'
-WHERE NOT EXISTS (SELECT 1 FROM services WHERE name = 'Lavagem Jantes e Pneus' AND pack_type = 'Básico');
+INSERT INTO services (
+  name, description, long_description,
+  price_ab, price_c, price_de,
+  duration_minutes, duration_details,
+  pack_type, includes, process_steps, icon, loyalty_points
+)
+SELECT
+  'Lavagem Interior',
+  'Aspiração + limpeza de plásticos + vidros',
+  'Limpeza interior completa com aspiração, limpeza de todas as superfícies plásticas, vidros e aplicação de ambientador.',
+  35, 45, 55,
+  90, '1h30 a 2h',
+  'Basico',
+  ARRAY[
+    'Aspiração completa',
+    'Limpeza de plásticos e superfícies',
+    'Limpeza de vidros interiores',
+    'Ambientador'
+  ],
+  '[
+    {"step":1,"title":"Aspiração","description":"Aspiração profunda de tapetes, carpetes e bancos."},
+    {"step":2,"title":"Superfícies","description":"Limpeza de plásticos com produtos específicos."},
+    {"step":3,"title":"Vidros","description":"Limpeza de vidros sem deixar marcas."}
+  ]',
+  '🪣', 5
+WHERE NOT EXISTS (
+  SELECT 1 FROM services WHERE name = 'Lavagem Interior' AND pack_type = 'Basico'
+);
 
-INSERT INTO services (name, description, long_description, price_ab, price_c, price_de, duration_minutes, duration_details, pack_type, includes, process_steps, icon)
-SELECT 'Lavagem Jantes, Pneus e Discos', 'Sem remoção da roda',
-       'Limpeza completa do sistema de rodas incluindo discos de travão visíveis.',
-       20, 25, 35, 30, '30 a 40 minutos', 'Básico',
-       ARRAY['Limpeza de jantes', 'Limpeza de pneus', 'Limpeza de discos', 'Aplicação de brilho'],
-       '[]',
-       '🔧'
-WHERE NOT EXISTS (SELECT 1 FROM services WHERE name = 'Lavagem Jantes, Pneus e Discos' AND pack_type = 'Básico');
+-- ============================================
+-- PACKS COMPLETOS
+-- ============================================
 
-INSERT INTO services (name, description, long_description, price_ab, price_c, price_de, duration_minutes, duration_details, pack_type, includes, process_steps, icon)
-SELECT 'Lavagem Completa', 'Exterior, interior, jantes, pneus e discos + oferta de ambientador',
-       'O tratamento mais completo da categoria Básico. Tudo o que o seu carro precisa num só serviço.',
-       55, 75, 100, 90, '90 a 120 minutos', 'Básico',
-       ARRAY['Lavagem exterior completa', 'Lavagem interior completa', 'Jantes, pneus e discos', 'Ambientador oferta'],
-       '[]',
-       '⭐'
-WHERE NOT EXISTS (SELECT 1 FROM services WHERE name = 'Lavagem Completa' AND pack_type = 'Básico');
+INSERT INTO services (
+  name, description, long_description,
+  price_ab, price_c, price_de,
+  duration_minutes, duration_details,
+  pack_type, includes, process_steps, icon, loyalty_points
+)
+SELECT
+  'Pack Essencial',
+  'Lavagem exterior + interior completa',
+  'O pacote essencial para o dia a dia. Combina lavagem exterior e interior para um resultado completo. SUV +10€, Van +15€.',
+  35, 45, 55,
+  -- Tempo real baseado nas imagens: 1h22 real / estimado 1h30-2h
+  82, '1h30 a 2h',
+  'Pack',
+  ARRAY[
+    'Pré-lavagem com espuma',
+    'Lavagem manual exterior',
+    'Secagem com panos microfibra',
+    'Limpeza de jantes e pneus',
+    'Aspiração completa',
+    'Limpeza de plásticos interiores',
+    'Limpeza de vidros',
+    'Ambientador',
+    'Brilho nos pneus'
+  ],
+  '[
+    {"step":1,"title":"Pré-lavagem","duration_min":10,"description":"Aplicação de espuma para soltar partículas."},
+    {"step":2,"title":"Lavagem de jantes","duration_min":5,"description":"Limpeza detalhada de jantes e pneus."},
+    {"step":3,"title":"Lavagem manual","duration_min":20,"description":"Lavagem manual com técnica de 2 baldes."},
+    {"step":4,"title":"Secagem manual","duration_min":10,"description":"Secagem com panos de microfibra."},
+    {"step":5,"title":"Limpeza de vidros","duration_min":5,"description":"Vidros sem marcas, interior e exterior."},
+    {"step":6,"title":"Ambientador","duration_min":2,"description":"Aplicação de ambientador premium."},
+    {"step":7,"title":"Aspiração simples","duration_min":15,"description":"Aspiração de tapetes e bancos."},
+    {"step":8,"title":"Limpeza interior simples","duration_min":25,"description":"Limpeza de plásticos e superfícies interiores."}
+  ]',
+  '⭐', 10
+WHERE NOT EXISTS (
+  SELECT 1 FROM services WHERE name = 'Pack Essencial' AND pack_type = 'Pack'
+);
 
--- Premium
-INSERT INTO services (name, description, long_description, price_ab, price_c, price_de, duration_minutes, duration_details, pack_type, includes, process_steps, icon)
-SELECT 'Lavagem Exterior', 'Snow-foam + pincéis + secar com pano de microfibra',
-       'Lavagem exterior premium com produtos de alta qualidade e técnicas avançadas para um acabamento superior.',
-       30, 40, 55, 45, '45 a 60 minutos', 'Premium',
-       ARRAY['Snow foam premium', 'Lavagem à mão com técnica 2 baldes', 'Secagem com pano de microfibra', 'Limpeza de jantes com pincéis', 'Aplicação de cera líquida'],
-       '[{"step":1,"title":"Snow Foam Premium","description":"Espuma de alta qualidade que remove sujidade sem riscar."},{"step":2,"title":"Lavagem Detalhada","description":"Técnica 2 baldes com luvas de microfibra premium."},{"step":3,"title":"Jantes e Pneus","description":"Limpeza com pincéis específicos para cada área."},{"step":4,"title":"Cera Líquida","description":"Aplicação de cera para proteção e brilho extra."}]',
-       '👑'
-WHERE NOT EXISTS (SELECT 1 FROM services WHERE name = 'Lavagem Exterior' AND pack_type = 'Premium');
+INSERT INTO services (
+  name, description, long_description,
+  price_ab, price_c, price_de,
+  duration_minutes, duration_details,
+  pack_type, includes, process_steps, icon, loyalty_points
+)
+SELECT
+  'Pack Premium',
+  'Detalhe completo interior e exterior com cera e purio',
+  'Tratamento premium completo. Inclui lavagem exterior com cera, interior detalhado com purio, jantes e pneus. SUV +10€, Van +15€.',
+  55, 65, 70,
+  -- Tempo real: 2h15 / estimado 3h-4h
+  135, '3h a 4h',
+  'Pack',
+  ARRAY[
+    'Pré-lavagem com snow foam',
+    'Lavagem manual exterior',
+    'Limpeza detalhada de jantes',
+    'Secagem com panos microfibra',
+    'Aplicação de cera/selante',
+    'Aspiração detalhada',
+    'Lavagem de tapetes',
+    'Lavagem do volante e travão de mão',
+    'Limpeza de plásticos interiores',
+    'Utilização do purio',
+    'Limpeza de vidros',
+    'Brilho nos pneus',
+    'Ambientador'
+  ],
+  '[
+    {"step":1,"title":"Pré-lavagem","duration_min":10,"description":"Snow foam premium para soltar toda a sujidade."},
+    {"step":2,"title":"Lavagem de jantes","duration_min":5,"description":"Limpeza detalhada de jantes e pneus."},
+    {"step":3,"title":"Lavagem manual","duration_min":20,"description":"Lavagem manual com técnica de 2 baldes."},
+    {"step":4,"title":"Secagem manual","duration_min":10,"description":"Secagem com panos de microfibra premium."},
+    {"step":5,"title":"Limpeza de vidros","duration_min":5,"description":"Vidros sem marcas, interior e exterior."},
+    {"step":6,"title":"Ambientador","duration_min":2,"description":"Aplicação de ambientador premium."},
+    {"step":7,"title":"Aspiração detalhada","duration_min":25,"description":"Aspiração profunda de todos os cantos."},
+    {"step":8,"title":"Lavagem de tapetes","duration_min":15,"description":"Lavagem e secagem de tapetes."},
+    {"step":9,"title":"Volante e travão de mão","duration_min":10,"description":"Limpeza e higienização do volante e travão."},
+    {"step":10,"title":"Utilização do purio","duration_min":30,"description":"Desinfeção profunda com máquina purio."}
+  ]',
+  '💎', 15
+WHERE NOT EXISTS (
+  SELECT 1 FROM services WHERE name = 'Pack Premium' AND pack_type = 'Pack'
+);
 
-INSERT INTO services (name, description, long_description, price_ab, price_c, price_de, duration_minutes, duration_details, pack_type, includes, process_steps, icon)
-SELECT 'Lavagem Interior', 'Aspiração profunda, lavagem de estofos, detalhamento com pincel',
-       'Limpeza interior premium com aspiração profunda, lavagem de estofos e detalhamento com pincéis específicos.',
-       40, 50, 70, 60, '60 a 90 minutos', 'Premium',
-       ARRAY['Aspiração profunda', 'Lavagem de estofos', 'Detalhamento com pincéis', 'Hidratação de couro', 'Limpeza de vidros interior'],
-       '[]',
-       '✨'
-WHERE NOT EXISTS (SELECT 1 FROM services WHERE name = 'Lavagem Interior' AND pack_type = 'Premium');
+INSERT INTO services (
+  name, description, long_description,
+  price_ab, price_c, price_de,
+  duration_minutes, duration_details,
+  pack_type, includes, process_steps, icon, loyalty_points
+)
+SELECT
+  'Pack Showroom',
+  'Acabamento próximo de showroom — o tratamento mais completo',
+  'O tratamento mais completo disponível. Inclui tudo do Pack Premium + hidratação de plásticos exteriores, proteção UV interior, limpeza do motor e acabamento de showroom. SUV +10€, Van +15€.',
+  100, 110, 115,
+  -- Tempo real estimado 4h32 / estimado 5h-6h
+  272, '5h a 6h',
+  'Pack',
+  ARRAY[
+    'Pré-lavagem com snow foam',
+    'Lavagem manual exterior',
+    'Limpeza detalhada de jantes',
+    'Secagem com panos microfibra',
+    'Aplicação de cera/selante',
+    'Hidratação de plásticos (exterior)',
+    'Limpeza e hidratação do motor',
+    'Aspiração detalhada',
+    'Limpeza interior detalhada',
+    'Lavagem de tapetes',
+    'Lavagem do volante e travão de mão',
+    'Proteção UV de plásticos (interior)',
+    'Utilização do purio',
+    'Limpeza de vidros',
+    'Brilho nos pneus',
+    'Ambientador premium'
+  ],
+  '[
+    {"step":1,"title":"Pré-lavagem","duration_min":10,"description":"Snow foam premium para soltar toda a sujidade."},
+    {"step":2,"title":"Lavagem de jantes","duration_min":5,"description":"Limpeza detalhada de jantes e pneus."},
+    {"step":3,"title":"Lavagem manual","duration_min":20,"description":"Lavagem manual com técnica de 2 baldes."},
+    {"step":4,"title":"Secagem manual","duration_min":10,"description":"Secagem com panos de microfibra premium."},
+    {"step":5,"title":"Limpeza de vidros","duration_min":5,"description":"Vidros sem marcas, interior e exterior."},
+    {"step":6,"title":"Ambientador","duration_min":2,"description":"Aplicação de ambientador premium."},
+    {"step":7,"title":"Limpeza interior detalhada","duration_min":30,"description":"Limpeza profunda de todos os plásticos e superfícies."},
+    {"step":8,"title":"Lavagem de tapetes","duration_min":15,"description":"Lavagem e secagem de tapetes."},
+    {"step":9,"title":"Volante e travão de mão","duration_min":10,"description":"Limpeza e higienização do volante e travão."},
+    {"step":10,"title":"Utilização do purio","duration_min":30,"description":"Desinfeção profunda com máquina purio."},
+    {"step":11,"title":"Cera / Selante","duration_min":45,"description":"Proteção da pintura com cera de alta qualidade."},
+    {"step":12,"title":"Hidratação plásticos exterior","duration_min":20,"description":"Hidratação de para-choques, frisos e plásticos exteriores."},
+    {"step":13,"title":"Proteção UV interior","duration_min":20,"description":"Proteção UV em todos os plásticos interiores."},
+    {"step":14,"title":"Limpeza do motor","duration_min":45,"description":"Limpeza e hidratação do compartimento do motor."},
+    {"step":15,"title":"Brilho nos pneus","duration_min":5,"description":"Aplicação de produto de brilho nos pneus."}
+  ]',
+  '🏆', 25
+WHERE NOT EXISTS (
+  SELECT 1 FROM services WHERE name = 'Pack Showroom' AND pack_type = 'Pack'
+);
 
-INSERT INTO services (name, description, long_description, price_ab, price_c, price_de, duration_minutes, duration_details, pack_type, includes, process_steps, icon)
-SELECT 'Lavagem Exterior e Interior', 'Junção dos dois serviços premium',
-       'O melhor dos dois mundos premium. Exterior e interior tratados ao pormenor.',
-       60, 75, 90, 90, '90 a 120 minutos', 'Premium',
-       ARRAY['Tudo da Lavagem Exterior Premium', 'Tudo da Lavagem Interior Premium', 'Ambientador premium'],
-       '[]',
-       '💎'
-WHERE NOT EXISTS (SELECT 1 FROM services WHERE name = 'Lavagem Exterior e Interior' AND pack_type = 'Premium');
+-- ============================================
+-- EXTRAS (adicionáveis a packs)
+-- ============================================
 
-INSERT INTO services (name, description, long_description, price_ab, price_c, price_de, duration_minutes, duration_details, pack_type, includes, process_steps, icon)
-SELECT 'Lavagem Jantes e Pneus', 'Lavagem com piaçaba',
-       'Limpeza premium de jantes e pneus com ferramentas específicas para um acabamento perfeito.',
-       20, 25, 35, 30, '30 a 40 minutos', 'Premium',
-       ARRAY['Limpeza com piaçaba', 'Descontaminação de jantes', 'Aplicação de selante'],
-       '[]',
-       '🛞'
-WHERE NOT EXISTS (SELECT 1 FROM services WHERE name = 'Lavagem Jantes e Pneus' AND pack_type = 'Premium');
+INSERT INTO services (
+  name, description, long_description,
+  price_ab, price_c, price_de,
+  duration_minutes, duration_details,
+  pack_type, includes, process_steps, icon, loyalty_points
+)
+SELECT
+  'Cera / Selante',
+  'Aplicação de cera ou selante para proteção extra da pintura',
+  'Proteção adicional para a pintura com cera de alta qualidade ou selante sintético. Prolonga o brilho e protege contra contaminantes.',
+  10, 10, 10,
+  45, '30min a 45min',
+  'Extra',
+  ARRAY['Aplicação de cera/selante', 'Buffing manual'],
+  '[]',
+  '🛡️', 2
+WHERE NOT EXISTS (
+  SELECT 1 FROM services WHERE name = 'Cera / Selante' AND pack_type = 'Extra'
+);
 
-INSERT INTO services (name, description, long_description, price_ab, price_c, price_de, duration_minutes, duration_details, pack_type, includes, process_steps, icon)
-SELECT 'Lavagem Jantes, Pneus e Discos', 'Com remoção da roda',
-       'O tratamento mais completo para rodas. Remoção da roda para limpeza total.',
-       25, 30, 45, 40, '40 a 60 minutos', 'Premium',
-       ARRAY['Remoção da roda', 'Limpeza profunda de jantes', 'Limpeza de discos', 'Aplicação de proteção'],
-       '[]',
-       '🔧'
-WHERE NOT EXISTS (SELECT 1 FROM services WHERE name = 'Lavagem Jantes, Pneus e Discos' AND pack_type = 'Premium');
+INSERT INTO services (
+  name, description, long_description,
+  price_ab, price_c, price_de,
+  duration_minutes, duration_details,
+  pack_type, includes, process_steps, icon, loyalty_points
+)
+SELECT
+  'Hidratação Plásticos Exterior',
+  'Hidratação e restauro de plásticos exteriores',
+  'Restauração e hidratação de todos os plásticos exteriores (para-choques, frisos, etc.) devolvendo o aspeto de novo.',
+  10, 10, 10,
+  20, '15min a 20min',
+  'Extra',
+  ARRAY['Limpeza de plásticos', 'Aplicação de hidratante'],
+  '[]',
+  '🖤', 2
+WHERE NOT EXISTS (
+  SELECT 1 FROM services WHERE name = 'Hidratação Plásticos Exterior' AND pack_type = 'Extra'
+);
 
-INSERT INTO services (name, description, long_description, price_ab, price_c, price_de, duration_minutes, duration_details, pack_type, includes, process_steps, icon)
-SELECT 'Lavagem Completa', 'Tratamento premium completo + oferta de ambientador',
-       'A experiência definitiva de detalhe automóvel. O melhor tratamento que pode dar ao seu carro.',
-       80, 95, 120, 120, '120 a 180 minutos', 'Premium',
-       ARRAY['Lavagem exterior premium', 'Lavagem interior premium', 'Jantes, pneus e discos premium', 'Cera de proteção', 'Ambientador premium'],
-       '[]',
-       '👑'
-WHERE NOT EXISTS (SELECT 1 FROM services WHERE name = 'Lavagem Completa' AND pack_type = 'Premium');
+INSERT INTO services (
+  name, description, long_description,
+  price_ab, price_c, price_de,
+  duration_minutes, duration_details,
+  pack_type, includes, process_steps, icon, loyalty_points
+)
+SELECT
+  'Proteção UV Interior',
+  'Proteção UV para plásticos interiores contra descoloração',
+  'Aplicação de proteção UV em todas as superfícies plásticas interiores para evitar descoloração e envelhecimento.',
+  12, 12, 12,
+  20, '15min a 20min',
+  'Extra',
+  ARRAY['Limpeza de superfícies', 'Aplicação de proteção UV'],
+  '[]',
+  '☀️', 2
+WHERE NOT EXISTS (
+  SELECT 1 FROM services WHERE name = 'Proteção UV Interior' AND pack_type = 'Extra'
+);
+
+INSERT INTO services (
+  name, description, long_description,
+  price_ab, price_c, price_de,
+  duration_minutes, duration_details,
+  pack_type, includes, process_steps, icon, loyalty_points
+)
+SELECT
+  'Limpeza do Motor',
+  'Limpeza e hidratação do compartimento do motor',
+  'Limpeza profissional do compartimento do motor com produtos específicos. Remove sujidade acumulada e protege componentes.',
+  25, 25, 25,
+  45, '30min a 45min',
+  'Extra',
+  ARRAY[
+    'Pré-limpeza do motor',
+    'Aplicação de desengordurante',
+    'Lavagem controlada',
+    'Secagem',
+    'Hidratação de plásticos e borrachas'
+  ],
+  '[]',
+  '🔧', 5
+WHERE NOT EXISTS (
+  SELECT 1 FROM services WHERE name = 'Limpeza do Motor' AND pack_type = 'Extra'
+);
+
+INSERT INTO services (
+  name, description, long_description,
+  price_ab, price_c, price_de,
+  duration_minutes, duration_details,
+  pack_type, includes, process_steps, icon, loyalty_points
+)
+SELECT
+  'Neutralização de Odores',
+  'Tratamento com ozono para eliminar odores persistentes',
+  'Eliminação profunda de odores (tabaco, animais, comida) através de tratamento com ozono. Renova completamente o ar interior.',
+  30, 30, 30,
+  45, '30min a 45min',
+  'Extra',
+  ARRAY[
+    'Limpeza prévia do interior',
+    'Tratamento com ozono',
+    'Ventilação e neutralização'
+  ],
+  '[]',
+  '🌬️', 5
+WHERE NOT EXISTS (
+  SELECT 1 FROM services WHERE name = 'Neutralização de Odores' AND pack_type = 'Extra'
+);
+
+INSERT INTO services (
+  name, description, long_description,
+  price_ab, price_c, price_de,
+  duration_minutes, duration_details,
+  pack_type, includes, process_steps, icon, loyalty_points
+)
+SELECT
+  'Restauro de Faróis',
+  'Recuperação de faróis baços ou amarelados',
+  'Restauro completo de faróis com lixagem, polimento e selagem. Devolve a transparência original e melhora a visibilidade noturna.',
+  35, 35, 35,
+  90, '1h a 1h30',
+  'Extra',
+  ARRAY['Lixagem progressiva', 'Polimento', 'Selagem com proteção UV'],
+  '[]',
+  '💡', 7
+WHERE NOT EXISTS (
+  SELECT 1 FROM services WHERE name = 'Restauro de Faróis' AND pack_type = 'Extra'
+);
+
+INSERT INTO services (
+  name, description, long_description,
+  price_ab, price_c, price_de,
+  duration_minutes, duration_details,
+  pack_type, includes, process_steps, icon, loyalty_points
+)
+SELECT
+  'Remoção de Pêlos de Animal',
+  'Remoção profunda de pêlos de animal de estimação',
+  'Remoção especializada de pêlos de animal de estimação em estofos, carpetes e tapetes com ferramentas específicas.',
+  0, 0, 0,
+  60, '30min a 1h (sob orçamento)',
+  'Extra',
+  ARRAY['Remoção com ferramentas específicas', 'Aspiração profunda'],
+  '[]',
+  '🐾', 0
+WHERE NOT EXISTS (
+  SELECT 1 FROM services WHERE name = 'Remoção de Pêlos de Animal' AND pack_type = 'Extra'
+);
+
+INSERT INTO services (
+  name, description, long_description,
+  price_ab, price_c, price_de,
+  duration_minutes, duration_details,
+  pack_type, includes, process_steps, icon, loyalty_points
+)
+SELECT
+  'Remoção de Calcário',
+  'Remoção de manchas de calcário em vidros e pintura',
+  'Tratamento especializado para remover depósitos de calcário em vidros, pintura e cromados sem danificar as superfícies.',
+  0, 0, 0,
+  60, '30min a 1h (sob orçamento)',
+  'Extra',
+  ARRAY[
+    'Avaliação das áreas afetadas',
+    'Aplicação de removedor específico',
+    'Limpeza e neutralização'
+  ],
+  '[]',
+  '💧', 0
+WHERE NOT EXISTS (
+  SELECT 1 FROM services WHERE name = 'Remoção de Calcário' AND pack_type = 'Extra'
+);
+
+-- ============================================
+-- LIMPEZA DE BANCOS (por material)
+-- ============================================
+
+INSERT INTO services (
+  name, description, long_description,
+  price_ab, price_c, price_de,
+  duration_minutes, duration_details,
+  pack_type, includes, process_steps, icon, loyalty_points
+)
+SELECT
+  'Limpeza de Bancos - Couro',
+  'Limpeza profunda + hidratação de couro',
+  'Tratamento completo para bancos em couro. Limpeza profunda com remoção de bactérias, seguida de hidratação para manter a flexibilidade e evitar rachas.',
+  55, 55, 55,
+  180, '2h a 3h',
+  'Bancos',
+  ARRAY[
+    'Aspiração profunda',
+    'Limpeza com produto específico para couro',
+    'Hidratação do couro',
+    'Proteção UV'
+  ],
+  '[]',
+  '🪑', 10
+WHERE NOT EXISTS (
+  SELECT 1 FROM services WHERE name = 'Limpeza de Bancos - Couro' AND pack_type = 'Bancos'
+);
+
+INSERT INTO services (
+  name, description, long_description,
+  price_ab, price_c, price_de,
+  duration_minutes, duration_details,
+  pack_type, includes, process_steps, icon, loyalty_points
+)
+SELECT
+  'Limpeza de Bancos - Sintético',
+  'Limpeza profunda + hidratação de material sintético',
+  'Tratamento completo para bancos em material sintético. Limpeza profunda com remoção de bactérias e hidratação.',
+  55, 55, 55,
+  180, '2h a 3h',
+  'Bancos',
+  ARRAY[
+    'Aspiração profunda',
+    'Limpeza com produto específico',
+    'Hidratação do material',
+    'Proteção UV'
+  ],
+  '[]',
+  '🪑', 10
+WHERE NOT EXISTS (
+  SELECT 1 FROM services WHERE name = 'Limpeza de Bancos - Sintético' AND pack_type = 'Bancos'
+);
+
+INSERT INTO services (
+  name, description, long_description,
+  price_ab, price_c, price_de,
+  duration_minutes, duration_details,
+  pack_type, includes, process_steps, icon, loyalty_points
+)
+SELECT
+  'Limpeza de Bancos - Alcântara',
+  'Limpeza especializada para alcântara',
+  'Tratamento delicado para bancos em alcântara. Limpeza com produtos específicos que preservam a textura e suavidade do material.',
+  60, 60, 60,
+  240, '3h a 4h',
+  'Bancos',
+  ARRAY[
+    'Aspiração cuidadosa',
+    'Limpeza com produto específico para alcântara',
+    'Escovagem suave',
+    'Proteção'
+  ],
+  '[]',
+  '🪑', 12
+WHERE NOT EXISTS (
+  SELECT 1 FROM services WHERE name = 'Limpeza de Bancos - Alcântara' AND pack_type = 'Bancos'
+);
+
+INSERT INTO services (
+  name, description, long_description,
+  price_ab, price_c, price_de,
+  duration_minutes, duration_details,
+  pack_type, includes, process_steps, icon, loyalty_points
+)
+SELECT
+  'Limpeza de Bancos - Tecido',
+  'Limpeza profunda de tecido com extração',
+  'Limpeza profunda de bancos em tecido com máquina de extração. Remove nódoas, bactérias e odores incrustados.',
+  60, 60, 60,
+  240, '3h a 4h',
+  'Bancos',
+  ARRAY[
+    'Aspiração profunda',
+    'Aplicação de produto de limpeza',
+    'Extração com máquina',
+    'Secagem',
+    'Proteção de tecido'
+  ],
+  '[]',
+  '🪑', 12
+WHERE NOT EXISTS (
+  SELECT 1 FROM services WHERE name = 'Limpeza de Bancos - Tecido' AND pack_type = 'Bancos'
+);
+
+INSERT INTO services (
+  name, description, long_description,
+  price_ab, price_c, price_de,
+  duration_minutes, duration_details,
+  pack_type, includes, process_steps, icon, loyalty_points
+)
+SELECT
+  'Limpeza de Bancos - Misto',
+  'Limpeza para veículos com 2 materiais diferentes',
+  'Tratamento para veículos com bancos em 2 materiais diferentes (ex: couro + alcântara). Combina as técnicas adequadas a cada material.',
+  65, 65, 65,
+  270, '3h30 a 4h30',
+  'Bancos',
+  ARRAY[
+    'Avaliação dos materiais',
+    'Limpeza específica para cada material',
+    'Hidratação/Proteção adequada a cada superfície'
+  ],
+  '[]',
+  '🪑', 13
+WHERE NOT EXISTS (
+  SELECT 1 FROM services WHERE name = 'Limpeza de Bancos - Misto' AND pack_type = 'Bancos'
+);

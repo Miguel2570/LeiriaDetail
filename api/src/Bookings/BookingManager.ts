@@ -79,10 +79,11 @@ class BookingManager {
     static async GetAvailableSlots(date: string): Promise<SlotsOutputModel> {
         try {
             const allSlots = [
-                '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
+                '09:00', '09:30', '10:00', '10:30',
                 '11:00', '11:30', '12:00', '12:30', '13:00', '13:30',
                 '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
-                '17:00', '17:30'
+                '17:00', '17:30', '18:00', '18:30', '19:00', '19:30',
+                '20:00', '20:30', '21:00'
             ];
 
             const query = `
@@ -139,6 +140,64 @@ class BookingManager {
         } catch (error: any) {
             return new PriceOutputModel(undefined, undefined, undefined, undefined,
                 new ErrorModel("Server", "Erro ao calcular preço."));
+        }
+    }
+    static async CreatePendingBooking(data: {
+        userId: number;
+        vehicleId: number;
+        serviceId: number;
+        bookingDate: string;
+        bookingTime: string;
+        serviceName: string;
+        vehicleName: string;
+        vehiclePlate: string;
+        price: number;
+        paymentMethod: string;
+        expiresInMinutes: number;
+    }): Promise<any> {
+        try {
+            const query = `
+                INSERT INTO pending_bookings (
+                    user_id, vehicle_id, service_id, 
+                    booking_date, booking_time, 
+                    service_name, vehicle_name, vehicle_plate,
+                    price, payment_method, 
+                    expires_at, status
+                )
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 
+                        NOW() + INTERVAL '${data.expiresInMinutes} minutes', 
+                        'PENDENTE')
+                RETURNING id, expires_at
+            `;
+            
+            const values = [
+                data.userId,
+                data.vehicleId,
+                data.serviceId,
+                data.bookingDate,
+                data.bookingTime,
+                data.serviceName,
+                data.vehicleName,
+                data.vehiclePlate,
+                data.price,
+                data.paymentMethod
+            ];
+            
+            const result = await server.query(query, values);
+            
+            return {
+                HasError: false,
+                PendingBooking: {
+                    id: result.rows[0].id,
+                    expires_at: result.rows[0].expires_at
+                }
+            };
+        } catch (error: any) {
+            console.error('Error creating pending booking:', error);
+            return {
+                HasError: true,
+                Error: { Message: error.message || "Erro ao criar pré-reserva." }
+            };
         }
     }
 }

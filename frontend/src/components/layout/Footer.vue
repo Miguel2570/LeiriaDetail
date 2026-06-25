@@ -44,12 +44,7 @@ const { t } = useI18n()
               </router-link>
             </li>
             <li>
-              <router-link to="/precos" class="hover:text-[#3B82F6] transition-all duration-300 hover:pl-1">
-                {{ t('footer.links.prices') }}
-              </router-link>
-            </li>
-            <li>
-              <router-link to="/agenda" class="text-[#3B82F6] font-bold hover:text-[#06B6D4] transition-all duration-300 hover:pl-1">
+              <router-link to="/servicos" class="text-[#3B82F6] font-bold hover:text-[#06B6D4] transition-all duration-300 hover:pl-1">
                 {{ t('footer.links.schedule') }} →
               </router-link>
             </li>
@@ -100,7 +95,7 @@ const { t } = useI18n()
             <li class="flex items-center gap-3 group">
               <Mail class="h-5 w-5 text-[#06B6D4] shrink-0 transition-transform group-hover:scale-110" />
               <a href="mailto:geral@leiriadetail.pt" class="hover:text-[#3B82F6] transition-colors">
-                geral@leiriadetail.pt
+                leiriadetail@gmail.com
               </a>
             </li>
           </ul>

@@ -3,11 +3,13 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import i18n from './i18n'
+import { createHead } from '@vueuse/head'
 import './assets/css/style.css'
 import './assets/css/admin.css'
 import './Helpers/apiInterceptor'
 
 const app = createApp(App)
+const head = createHead()
 
 app.config.errorHandler = (err, instance, info) => {
     const error = err as Error
@@ -34,5 +36,6 @@ app.config.errorHandler = (err, instance, info) => {
 }
 
 app.use(i18n)
+app.use(head)
 app.use(router)
 app.mount('#app')

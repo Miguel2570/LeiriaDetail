@@ -66,7 +66,7 @@ const publicRoutes = [
     '/Authentication/CheckEmail', '/Authentication/Verify', '/Authentication/Resend-Verification',
     '/Authentication/Reset-Password', '/Authentication/ValidateToken',
     '/Materials', '/Services', '/Portfolio', '/Faqs', '/Reviews', '/Payment/Webhook', '/Loyalty',
-    '/Bookings', '/Holiday', '/PendingBookings', '/Reviews/token',
+    '/Bookings', '/Holiday', '/PendingBookings', '/Reviews/token', 'Reviews',
 ];
 
 app.use(LoginValidationMiddleware(publicRoutes));

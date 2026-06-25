@@ -1,15 +1,33 @@
+<template>
+  <div>
+    <div ref="heroSection"><Hero /></div>
+    <Separator class="bg-black" />
+    
+    <div ref="aboutSection"><AboutUs /></div>
+    <Separator class="bg-black" />
+    
+    <div ref="benefitsSection"><Benefits /></div>
+    <Separator class="bg-black" />
+    
+    <div ref="howItWorksSection"><HowItWorks /></div>
+
+    <div ref="testimonialsSection"><Testimonials /></div>   
+     
+    <div ref="ctaSection"><FinalCTA /></div>
+  </div>
+</template>
+
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import Hero from '@/components/sections/Hero.vue'
 import AboutUs from '@/components/sections/About.vue'
 import HowItWorks from '@/components/sections/HowItWorks.vue'
 import Benefits from '@/components/sections/Benefits.vue'
-import ServicePacks from '@/components/sections/ServicePacks.vue' 
-import Testimonials from '@/components/sections/Testimonials.vue'
+import Testimonials from '@/components/sections/Reviews.vue'
 import FinalCTA from '@/components/sections/FinalCTA.vue'
-import FeaturedServices from '@/components/sections/FeaturedServices.vue'
-import FAQ from '@/components/sections/FAQ.vue'
 import { useHead } from '@vueuse/head'
 import Separator from '@/components/ui/utility/Separator.vue'
+import { fadeInUp, parallax } from '@/assets/animations/gsap'
 
 useHead({
   title: 'LeiriaDetail - Detalhe Automóvel de Excelência em Leiria',
@@ -20,21 +38,26 @@ useHead({
     { property: 'og:type', content: 'website' },
   ]
 })
-</script>
 
-<template>
-  <div>
-    <Hero />
-    <Separator class="bg-black" />
-    
-    <AboutUs />
-    <Separator class="bg-black" />
-    
-    <Benefits />
-    <Separator class="bg-black" />
-    
-    <HowItWorks />    
-    <Testimonials />    
-    <FinalCTA />
-  </div>
-</template>
+const heroSection = ref(null)
+const aboutSection = ref(null)
+const benefitsSection = ref(null)
+const howItWorksSection = ref(null)
+const testimonialsSection = ref(null)
+const ctaSection = ref(null)
+
+onMounted(() => {
+  // ✅ Hero aparece ao carregar
+  fadeInUp(heroSection.value)
+
+  // ✅ Secções aparecem ao fazer scroll
+  fadeInUp(aboutSection.value, 0.1)
+  fadeInUp(benefitsSection.value, 0.2)
+  fadeInUp(howItWorksSection.value, 0.3)
+  fadeInUp(testimonialsSection.value, 0.4)
+  fadeInUp(ctaSection.value, 0.5)
+
+  // ✅ Parallax nos backgrounds
+  parallax('.parallax-bg')
+})
+</script>

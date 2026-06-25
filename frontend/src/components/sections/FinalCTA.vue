@@ -29,7 +29,7 @@ import { MessageSquare, FileText } from 'lucide-vue-next'
           </button>
         </a>
         
-        <router-link to="/contacto" class="w-full sm:w-auto">
+        <router-link to="/contactos" class="w-full sm:w-auto">
           <button class="w-full bg-white/5 border border-white/10 text-white font-black px-8 py-4 rounded-xl uppercase text-xs tracking-widest hover:bg-white/10 hover:border-[#00D8FF]/30 transition-all duration-300 flex items-center justify-center gap-3">
             <FileText class="h-4 w-4" /> Pedir Orçamento
           </button>

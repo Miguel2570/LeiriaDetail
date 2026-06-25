@@ -12,11 +12,10 @@
       <!-- Logo -->
       <router-link to="/" class="flex items-center gap-2 sm:gap-3 group shrink-0">
         <div class="relative">
-          <div class="absolute inset-0 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] rounded-xl blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
           <img 
             src="../../assets/img/Logo.png" 
             alt="LeiriaDetail" 
-            class="relative h-8 sm:h-12 w-auto object-contain transition-all duration-500 group-hover:scale-105" 
+            class="relative h-8 sm:h-12 w-auto object-contain transition-all duration-500" 
           />
         </div>
         <span class="font-black text-lg sm:text-xl tracking-tighter">

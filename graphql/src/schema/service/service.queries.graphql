@@ -2,4 +2,7 @@ extend type Query {
     services: ServiceOutput!
     service(id: ID!): ServiceOutput!
     servicesByPack(pack: String!): ServiceOutput!
+    packExtras(packId: ID!): [Service]
+    serviceSteps(serviceId: ID!): [ServiceStep]
+    fullPackDetails(id: ID!): FullServiceDetails
 }

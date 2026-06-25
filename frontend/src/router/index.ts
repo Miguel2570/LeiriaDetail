@@ -37,38 +37,29 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   scrollBehavior: () => ({ top: 0 }),
   routes: [
-    // ===== ROTAS PÚBLICAS (CLIENTES) =====
     { path: '/', name: 'home', component: Home },
     
-    // Auth - Clientes
     { path: '/login', name: 'login', component: Login },
     { path: '/registar', name: 'register', component: Register },
     
-    // Recuperação de password
     { path: '/recuperar-password', name: 'forgot-password', component: ForgotPassword },
     { path: '/reset-password', name: 'reset-password', component: ResetPassword },
 
-    // Verificar conta
     { path: '/verify', name: 'VerifyCode', component: VerifyCode },
 
-    // Pagamento
-    { path: '/pagamento/:bookingId', name: 'payment', component: PaymentPage },
+    { path: '/pagamento/:bookingId', name: 'payment', component: PaymentPage, meta: { requiresAuth: true } },
 
-    // Agendamento
-    { path: '/agenda', alias: ['/booking', '/marcacao'], name: 'booking', component: Booking },
+    { path: '/agenda', alias: ['/booking', '/marcacao'], name: 'booking', component: Booking, meta: { requiresAuth: true } },
     
-    // Área Cliente
-    { path: '/client-area', alias: ['/clientarea'], name: 'client-area', component: ClientArea },
+    { path: '/client-area', alias: ['/clientarea'], name: 'client-area', component: ClientArea, meta: { requiresAuth: true } },
 
-    // Portfolio
     { path: '/portfolio/:id', name: 'portfolio-detail', component: () => import('@/page/portfolio/PortfolioDetail.vue') },
     
-    // Páginas Públicas (menos críticas - lazy load)
     { path: '/servicos', component: () => import('@/page/services/Services.vue') },
     { path: '/portfolio', component: () => import('@/page/portfolio/Portfolio.vue') },
     { path: '/materiais', component: () => import('@/page/MaterialsList.vue') },
+    { path: '/contactos', name: 'contactos', component: () => import('@/page/Contact.vue') },
     
-    // Legal
     { path: '/privacidade', component: () => import('@/page/legal/Privacy.vue') },
     { path: '/termos', component: () => import('@/page/legal/Terms.vue') },
     { path: '/cookies', component: () => import('@/page/legal/Cookies.vue') },
@@ -77,7 +68,6 @@ const router = createRouter({
     { path: '/error', name: 'error', component: ErrorPage, props: true },
     { path: '/error-page', name: 'ErrorPage', component: ErrorPage, props: true },
 
-    // ===== ROTAS ADMIN =====
     {
       path: '/admin',
       component: DashboardLayout,
@@ -105,12 +95,23 @@ const router = createRouter({
   ]
 })
 
-// Router Guard
 router.beforeEach(async (to, from, next) => {
   if (to.meta?.title) {
     document.title = `LeiriaDetail | ${to.meta.title}`
   } else {
     document.title = 'LeiriaDetail'
+  }
+
+  if (to.meta.requiresAuth) {
+    const sessionKey = Cache.Session?.value
+    
+    if (!sessionKey) {
+      next({ path: '/login', query: { redirect: to.fullPath } })
+      return
+    }
+    
+    next()
+    return
   }
 
   if (!to.meta.requiresRole) {

@@ -3,37 +3,9 @@
   <div class="space-y-8">
     <div class="flex flex-col space-y-2 mb-8">
       <h3 class="text-2xl font-black italic text-white uppercase tracking-tight">
-        Escolha o <span class="bg-gradient-to-r from-[#2563EB] to-[#00D8FF] bg-clip-text text-transparent">Tratamento</span>
+        {{ isPreSelected ? 'Serviço' : 'Escolha o' }} <span class="bg-gradient-to-r from-[#2563EB] to-[#00D8FF] bg-clip-text text-transparent">{{ isPreSelected ? 'Selecionado' : 'Tratamento' }}</span>
       </h3>
-      <p class="text-xs text-gray-400 uppercase tracking-widest">Passo 3 de 5</p>
-    </div>
-
-    <!-- Toggle Pack -->
-    <div class="flex justify-center mb-6">
-      <div class="bg-[#050508] border border-white/10 rounded-full p-1 flex">
-        <button 
-          @click="selectedPack = 'Básico'"
-          :class="[
-            'px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all',
-            selectedPack === 'Básico' 
-              ? 'bg-gradient-to-r from-[#2563EB] to-[#00D8FF] text-white shadow-lg' 
-              : 'text-gray-400 hover:text-white'
-          ]"
-        >
-          🧼 Básico
-        </button>
-        <button 
-          @click="selectedPack = 'Premium'"
-          :class="[
-            'px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all',
-            selectedPack === 'Premium' 
-              ? 'bg-gradient-to-r from-[#2563EB] to-[#00D8FF] text-white shadow-lg' 
-              : 'text-gray-400 hover:text-white'
-          ]"
-        >
-          👑 Premium
-        </button>
-      </div>
+      <p class="text-xs text-gray-400 uppercase tracking-widest">Passo 1 de 6</p>
     </div>
 
     <!-- Loading -->
@@ -41,10 +13,50 @@
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00D8FF]"></div>
     </div>
 
-    <!-- Serviços do Pack Selecionado -->
-    <div v-else-if="filteredServices.length > 0" class="space-y-3">
+    <!-- ============================================ -->
+    <!-- ✅ MODO PRÉ-SELECIONADO -->
+    <!-- ============================================ -->
+    <div v-else-if="isPreSelected && preSelectedServiceData" class="space-y-4">
+      <div class="p-5 rounded-2xl border-2 border-[#00D8FF] bg-[#00D8FF]/10 shadow-[0_0_20px_rgba(0,216,255,0.1)]">
+        <div class="flex items-center justify-between">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-1">
+              <h4 class="text-white font-bold text-sm">{{ preSelectedServiceData.name }}</h4>
+              <span class="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase bg-[#F59E0B]/10 text-[#F59E0B]">
+                Pack
+              </span>
+            </div>
+            <p class="text-xs text-gray-500 mt-1">{{ preSelectedServiceData.description }}</p>
+            
+            <!-- Extras disponíveis -->
+            <div v-if="packExtrasCount[preSelectedServiceData.id]" class="flex items-center gap-1 mt-2">
+              <span class="text-[#F59E0B] text-xs">➕ {{ packExtrasCount[preSelectedServiceData.id] }} extras disponíveis</span>
+            </div>
+            
+            <div v-if="preSelectedServiceData.loyaltyPoints > 0" class="flex items-center gap-1 mt-1">
+              <span class="text-[#10B981] text-xs font-bold">🪙 +{{ preSelectedServiceData.loyaltyPoints }} LeiriaPoints</span>
+            </div>
+          </div>
+          
+          <div class="text-right ml-4">
+            <span class="text-xl font-black text-[#00D8FF]">{{ getPrice(preSelectedServiceData) }}€</span>
+            <p class="text-[10px] text-gray-500 mt-0.5">⏱ {{ preSelectedServiceData.durationMinutes }} min</p>
+          </div>
+        </div>
+
+        <div class="mt-3 pt-3 border-t border-[#00D8FF]/20 flex items-center gap-2 text-[#00D8FF] text-xs">
+          <span class="w-5 h-5 rounded-full bg-[#00D8FF]/20 flex items-center justify-center">✓</span>
+          Selecionado
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- ✅ LISTA DE PACKS -->
+    <!-- ============================================ -->
+    <div v-else-if="packServices.length > 0" class="space-y-3">
       <div 
-        v-for="service in filteredServices" 
+        v-for="service in packServices" 
         :key="service.id"
         @click="selectService(service)"
         :class="[
@@ -56,10 +68,20 @@
       >
         <div class="flex items-center justify-between">
           <div class="flex-1">
-            <h4 class="text-white font-bold text-sm">{{ service.name }}</h4>
+            <div class="flex items-center gap-2">
+              <h4 class="text-white font-bold text-sm">{{ service.name }}</h4>
+              <span class="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase bg-[#F59E0B]/10 text-[#F59E0B]">
+                Pack
+              </span>
+            </div>
             <p class="text-xs text-gray-500 mt-1">{{ service.description }}</p>
-            <!-- ✅ LeiriaPoints -->
-            <div v-if="service.loyaltyPoints > 0" class="flex items-center gap-1 mt-2">
+            
+            <!-- Extras disponíveis -->
+            <div v-if="packExtrasCount[service.id]" class="flex items-center gap-1 mt-2">
+              <span class="text-[#F59E0B] text-xs">➕ {{ packExtrasCount[service.id] }} extras disponíveis</span>
+            </div>
+            
+            <div v-if="service.loyaltyPoints > 0" class="flex items-center gap-1 mt-1">
               <span class="text-[#10B981] text-xs font-bold">🪙 +{{ service.loyaltyPoints }} LeiriaPoints</span>
             </div>
           </div>
@@ -70,7 +92,6 @@
           </div>
         </div>
 
-        <!-- Check no selecionado -->
         <div v-if="selectedServiceId === service.id" class="mt-3 pt-3 border-t border-[#00D8FF]/20 flex items-center gap-2 text-[#00D8FF] text-xs">
           <span class="w-5 h-5 rounded-full bg-[#00D8FF]/20 flex items-center justify-center">✓</span>
           Selecionado
@@ -80,7 +101,7 @@
 
     <!-- Sem serviços -->
     <div v-else class="text-center py-12">
-      <p class="text-gray-500 text-sm">Nenhum serviço disponível para {{ selectedPack }}.</p>
+      <p class="text-gray-500 text-sm">Nenhum serviço disponível.</p>
     </div>
   </div>
 </template>
@@ -106,20 +127,28 @@ interface Service {
 
 const services = ref<Service[]>([]);
 const isLoading = ref(true);
-const selectedPack = ref<string>('Básico');
+const packExtrasCount = ref<Record<string, number>>({});
 
-const filteredServices = computed(() => {
-  return services.value.filter(s => {
-    const normalizedPack = (s.packType || '').toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    const normalizedSelected = selectedPack.value.toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    return normalizedPack === normalizedSelected;
-  });
+// ✅ Verificar se já tem serviço pré-selecionado (do bookingData ou localStorage)
+const isPreSelected = computed(() => {
+  return !!props.selectedServiceId || !!localStorage.getItem('pre_selected_service_id');
+});
+
+// ✅ Dados do serviço pré-selecionado
+const preSelectedServiceData = computed(() => {
+  const id = props.selectedServiceId || localStorage.getItem('pre_selected_service_id');
+  if (!id) return null;
+  return services.value.find(s => s.id === id) || null;
+});
+
+// ✅ Filtrar apenas packs
+const packServices = computed(() => {
+  return services.value.filter(s => s.packType === 'Pack');
 });
 
 const fetchServices = async () => {
   try {
+    isLoading.value = true;
     const query = `
       query {
         services {
@@ -137,12 +166,54 @@ const fetchServices = async () => {
         }
       }
     `;
+    
     const data = await graphql<{ services: { services: Service[] } }>(query);
-    services.value = data.services.services;
+    services.value = data?.services?.services || [];
+    
+    // ✅ Corrigido: Carregar extras garantindo que não bloqueia a UI se falhar
+    await loadExtrasCount();
+    
+    // ✅ Corrigido: Lógica de pré-seleção mais segura
+    const preSelectedId = localStorage.getItem('pre_selected_service_id');
+    if (preSelectedId) {
+      const found = services.value.find(s => s.id === preSelectedId);
+      if (found) {
+        // Só selecionamos se a prop ainda não tiver um serviço ativo
+        if (!props.selectedServiceId) {
+          selectService(found);
+        }
+        localStorage.removeItem('pre_selected_service_id');
+      }
+    }
   } catch (error) {
     console.error("Erro ao carregar serviços:", error);
   } finally {
     isLoading.value = false;
+  }
+};
+
+// Sugestão de implementação robusta para o loadExtrasCount
+const loadExtrasCount = async () => {
+  try {
+    // Usamos um Promise.all para carregar tudo em paralelo e ser mais rápido
+    const results = await Promise.all(
+      services.value
+        .filter(s => s.packType === 'Pack')
+        .map(async (s) => {
+          const res = await graphql<{ packExtras: any[] }>(
+            `query { packExtras(packId: "${s.id}") { id } }`
+          );
+          return { id: s.id, count: res?.packExtras?.length || 0 };
+        })
+    );
+
+    // Mapear resultados para o objeto packExtrasCount
+    results.forEach(r => {
+      packExtrasCount.value[r.id] = r.count;
+    });
+  } catch (error) {
+    console.error("Erro ao carregar extras:", error);
+    // Não paramos a execução se falhar, apenas não mostramos contagem
   }
 };
 
@@ -154,6 +225,11 @@ const getPrice = (service: Service): number => {
 };
 
 const selectService = (service: Service) => {
+  // ✅ Guardar pack_id para o passo de extras
+  if (service.packType === 'Pack') {
+    localStorage.setItem('selected_pack_id', service.id);
+  }
+  
   emit('update:service', { 
     id: service.id, 
     name: service.name, 
@@ -164,5 +240,12 @@ const selectService = (service: Service) => {
   });
 };
 
-onMounted(fetchServices);
+const clearPreSelection = () => {
+  localStorage.removeItem('selected_pack_id');
+  emit('update:service', null);
+};
+
+onMounted(() => {
+  fetchServices();
+});
 </script>

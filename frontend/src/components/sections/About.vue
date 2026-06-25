@@ -132,7 +132,7 @@ onMounted(() => {
               </div>
               <div>
                 <p class="text-xs text-gray-400">Horário flexível</p>
-                <p class="text-sm font-bold text-white">2ª a Sábado</p>
+                <p class="text-sm font-bold text-white">3ª a Domingo</p>
               </div>
             </div>
           </div>

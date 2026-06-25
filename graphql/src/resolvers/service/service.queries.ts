@@ -1,10 +1,10 @@
+// graphql/src/resolvers/services/services.queries.ts
 import { API } from '../../proxy/serviceproxy/api';
 
 export const serviceQueries = {
     services: async (_: any, __: any, context: any) => {
         try {
             const data: any = await API.GET<any>(context, "/Services/");
-
             return {
                 services: (data.Services || []).map(mapService),
                 message: data.Message,
@@ -12,19 +12,13 @@ export const serviceQueries = {
                 error: data.Error || null
             };
         } catch (error: any) {
-            return {
-                services: [],
-                message: null,
-                hasError: true,
-                error: { field: "server", message: error.message }
-            };
+            return { services: [], message: null, hasError: true, error: { field: "server", message: error.message } };
         }
     },
 
     service: async (_: any, { id }: { id: string }, context: any) => {
         try {
             const data: any = await API.GET<any>(context, `/Services/${id}`);
-
             return {
                 services: (data.Services || []).map(mapService),
                 message: data.Message,
@@ -32,19 +26,13 @@ export const serviceQueries = {
                 error: data.Error || null
             };
         } catch (error: any) {
-            return {
-                services: [],
-                message: null,
-                hasError: true,
-                error: { field: "server", message: error.message }
-            };
+            return { services: [], message: null, hasError: true, error: { field: "server", message: error.message } };
         }
     },
 
     servicesByPack: async (_: any, { pack }: { pack: string }, context: any) => {
         try {
             const data: any = await API.GET<any>(context, `/Services/pack/query?pack=${pack}`);
-
             return {
                 services: (data.Services || []).map(mapService),
                 message: data.Message,
@@ -52,12 +40,48 @@ export const serviceQueries = {
                 error: data.Error || null
             };
         } catch (error: any) {
+            return { services: [], message: null, hasError: true, error: { field: "server", message: error.message } };
+        }
+    },
+
+    packExtras: async (_: any, { packId }: { packId: string }, context: any) => {
+        try {
+            const data: any = await API.GET<any>(context, `/Services/${packId}/extras`);
+            return (data.Services || []).map(mapService); 
+        } catch (error: any) {
+            return [];
+        }
+    },
+    fullPackDetails: async (_: any, { id }: { id: string }, context: any) => {
+        try {
+            const data: any = await API.GET<any>(context, `/Services/${id}/full`);
+            if (data.HasError) return null;
+            
+            const pack = data.Services[0];
             return {
-                services: [],
-                message: null,
-                hasError: true,
-                error: { field: "server", message: error.message }
+                ...mapService(pack),
+                steps: pack.steps.map((s: any) => ({
+                    stepOrder: s.step_order,
+                    title: s.title,
+                    durationMinutes: s.duration_minutes
+                })),
+                extras: (pack.extras || []).map(mapService)
             };
+        } catch (error: any) {
+            return null;
+        }
+    },
+
+    serviceSteps: async (_: any, { serviceId }: { serviceId: string }, context: any) => {
+        try {
+            const data: any = await API.GET<any>(context, `/Services/${serviceId}/steps`);
+            return (data.Steps || []).map((s: any) => ({
+                stepOrder: s.step_order,
+                title: s.title,
+                durationMinutes: s.duration_minutes
+            }));
+        } catch (error: any) {
+            return [];
         }
     }
 };
@@ -73,7 +97,7 @@ function mapService(s: any) {
         priceDE: parseFloat(s.price_de) || 0,
         durationMinutes: s.duration_minutes,
         durationDetails: s.duration_details || null,
-        packType: s.pack_type || 'Básico',
+        packType: s.pack_type || 'Basico',
         icon: s.icon || null,
         includes: s.includes || [],
         processSteps: typeof s.process_steps === 'string' 
