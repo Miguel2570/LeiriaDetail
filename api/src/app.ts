@@ -40,12 +40,6 @@ app.use(httpLogger);
 app.use(helmet());
 app.use(compression());
 
-const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 10,
-    message: { HasError: true, Error: { Message: "Demasiadas tentativas. Tente novamente mais tarde." } }
-});
-
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
@@ -57,9 +51,6 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'X-Requested-With', 'Session-Key', 'session-key']
 }));
-
-app.use('/Authentication/Login', authLimiter);
-app.use('/Authentication/Register', authLimiter);
 
 const publicRoutes = [
     '/Authentication/Login', '/Authentication/Register', '/Authentication/register',

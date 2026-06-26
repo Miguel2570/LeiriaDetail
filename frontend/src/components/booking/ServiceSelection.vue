@@ -218,14 +218,23 @@ const loadExtrasCount = async () => {
 };
 
 const getPrice = (service: Service): number => {
-  const category = props.selectedVehicle?.sizeCategory || 'C';
-  if (category === 'A' || category === 'B') return service.priceAB;
-  if (category === 'C') return service.priceC;
-  return service.priceDE;
+  const category = props.selectedVehicle?.sizeCategory || 'Small';
+  
+  if (category === 'Small') return service.priceAB;   // Clio, 208, Golf
+  if (category === 'Medium') return service.priceC;   // Série 3, Qashqai, 3008
+  return service.priceDE;                              // Classe V, Trafic
 };
 
 const selectService = (service: Service) => {
-  // ✅ Guardar pack_id para o passo de extras
+  // Guardar preços para recalcular depois
+  const existing = JSON.parse(localStorage.getItem('service_prices') || '{}');
+  existing[service.id] = {
+    priceAB: service.priceAB,
+    priceC: service.priceC,
+    priceDE: service.priceDE
+  };
+  localStorage.setItem('service_prices', JSON.stringify(existing));
+  
   if (service.packType === 'Pack') {
     localStorage.setItem('selected_pack_id', service.id);
   }
@@ -233,12 +242,17 @@ const selectService = (service: Service) => {
   emit('update:service', { 
     id: service.id, 
     name: service.name, 
-    price: getPrice(service), 
+    price: getPrice(service),  // 🔥 Preço inicial (pode ser recalculado depois)
     duration: service.durationMinutes,
     packType: service.packType,
-    loyaltyPoints: service.loyaltyPoints || 0
+    loyaltyPoints: service.loyaltyPoints || 0,
+    // 🔥 NOVO: Passar os preços para recalcular
+    priceAB: service.priceAB,
+    priceC: service.priceC,
+    priceDE: service.priceDE
   });
 };
+
 
 const clearPreSelection = () => {
   localStorage.removeItem('selected_pack_id');

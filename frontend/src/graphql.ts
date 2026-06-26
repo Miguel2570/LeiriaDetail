@@ -1,10 +1,7 @@
 import { Cache } from "@/services/cachemanager";
 import router from "@/router";
 
-// Vai buscar o URL da API ao ficheiro .env (ex: http://localhost:4001/graphql)
 const GRAPHQL_URL = import.meta.env.VITE_GRAPHQL_URL || "http://localhost:4001/graphql";
-
-// Nome da rota de erro (igual ao definido no router)
 const ERROR_ROUTE_NAME = "ErrorPage";
 
 export const graphql = async <T>(
@@ -18,7 +15,7 @@ export const graphql = async <T>(
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                ...(Cache.Session?.value && Cache.Session.value !== '1234' && { "Session-Key": Cache.Session.value })
+                "Session-Key": Cache.Session?.value || localStorage.getItem('session_key') || ''
             },
             body: JSON.stringify({ query, variables })
         });
@@ -102,6 +99,7 @@ export const graphql = async <T>(
 
         const errorMessage = String(error?.message || "").toLowerCase();
 
+        // 🔥 Erro de rede
         const isNetworkError =
             error instanceof TypeError ||
             errorMessage.includes("failed to fetch") ||
@@ -110,47 +108,68 @@ export const graphql = async <T>(
 
         if (isNetworkError) {
             await router.push({
-                name: ERROR_ROUTE_NAME,  // ← CORRIGIDO
+                name: ERROR_ROUTE_NAME,
                 state: {
                     layer: "NETWORK",
-                    title: "NETWORK",
-                    subTitle: "Connection error",
+                    title: "Sem Ligação",
+                    subTitle: "Erro de conexão",
                     message: "Não foi possível ligar ao servidor da LeiriaDetail.",
-                    details: error?.message || "O servidor pode estar em baixo.",
                     stacktrace: error?.stack || "",
-                    statusCode: "NETWORK"
+                    statusCode: "503"
                 }
             });
             throw error;
         }
 
+        // 🔥 CORRIGIDO: Sessão expirada - redirecionar para página de erro (não login)
         const isAuthError =
-            error?.code === 401 &&
-            (
-                errorMessage.includes("session expired") ||
-                errorMessage.includes("invalid session") ||
-                errorMessage.includes("missing session-key") ||
-                errorMessage.includes("token is required") ||
-                errorMessage.includes("token is not valid") ||
-                errorMessage.includes("unauthorized")
-            );
+            error?.code === 401 ||
+            error?.code === 'UNAUTHENTICATED' ||
+            errorMessage.includes("session expired") ||
+            errorMessage.includes("invalid session") ||
+            errorMessage.includes("missing session-key") ||
+            errorMessage.includes("token is required") ||
+            errorMessage.includes("token is not valid") ||
+            errorMessage.includes("token inválido") ||
+            errorMessage.includes("sessão expirada") ||
+            errorMessage.includes("unauthorized");
 
         if (isAuthError) {
+            // Limpar cache
             if (Cache.Session) Cache.Session.value = "";
-            await router.push("/login");
+            Cache.clearAuth?.();
+            localStorage.removeItem('pending_booking');
+            localStorage.removeItem('pending_booking_id');
+            localStorage.removeItem('booking_state');
+            
+            // 🔥 Redirecionar para página de erro de sessão expirada
+            await router.push({
+                name: ERROR_ROUTE_NAME,
+                query: {
+                    code: '401',
+                    message: 'Sessão expirada. Por favor, inicie sessão novamente.'
+                },
+                state: {
+                    layer: "AUTH",
+                    title: "Sessão Expirada",
+                    subTitle: "A sua sessão expirou por inatividade ou foi terminada.",
+                    message: "Por favor, inicie sessão novamente para continuar.",
+                    statusCode: "401"
+                }
+            });
             throw error;
         }
 
+        // Outros erros
         await router.push({
-            name: ERROR_ROUTE_NAME,  // ← CORRIGIDO
+            name: ERROR_ROUTE_NAME,
             state: {
                 layer: "GRAPHQL",
-                title: error?.code || "GRAPHQL",
+                title: error?.code || "Erro",
                 subTitle: "Ocorreu um erro inesperado",
                 message: error?.message || "Não foi possível processar o seu pedido.",
-                details: error?.message || formatErrorDetails(error),
                 stacktrace: error?.stack || "",
-                statusCode: error?.code || "9999"
+                statusCode: error?.code || "500"
             }
         });
 
@@ -158,18 +177,11 @@ export const graphql = async <T>(
     }
 };
 
-// Funções utilitárias
+// Funções utilitárias (mantêm-se iguais)
 function getApiErrors(responseData: any): any[] {
     if (Array.isArray(responseData?.errors)) return responseData.errors;
     if (responseData?.HasError && responseData?.Error) return [responseData.Error];
     return [];
-}
-
-function formatErrorDetails(error: any): string {
-    const parts: string[] = [];
-    if (error?.output) parts.push(formatErrorValue(error.output));
-    if (error?.errors) parts.push(formatErrorValue(error.errors));
-    return parts.join("\n\n");
 }
 
 function formatErrorValue(value: unknown): string {

@@ -4,7 +4,6 @@ import { API } from '../../proxy/serviceproxy/api';
 export const settingsQueries = {
     settings: async (_: any, __: any, context: any) => {
         try {
-            // ✅ Usa a rota admin (requer Session-Key do context)
             const data: any = await API.GET<any>(context, "/Settings/");
             
             if (data.HasError) {

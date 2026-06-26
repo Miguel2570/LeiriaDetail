@@ -1,5 +1,5 @@
 extend type Query {
-    financialData: FinancialOutput!
-    financialSummary: FinancialOutput!
-    financialTransactions: FinancialOutput!
+    financialData(period: String): FinancialOutput!
+    financialSummary(period: String): FinancialOutput!
+    financialTransactions(period: String): FinancialOutput!
 }

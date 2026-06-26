@@ -1,4 +1,5 @@
 type FinancialSummary {
+    periodRevenue: Float!
     weeklyRevenue: Float!
     expectedIncome: Float!
     pendingPayments: Float!

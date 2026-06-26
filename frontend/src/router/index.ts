@@ -64,9 +64,34 @@ const router = createRouter({
     { path: '/termos', component: () => import('@/page/legal/Terms.vue') },
     { path: '/cookies', component: () => import('@/page/legal/Cookies.vue') },
 
-    // Erro
-    { path: '/error', name: 'error', component: ErrorPage, props: true },
-    { path: '/error-page', name: 'ErrorPage', component: ErrorPage, props: true },
+    // 🔥 Páginas de Erro
+    { 
+      path: '/error', 
+      name: 'ErrorPage',  // ⚠️ Nome exato que o graphql.ts usa
+      component: ErrorPage, 
+      meta: { public: true },
+      props: (route: any) => ({
+        title: route.query.title,
+        subTitle: route.query.subTitle,
+        message: route.query.message || 'Ocorreu um erro inesperado.',
+        stacktrace: route.query.stacktrace,
+        statusCode: route.query.code || '500',
+        layer: route.query.layer,
+      })
+    },
+    { 
+      path: '/session-expired', 
+      redirect: '/error?code=401&message=Sessão expirada. Por favor, inicie sessão novamente.' 
+    },
+    
+    // Também aceitar /error-page como alias
+    { path: '/error-page', redirect: '/error' },
+
+    // 404 - Redirecionar para erro
+    { 
+      path: '/404', 
+      redirect: '/error?code=404&message=Página não encontrada.' 
+    },
 
     {
       path: '/admin',
@@ -84,24 +109,33 @@ const router = createRouter({
         { path: 'profile', name: 'admin-profile', component: ProfilePage, meta: { requiresRole: ALLOWED_ROLES, title: 'Perfil' } },
         { path: 'audit', name: 'admin-audit', component: AuditLogs, meta: { requiresRole: ['admin', 'superadmin'], title: 'Auditoria' } },
         { path: 'holidays', name: 'admin-holidays', component: HolidayManager, meta: { requiresRole: ['admin', 'superadmin'], title: 'Feriados' } },
-        { path: 'portfolio', name: 'admin-portfolio', component: PortfolioManager, meta: { requiresRole: ALLOWED_ROLES, title: 'Portfolio' } },
+        //{ path: 'portfolio', name: 'admin-portfolio', component: PortfolioManager, meta: { requiresRole: ALLOWED_ROLES, title: 'Portfolio' } },
         { path: 'registos', name: 'admin-registos', component: RegisterFlow, meta: { requiresRole: ALLOWED_ROLES, title: 'Registos' } },
         { path: 'settings', name: 'admin-settings', component: SettingsManager, meta: { requiresRole: ['superadmin'], title: 'Configurações' } },
       ]
     },
 
-    // 404
-    { path: '/:pathMatch(.*)*', redirect: '/' }
+    // 404 - Catch all (última rota)
+    { path: '/:pathMatch(.*)*', redirect: '/error?code=404&message=Página não encontrada.' }
   ]
 })
 
+// 🔥 Navigation guard
 router.beforeEach(async (to, from, next) => {
+  // Atualizar título da página
   if (to.meta?.title) {
     document.title = `LeiriaDetail | ${to.meta.title}`
   } else {
     document.title = 'LeiriaDetail'
   }
 
+  // Rotas públicas - permitir sempre
+  if (to.meta?.public) {
+    next()
+    return
+  }
+
+  // Verificar autenticação
   if (to.meta.requiresAuth) {
     const sessionKey = Cache.Session?.value
     
@@ -110,10 +144,25 @@ router.beforeEach(async (to, from, next) => {
       return
     }
     
+    // 🔥 Validar token antes de continuar
+    try {
+      const response = await fetch(`/Authentication/ValidateToken?token=${sessionKey}`)
+      const data = await response.json()
+      
+      if (!data.isValid) {
+        Cache.clearAuth()
+        next({ path: '/error', query: { code: '401', message: 'Sessão expirada.' } })
+        return
+      }
+    } catch {
+      // Se não conseguir validar, permite na mesma (o backend vai rejeitar se for inválido)
+    }
+    
     next()
     return
   }
 
+  // Verificar role
   if (!to.meta.requiresRole) {
     next()
     return
@@ -141,7 +190,7 @@ router.beforeEach(async (to, from, next) => {
     Cache.UserRole.value = data.role
     
     if (data.role === 'customer' || !allowedRoles.includes(data.role)) {
-      next('/')
+      next('/error?code=403&message=Acesso negado.')
       return
     }
     next()

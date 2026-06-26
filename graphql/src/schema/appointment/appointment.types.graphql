@@ -1,5 +1,7 @@
 type DispatchBooking {
     id: Int!
+    clientId: Int
+    vehicleId: Int
     clientName: String!
     clientPhone: String!
     service: String!
@@ -15,11 +17,11 @@ type DispatchBooking {
 type Bay {
     id: String!
     name: String!
-    bookings: [Booking!]!
+    bookings: [DispatchBooking!]!
 }
 
 type AppointmentsData {
-    pending: [Booking!]!
+    pending: [DispatchBooking!]!
     bays: [Bay!]!
 }
 

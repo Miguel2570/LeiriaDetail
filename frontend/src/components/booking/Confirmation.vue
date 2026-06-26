@@ -18,7 +18,6 @@
       </div>
     </div>
 
-    <!-- LeiriaPoints que vai ganhar -->
     <div v-if="!bookingData.isRedeemed && bookingData.service?.loyaltyPoints > 0" class="bg-[#10B981]/10 border border-[#10B981]/30 rounded-2xl p-4 flex items-center gap-3">
       <span class="text-2xl">🪙</span>
       <div>
@@ -29,10 +28,11 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       
+      <!-- Preço -->
       <div class="bg-white/[0.01] border border-white/5 rounded-3xl p-6 flex flex-col justify-between">
         <div>
           <div class="flex items-center gap-2 text-white text-sm font-black uppercase tracking-wider italic border-b border-white/5 pb-3 mb-4">
-            <CreditCard class="w-4 h-4 text-[#00D8FF]" /> Detalhes do Pagamento
+            <CreditCard class="w-4 h-4 text-[#00D8FF]" /> Resumo do Valor
           </div>
           
           <div v-if="bookingData.isRedeemed" class="text-center py-8">
@@ -47,31 +47,19 @@
               <span class="text-white font-medium">{{ basePrice.toFixed(2) }}€</span>
             </div>
             
-            <div v-if="ivaEnabled" class="flex justify-between text-gray-400">
-              <span>IVA ({{ ivaRate }}%)</span>
-              <span class="text-white font-medium">{{ ivaAmount.toFixed(2) }}€</span>
-            </div>
-            
             <div class="border-t border-white/5 pt-4 mt-2 flex justify-between items-center">
-              <span class="text-white font-bold uppercase text-xs tracking-wider">Total Final</span>
+              <span class="text-white font-bold uppercase text-xs tracking-wider">Total</span>
               <span class="text-2xl font-black bg-gradient-to-r from-[#2563EB] to-[#00D8FF] bg-clip-text text-transparent">
                 {{ total.toFixed(2) }}€
               </span>
             </div>
             
-            <p v-if="ivaEnabled" class="text-[9px] text-gray-500">Preços em EUR. IVA incluído à taxa legal em vigor ({{ ivaRate }}%).</p>
-            <p v-else class="text-[9px] text-gray-500">Preços em EUR.</p>
-          </div>
-        </div>
-        <div v-if="!bookingData.isRedeemed" class="mt-6 pt-4 border-t border-white/5">
-          <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-2">Pagamento seguro via</p>
-          <div class="flex gap-2">
-            <span class="text-[10px] bg-[#E6007E]/10 text-[#E6007E] px-2 py-1 rounded-lg font-bold">MB Way</span>
-            <span class="text-[10px] bg-[#10B981]/10 text-[#10B981] px-2 py-1 rounded-lg font-bold">Dinheiro</span>
+            <p class="text-[9px] text-gray-500">Preços em EUR.</p>
           </div>
         </div>
       </div>
 
+      <!-- Detalhes -->
       <div class="space-y-4">
         <div class="bg-white/[0.01] border border-white/5 rounded-2xl p-5">
           <div class="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-wider font-bold mb-3"><Car class="w-4 h-4 text-[#2563EB]" /> Viatura</div>
@@ -127,7 +115,7 @@
               <svg v-if="selectedReminders.includes(opt.key)" class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
             </div>
             <div class="flex-1">
-              <p class="text-white text-xs font-bold" :style="{ color: selectedReminders.includes(opt.key) ? opt.color : undefined }">{{ opt.label }}</p>
+              <p class="text-white text-xs font-bold">{{ opt.label }}</p>
               <p class="text-gray-400 text-[10px]">{{ opt.desc }}</p>
             </div>
             <span v-if="opt.forced" class="text-[9px] text-[#00D8FF] bg-[#00D8FF]/10 px-1.5 py-0.5 rounded-full">Obrigatório</span>
@@ -179,7 +167,6 @@ const termsAccepted = ref(false);
 const ivaEnabled = ref(false);
 const ivaRate = ref(23);
 
-// ✅ Emitir quando o checkbox muda
 watch(termsAccepted, (val) => {
   emit('update:termsAccepted', val);
 });
@@ -192,11 +179,11 @@ const toggleReminder = (key: string) => {
 };
 
 const reminderOptions = [
-  { key: 'immediate', label: 'Confirmação Imediata', desc: 'Email + SMS com resumo da marcação assim que o pagamento for confirmado.', color: '#10B981', forced: false },
-  { key: '24h', label: '24 Horas Antes', desc: 'Lembrete automático com data, hora e morada do serviço.', color: '#00D8FF', forced: true },
-  { key: '6h', label: '6 Horas Antes', desc: 'Aviso de proximidade para preparar o veículo e documentos.', color: '#F59E0B', forced: false },
-  { key: '3h', label: '3 Horas Antes', desc: 'Último aviso antes do serviço.', color: '#8B5CF6', forced: false },
-  { key: '1h', label: '1 Hora Antes', desc: 'Lembrete final. Hora de sair de casa.', color: '#EC4899', forced: false },
+  { key: 'immediate', label: 'Confirmação Imediata', desc: 'Email + SMS com resumo da marcação assim que o pagamento for confirmado.', forced: false },
+  { key: '24h', label: '24 Horas Antes', desc: 'Lembrete automático com data, hora e morada do serviço.', forced: true },
+  { key: '6h', label: '6 Horas Antes', desc: 'Aviso de proximidade para preparar o veículo e documentos.', forced: false },
+  { key: '3h', label: '3 Horas Antes', desc: 'Último aviso antes do serviço.', forced: false },
+  { key: '1h', label: '1 Hora Antes', desc: 'Lembrete final. Hora de sair de casa.', forced: false },
 ];
 
 const formattedDate = computed(() => {
@@ -206,7 +193,7 @@ const formattedDate = computed(() => {
   return d.toString();
 });
 
-const basePrice = computed(() => props.bookingData.service?.price || 120.00);
+const basePrice = computed(() => props.bookingData.service?.price || 0)
 
 const ivaAmount = computed(() => {
   if (!ivaEnabled.value) return 0;

@@ -147,8 +147,24 @@ const checkRole = async () => {
   }
 }
 
-const logout = () => {
+const logout = async () => {
+  try {
+    const sessionKey = Cache.Session?.value
+    if (sessionKey) {
+      await fetch(`/Authentication/Logout/${sessionKey}`, { 
+        method: 'POST' 
+      })
+    }
+  } catch (error) {
+    console.error('Erro ao fazer logout:', error)
+  }
+  
   Cache.clearAuth()
+  
+  localStorage.removeItem('pending_booking')
+  localStorage.removeItem('pending_booking_id')
+  localStorage.removeItem('booking_state')
+  
   router.push('/login')
 }
 

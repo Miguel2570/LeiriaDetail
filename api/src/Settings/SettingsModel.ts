@@ -1,9 +1,5 @@
-// api/src/Settings/SettingsModel.ts
 
 export interface ISettings {
-    iva_enabled: boolean;
-    iva_rate: number;
-    require_nif: boolean;
     company_name: string;
     company_address: string;
 }

@@ -17,6 +17,7 @@ defineProps<{
       ></div>
 
       <div v-for="step in steps" :key="step.number" class="relative z-10 flex flex-col items-center">
+        
         <div :class="[
             'w-8 h-8 rounded-full border-[3px] transition-all duration-500 flex items-center justify-center font-black text-[12px]',
             step.number < currentStep ? 'border-[#00D8FF] bg-[#00D8FF] text-[#050505] shadow-[0_0_10px_rgba(0,216,255,0.4)]' : 
@@ -25,17 +26,16 @@ defineProps<{
           ]">
           {{ step.number }}
         </div>
-      </div>
-    </div>
 
-    <div class="relative flex items-center justify-between mt-4">
-      <div v-for="step in steps" :key="`label-${step.number}`" class="text-center w-20 -ml-8 first:ml-0 last:-mr-8">
-         <span :class="[
-           'text-[9px] font-black uppercase tracking-widest transition-colors duration-500',
-           step.number <= currentStep ? 'text-white' : 'text-white/30'
-         ]">
-          {{ step.label }}
-         </span>
+        <div class="absolute top-full mt-3 flex justify-center items-center w-0">
+          <span :class="[
+            'text-[9px] font-black uppercase tracking-widest transition-colors duration-500 whitespace-nowrap',
+            step.number <= currentStep ? 'text-white' : 'text-white/30'
+          ]">
+            {{ step.label }}
+          </span>
+        </div>
+
       </div>
     </div>
   </div>

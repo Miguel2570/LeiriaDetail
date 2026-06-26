@@ -27,7 +27,7 @@ class UserManager {
         return null;
     }
     
-    static async Register(email: string, password: string, firstName: string, lastName: string): Promise<CreateUserOutputModel> {
+    static async Register(email: string, password: string, firstName: string, lastName: string, phone?: string): Promise<CreateUserOutputModel> {
         const normalizedEmail = email.toLowerCase().trim();
         const passwordError = this.validatePasswordStrength(password);
         if (passwordError) return new CreateUserOutputModel(undefined, undefined, new ErrorModel("Password", passwordError));
@@ -39,20 +39,26 @@ class UserManager {
         const hash = await bcrypt.hash(password, await bcrypt.genSalt(10));
         
         try {
-            // Gerar código de 6 dígitos
             const verificationCode = this.generateVerificationCode();
             const codeExpires = new Date();
             codeExpires.setMinutes(codeExpires.getMinutes() + 15);
             
             const insertQuery = `
-                INSERT INTO users (first_name, last_name, email, password_hash, is_verified, role, provider, verification_code, verification_code_expires) 
-                VALUES ($1, $2, $3, $4, false, 'customer', 'local', $5, $6) 
+                INSERT INTO users (first_name, last_name, email, phone, password_hash, is_verified, role, provider, verification_code, verification_code_expires) 
+                VALUES ($1, $2, $3, $4, $5, false, 'customer', 'local', $6, $7) 
                 RETURNING id, first_name, last_name, email
             `;
-            const result = await server.query(insertQuery, [firstName, lastName, normalizedEmail, hash, verificationCode, codeExpires]);
+            const result = await server.query(insertQuery, [
+                firstName,
+                lastName,
+                normalizedEmail,
+                phone,
+                hash,
+                verificationCode,
+                codeExpires
+            ]);
             const newUser = result.rows[0];
             
-            // Enviar código por email
             await this.sendVerificationCodeEmail(normalizedEmail, verificationCode, firstName);
             
             await AuditManager.createLog(newUser.id, 'REGISTER', normalizedEmail, { firstName, lastName });
@@ -79,9 +85,12 @@ class UserManager {
         const isMatch = await bcrypt.compare(password, user.password_hash);
         if (!isMatch) return new LoginOutputModel(undefined, undefined, new ErrorModel("Password", "Password inválida."));
         
+        // 🔥 Remover sessões anteriores deste utilizador
+        await server.query('DELETE FROM user_sessions WHERE user_id = $1', [user.id]);
+        
         const sessionKey = this.generateUUID();
         const expirationDateTime = new Date();
-        expirationDateTime.setDate(expirationDateTime.getDate() + 1);
+        expirationDateTime.setHours(expirationDateTime.getHours() + 8)
         await server.query('INSERT INTO user_sessions (session_key, user_id, expirationdatetime) VALUES ($1::uuid, $2, $3)', [sessionKey, user.id, expirationDateTime]);
         
         await AuditManager.createLog(user.id, 'LOGIN', normalizedEmail, {});
@@ -97,7 +106,6 @@ class UserManager {
         const user = userResult.rows[0];
         if (user.is_verified) return new ResendVerificationOutputModel(undefined, new ErrorModel("Account", "Conta já verificada."));
         
-        // Gerar novo código
         const verificationCode = this.generateVerificationCode();
         const codeExpires = new Date();
         codeExpires.setMinutes(codeExpires.getMinutes() + 15);
@@ -223,8 +231,11 @@ class UserManager {
                 userId = result.rows[0].id;
             }
 
+            // 🔥 Remover sessões anteriores deste utilizador
+            await server.query('DELETE FROM user_sessions WHERE user_id = $1', [userId]);
+
             const sessionKey = this.generateUUID();
-            await server.query('INSERT INTO user_sessions (session_key, user_id, expirationdatetime) VALUES ($1::uuid, $2, NOW() + INTERVAL \'1 day\')', [sessionKey, userId]);
+            await server.query('INSERT INTO user_sessions (session_key, user_id, expirationdatetime) VALUES ($1::uuid, $2, NOW() + INTERVAL \'8 hours\')', [sessionKey, userId]);
             await AuditManager.createLog(userId, 'LOGIN_GOOGLE', email, {});
             logger.info('Login Google efetuado', { userId });
             return new LoginOutputModel(sessionKey, userId, undefined);
@@ -259,8 +270,11 @@ class UserManager {
                 userId = result.rows[0].id;
             }
 
+            // 🔥 Remover sessões anteriores deste utilizador
+            await server.query('DELETE FROM user_sessions WHERE user_id = $1', [userId]);
+
             const sessionKey = this.generateUUID();
-            await server.query('INSERT INTO user_sessions (session_key, user_id, expirationdatetime) VALUES ($1::uuid, $2, NOW() + INTERVAL \'1 day\')', [sessionKey, userId]);
+            await server.query('INSERT INTO user_sessions (session_key, user_id, expirationdatetime) VALUES ($1::uuid, $2, NOW() + INTERVAL \'8 hours\')', [sessionKey, userId]);
             await AuditManager.createLog(userId, 'LOGIN_APPLE', email, {});
             logger.info('Login Apple efetuado', { userId });
             return new LoginOutputModel(sessionKey, userId, undefined);
@@ -318,13 +332,11 @@ class UserManager {
         
         const user = result.rows[0];
         
-        // Marcar como verificado
         await server.query(
             'UPDATE users SET is_verified = true, verification_code = NULL, verification_code_expires = NULL, updated_at = NOW() WHERE id = $1',
             [user.id]
         );
         
-        // Enviar email de boas-vindas
         await sendWelcomeEmail(normalizedEmail, user.first_name || 'User');
         
         logger.info('Conta verificada por código', { email: normalizedEmail, userId: user.id });

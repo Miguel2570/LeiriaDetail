@@ -1,4 +1,3 @@
-// api/src/Loyalty/LoyaltyManager.ts
 import { server } from '../Helpers/DatabaseConnectionHelper';
 import { LoyaltyOutputModel, LoyaltyBalance, LoyaltyReward, CreditTransaction, RewardRedemption } from './LoyaltyModel';
 

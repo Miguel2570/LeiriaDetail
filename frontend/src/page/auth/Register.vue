@@ -35,14 +35,6 @@
               </svg>
               Registar com o Google
             </button>
-            
-            <!--<button @click="registerWithApple" type="button" class="w-full py-3.5 px-4 bg-white/5 border border-white/10 text-white font-bold rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-3">
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 21.99 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 21.99C7.79 22.03 6.8 20.68 5.96 19.47C4.25 16.97 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/>
-              </svg>
-              Registar com a Apple
-            </button>
-            -->
           </div>
 
           <div class="flex items-center gap-4 mb-6">
@@ -56,9 +48,16 @@
           </div>
 
           <form @submit.prevent="handleRegister" class="space-y-4">
-            <div class="relative">
-              <User class="absolute left-4 top-3.5 h-5 w-5 text-gray-500" />
-              <input v-model="formData.name" type="text" placeholder="Nome Completo" class="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-[#3B82F6] focus:bg-white/10 transition-all placeholder:text-gray-600" required />
+            <!-- 🔥 PRIMEIRO NOME + ÚLTIMO NOME (lado a lado) -->
+            <div class="grid grid-cols-2 gap-4">
+              <div class="relative">
+                <User class="absolute left-4 top-3.5 h-5 w-5 text-gray-500" />
+                <input v-model="formData.firstName" type="text" placeholder="Primeiro Nome" class="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-[#3B82F6] focus:bg-white/10 transition-all placeholder:text-gray-600" required />
+              </div>
+              <div class="relative">
+                <User class="absolute left-4 top-3.5 h-5 w-5 text-gray-500" />
+                <input v-model="formData.lastName" type="text" placeholder="Último Nome" class="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-[#3B82F6] focus:bg-white/10 transition-all placeholder:text-gray-600" required />
+              </div>
             </div>
 
             <div class="relative">
@@ -114,8 +113,10 @@ import { Cache } from '@/services/cachemanager';
 
 const router = useRouter();
 
+// 🔥 Campos separados para primeiro e último nome
 const formData = ref({
-  name: '',
+  firstName: '',
+  lastName: '',
   phone: '',
   email: '',
   password: '',
@@ -127,7 +128,6 @@ const errorMessage = ref('');
 const isLoading = ref(false);
 const success = ref(false);
 
-// ✅ Redirecionar para verificação
 const goToVerify = () => {
   router.push(`/verify?email=${encodeURIComponent(formData.value.email)}`);
 };
@@ -140,21 +140,28 @@ const handleRegister = async () => {
         return;
     }
 
+    // Validação básica
+    if (!formData.value.firstName.trim()) {
+        errorMessage.value = 'O primeiro nome é obrigatório.';
+        return;
+    }
+    if (!formData.value.lastName.trim()) {
+        errorMessage.value = 'O último nome é obrigatório.';
+        return;
+    }
+
     isLoading.value = true;
 
     try {
-        const nameParts = formData.value.name.trim().split(' ');
-        const firstName = nameParts[0] || '';
-        const lastName = nameParts.slice(1).join(' ') || '';
-
         const response = await fetch('/Authentication/Register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 email: formData.value.email,
                 password: formData.value.password,
-                firstName: firstName,
-                lastName: lastName
+                firstName: formData.value.firstName.trim(),
+                lastName: formData.value.lastName.trim(),
+                phone: formData.value.phone.trim()
             })
         });
 
@@ -164,7 +171,6 @@ const handleRegister = async () => {
             throw new Error(data.Error?.Message || 'Erro ao criar conta.');
         }
 
-        // ✅ Mostrar mensagem de sucesso em vez de redirecionar para login
         success.value = true;
         
     } catch (error: any) {
@@ -185,40 +191,71 @@ const registerWithGoogle = async () => {
       });
     }
 
-    const client = (window as any).google.accounts.oauth2.initCodeClient({
+    // 🔥 Usar initTokenClient (popup) - igual ao login
+    const client = (window as any).google.accounts.oauth2.initTokenClient({
       client_id: '433691700860-nuutndflkr2iosttdc0ij269igarlua7.apps.googleusercontent.com',
       scope: 'email profile',
-      ux_mode: 'redirect',
-      redirect_uri: 'http://localhost:5174/registar',
       callback: async (response: any) => {
-        if (response.code) {
+        if (response.access_token) {
           isLoading.value = true;
+          errorMessage.value = '';
           
-          const res = await fetch('/Authentication/GoogleLogin', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: response.code })
-          });
-          
-          const data = await res.json();
-          
-          if (data.HasError) {
-            errorMessage.value = data.Error?.Message || 'Erro no registo com Google.';
+          try {
+            const res = await fetch('/Authentication/GoogleLogin', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ token: response.access_token })
+            });
+            
+            const data = await res.json();
+            
+            if (data.HasError) {
+              errorMessage.value = data.Error?.Message || 'Erro no registo com Google.';
+              isLoading.value = false;
+              return;
+            }
+            
+            // Buscar perfil para obter o nome
+            const profileRes = await fetch('/Profile/', {
+              headers: { 'Session-Key': data.SessionKey }
+            });
+            const profileData = await profileRes.json();
+            const userName = profileData?.Profile?.firstName || 'User';
+            
+            // Verificar role
+            const roleRes = await fetch('/Authentication/Role', {
+              headers: { 'Session-Key': data.SessionKey }
+            });
+            const roleData = await roleRes.json();
+            
+            // 🔥 setAuth(session, id, name, role) - 4 parâmetros
+            Cache.setAuth(
+              data.SessionKey, 
+              data.CredencialKey?.toString() || '', 
+              userName,
+              roleData.role
+            );
+            
+            if (roleData.role !== 'customer') {
+              router.push('/admin/dashboard');
+              return;
+            }
+            
+            router.push('/');
+          } catch (err: any) {
+            errorMessage.value = err.message;
             isLoading.value = false;
-            return;
           }
-          
-          Cache.setAuth(data.SessionKey, data.CredencialKey?.toString(), '');
-          router.push('/');
         }
       }
     });
 
-    client.requestCode();
+    client.requestAccessToken();
   } catch (error: any) {
     errorMessage.value = error.message;
   }
 };
+
 /*
 const registerWithApple = async () => {
   try {

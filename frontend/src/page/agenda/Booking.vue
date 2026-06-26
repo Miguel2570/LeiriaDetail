@@ -75,7 +75,7 @@
                     <ServiceSelection
                       :selectedServiceId="bookingData.service?.id || null"
                       :selectedVehicle="bookingData.vehicle"
-                      @update:service="(val: any) => (bookingData.service = val)"
+                      @update:service="(val: any) => onServiceSelected(val)"
                     />
 
                     <div v-if="loyaltyBalance.availableCredits > 0 && redeemableRewards.length > 0 && !redeemedSuccess" 
@@ -127,7 +127,7 @@
                 <div v-else-if="step === 3">
                   <VehicleSelection
                     :selectedVehicle="bookingData.vehicle"
-                    @update:vehicle="(val: any) => (bookingData.vehicle = val)"
+                    @update:vehicle="(val: any) => onVehicleSelected(val)"
                     @saveBookingState="saveBookingState"
                   />
                 </div>
@@ -213,6 +213,7 @@ const isSubmitting = ref(false);
 const termsAccepted = ref(false);
 const showRecommendation = ref(false);
 const recommendedExtra = ref<any>(null);
+const servicePricesCache = ref<Record<string, { priceAB: number; priceC: number; priceDE: number }>>({});
 
 const steps = [
   { number: 1, label: "Serviço" },
@@ -222,6 +223,43 @@ const steps = [
   { number: 5, label: "Dados" },
   { number: 6, label: "Confirmar" },
 ];
+
+// ✅ Quando o serviço é selecionado, guarda os preços no cache
+const onServiceSelected = (val: any) => {
+  if (val) {
+    // 🔥 Garantir que o price está definido
+    bookingData.value.service = {
+      ...val,
+      price: val.price || 0  // Fallback para 0 em vez de undefined
+    };
+    
+    const cached = JSON.parse(localStorage.getItem('service_prices') || '{}');
+    if (cached[val.id]) {
+      servicePricesCache.value[val.id] = cached[val.id];
+    }
+  } else {
+    bookingData.value.service = null;
+  }
+};
+
+// ✅ Quando a viatura é selecionada, recalcula o preço
+const onVehicleSelected = (val: any) => {
+  bookingData.value.vehicle = val;
+  
+  if (val && bookingData.value.service && servicePricesCache.value[bookingData.value.service.id]) {
+    const prices = servicePricesCache.value[bookingData.value.service.id];
+    const category = val.sizeCategory || 'C';
+    
+    let newPrice = prices.priceC;
+    if (category === 'A' || category === 'B' || category === 'Small') newPrice = prices.priceAB;  // 🔥 Small → priceAB
+    else if (category === 'D' || category === 'E' || category === 'Large') newPrice = prices.priceDE;  // 🔥 Large → priceDE
+    
+    bookingData.value.service = {
+      ...bookingData.value.service,
+      price: newPrice
+    };
+  }
+};
 
 const handleNextStep = async () => {
   if (step.value === 2 && bookingData.value.extras.length === 0) {
@@ -381,7 +419,7 @@ const submitBooking = async () => {
         vehicleName: `${bookingData.value.vehicle?.brand || ""} ${bookingData.value.vehicle?.model || ""}`,
         vehiclePlate: bookingData.value.vehicle?.licensePlate || bookingData.value.vehicle?.plate || "",
         price: total,
-        paymentMethod: "mbway",
+        paymentMethod: "",
         expiresInMinutes: 30,
       },
     });
@@ -443,6 +481,11 @@ const restoreBookingState = () => {
 onMounted(() => {
   loadLoyalty();
   restoreBookingState();
+
+  const cached = localStorage.getItem('service_prices');
+  if (cached) {
+    servicePricesCache.value = JSON.parse(cached);
+  }
 
   const serviceIdFromQuery = route.query.serviceId as string;
   const packFromQuery = route.query.pack as string;

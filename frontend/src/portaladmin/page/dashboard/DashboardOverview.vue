@@ -67,10 +67,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'  // 🔥 Adicionar onUnmounted
+import { useRouter } from 'vue-router'  // 🔥 Adicionar useRouter
 import { TrendingUp, Clock, CalendarCheck, Users, CreditCard } from 'lucide-vue-next'
 import { Line } from 'vue-chartjs'
 import { graphql } from '@/graphql'
+import { Cache } from '@/services/cachemanager'  // 🔥 Adicionar Cache
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -93,6 +95,8 @@ ChartJS.register(
   Legend,
   Filler
 )
+
+const router = useRouter()  // 🔥 Adicionar router
 
 const metricCards = ref([
   { title: "Faturação Hoje", value: "€0", trend: "A carregar...", icon: TrendingUp, color: "from-[#3B82F6] to-[#06B6D4]" },
@@ -125,6 +129,9 @@ const chartOptions = {
 }
 
 const fetchDashboardData = async () => {
+  // 🔥 Verificar sessão antes de fazer fetch
+  if (!Cache.Session?.value) return
+  
   try {
     const query = `
       query {
@@ -148,15 +155,12 @@ const fetchDashboardData = async () => {
     
     const cards = metricCards.value
     
-    // Card 0 - Faturação Hoje
     cards[0].value = `€${d.metrics.faturacaoHoje.toFixed(0)}`
     cards[0].trend = d.metrics.faturacaoHoje > 0 ? 'Hoje' : 'Sem dados'
     
-    // Card 1 - Marcações Pendentes (backend)
     cards[1].value = String(d.metrics.marcacoesPendentes)
     cards[1].trend = d.metrics.marcacoesPendentes > 0 ? `${d.metrics.marcacoesPendentes} pendentes` : 'Nenhuma'
     
-    // Card 2 - Pagamentos por Concluir (localStorage)
     const pendingStorage = localStorage.getItem('pending_booking')
     let pendingLocal = 0
     if (pendingStorage) {
@@ -168,10 +172,8 @@ const fetchDashboardData = async () => {
     cards[2].value = String(pendingLocal)
     cards[2].trend = pendingLocal > 0 ? 'Por pagar' : 'Nenhum'
     
-    // Card 3 - Carros Concluídos
     cards[3].value = String(d.metrics.carrosConcluidos)
     
-    // Card 4 - Staff Ativo
     cards[4].value = `${d.metrics.staffAtivo.ativo}/${d.metrics.staffAtivo.total}`
     cards[4].trend = d.metrics.staffAtivo.total - d.metrics.staffAtivo.ativo > 0 ? `${d.metrics.staffAtivo.total - d.metrics.staffAtivo.ativo} ausente(s)` : 'Todos ativos'
     
@@ -191,13 +193,27 @@ const fetchDashboardData = async () => {
       activityLogs.value = d.activityLogs
     }
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Erro ao carregar dashboard:', error)
+    // 🔥 Se for erro de autenticação, redirecionar
+    if (error?.message?.includes('401') || error?.message?.includes('session')) {
+      Cache.clearAuth()
+      router.push('/login')
+    }
   }
 }
 
+let dashboardInterval: ReturnType<typeof setInterval> | null = null
+
 onMounted(() => {
   fetchDashboardData()
-  setInterval(fetchDashboardData, 60000)
+  dashboardInterval = setInterval(fetchDashboardData, 60000)
+})
+
+onUnmounted(() => {
+  if (dashboardInterval) {
+    clearInterval(dashboardInterval)
+    dashboardInterval = null
+  }
 })
 </script>

@@ -1,20 +1,20 @@
 type ServiceEntry {
-    id: ID!
-    clientId: ID!
-    vehicleId: ID!
-    vehiclePlate: String!
-    serviceType: String!
-    status: ServiceStatus!
-    progress: Int!
-    entryDate: String!
-    startedAt: String
-    completedAt: String
-    observations: String
-    entryChecks: [String!]!
-    checklistItems: [String!]!
-    serviceNotes: String
-    estimatedValue: Float!
-    totalValue: Float!
+  id: Int!
+  clientId: Int!
+  vehicleId: Int!
+  vehiclePlate: String
+  serviceType: String
+  status: String
+  progress: Int
+  entryDate: String
+  startedAt: String
+  completedAt: String
+  observations: String
+  entryChecks: [String]
+  checklistItems: [String]
+  serviceNotes: String
+  estimatedValue: Float
+  totalValue: Float
 }
 
 enum ServiceStatus {

@@ -19,8 +19,8 @@ async function Register(request: Request, response: Response) {
         return;
     }
 
-    const { email, password, firstName, lastName } = validation.data;
-    const result = await AuthenticationManager.Register(email, password, firstName, lastName);
+    const { email, password, firstName, lastName, phone } = validation.data;
+    const result = await AuthenticationManager.Register(email, password, firstName, lastName, phone);
     response.status(200).send(result);
 }
 

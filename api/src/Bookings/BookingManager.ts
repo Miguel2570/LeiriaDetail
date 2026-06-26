@@ -38,7 +38,7 @@ class BookingManager {
                     s.price_ab, s.price_c, s.price_de,
                     v.size_category
                 FROM bookings b
-                JOIN vehicles v ON b.vehicle_id = v.id
+                JOIN user_vehicles v ON b.vehicle_id = v.id
                 JOIN services s ON b.service_id = s.id
                 WHERE b.user_id = $1
                 ORDER BY b.booking_date DESC, b.booking_time DESC

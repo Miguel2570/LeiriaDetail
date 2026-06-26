@@ -20,20 +20,27 @@ class PendingBookingsManager {
         expiresInMinutes?: number;
     }): Promise<any> {
         console.log('📥 Manager recebeu:', JSON.stringify(data, null, 2));
-        const expiresInMinutes = data.expiresInMinutes || 30
+        const expiresInMinutes = data.expiresInMinutes || 30;
         console.log('⏱ Expira em:', expiresInMinutes, 'minutos');
         
         const result = await server.query(
             `INSERT INTO pending_bookings 
-             (user_id, vehicle_id, service_id, booking_date, booking_time, service_name, vehicle_name, vehicle_plate, price, payment_method, invoice_nif, invoice_name, invoice_address, status, expires_at)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 'pending', NOW() + INTERVAL '${expiresInMinutes} minutes')
-             RETURNING id, expires_at`,
+            (user_id, vehicle_id, service_id, booking_date, booking_time, service_name, vehicle_name, vehicle_plate, price, payment_method, invoice_nif, invoice_name, invoice_address, status, expires_at)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 'pending', NOW() + INTERVAL '${expiresInMinutes} minutes')
+            RETURNING id, expires_at`,
             [
                 data.userId, data.vehicleId, data.serviceId, data.bookingDate, data.bookingTime,
                 data.serviceName, data.vehicleName, data.vehiclePlate, data.price,
-                data.paymentMethod || 'mbway', data.invoiceNIF, data.invoiceName, data.invoiceAddress
+                data.paymentMethod || '', data.invoiceNIF, data.invoiceName, data.invoiceAddress
             ]
         );
+        
+        await server.query(
+            `INSERT INTO bookings (user_id, vehicle_id, service_id, booking_date, booking_time, status)
+            VALUES ($1, $2, $3, $4, $5, 'PENDENTE')`,
+            [data.userId, data.vehicleId, data.serviceId, data.bookingDate, data.bookingTime]
+        );
+        
         return result.rows[0];
     }
 

@@ -171,32 +171,65 @@ const loginWithGoogle = async () => {
       });
     }
 
-    const client = (window as any).google.accounts.oauth2.initCodeClient({
+    const client = (window as any).google.accounts.oauth2.initTokenClient({
       client_id: '433691700860-nuutndflkr2iosttdc0ij269igarlua7.apps.googleusercontent.com',
       scope: 'email profile',
-      ux_mode: 'redirect',
-      redirect_uri: 'http://localhost:5174/login',
       callback: async (response: any) => {
-        if (response.code) {
+        if (response.access_token) {
           isLoading.value = true;
-          const res = await fetch('/Authentication/GoogleLogin', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: response.code })
-          });
-          const data = await res.json();
-          if (data.HasError) {
-            errorMessage.value = data.Error?.Message || 'Erro no login com Google.';
+          errorMessage.value = '';
+          
+          try {
+            const res = await fetch('/Authentication/GoogleLogin', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ token: response.access_token })
+            });
+            
+            const data = await res.json();
+            
+            if (data.HasError) {
+              errorMessage.value = data.Error?.Message || 'Erro no login com Google.';
+              isLoading.value = false;
+              return;
+            }
+            
+            // 🔥 Buscar perfil para obter o nome
+            const profileRes = await fetch('/Profile/', {
+              headers: { 'Session-Key': data.SessionKey }
+            });
+            const profileData = await profileRes.json();
+            const userName = profileData?.Profile?.firstName || 'User';
+            
+            // Verificar role
+            const roleRes = await fetch('/Authentication/Role', {
+              headers: { 'Session-Key': data.SessionKey }
+            });
+            const roleData = await roleRes.json();
+            
+            // 🔥 setAuth(session, id, name, role)
+            Cache.setAuth(
+              data.SessionKey, 
+              data.CredencialKey?.toString() || '', 
+              userName,           // nome
+              roleData.role       // role
+            );
+            
+            if (roleData.role !== 'customer') {
+              router.push('/admin/dashboard');
+              return;
+            }
+            
+            router.push('/');
+          } catch (err: any) {
+            errorMessage.value = err.message;
             isLoading.value = false;
-            return;
           }
-          Cache.setAuth(data.SessionKey, data.CredencialKey?.toString(), '');
-          router.push('/');
         }
       }
     });
 
-    client.requestCode();
+    client.requestAccessToken();
   } catch (error: any) {
     errorMessage.value = error.message;
   }

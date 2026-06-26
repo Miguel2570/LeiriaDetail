@@ -1,4 +1,3 @@
-// src/Dashboard/DashboardManager.ts
 import { server } from '../Helpers/DatabaseConnectionHelper';
 
 export interface DashboardMetrics {
@@ -35,7 +34,7 @@ class DashboardManager {
             ), 0) as total
             FROM bookings b
             JOIN services s ON b.service_id = s.id
-            LEFT JOIN vehicles v ON b.vehicle_id = v.id
+            LEFT JOIN user_vehicles v ON b.vehicle_id = v.id
             WHERE b.status = 'CONCLUIDO'
             AND b.booking_date = CURRENT_DATE
         `;
@@ -96,7 +95,7 @@ class DashboardManager {
                 ), 0) as revenue
             FROM bookings b
             JOIN services s ON b.service_id = s.id
-            LEFT JOIN vehicles v ON b.vehicle_id = v.id
+            LEFT JOIN user_vehicles v ON b.vehicle_id = v.id
             WHERE b.status = 'CONCLUIDO'
             AND b.booking_date >= CURRENT_DATE - INTERVAL '${days} days'
             GROUP BY b.booking_date

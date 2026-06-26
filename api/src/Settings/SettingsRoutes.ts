@@ -4,16 +4,12 @@ import SettingsManager from "./SettingsManager";
 
 const router = Router();
 
-// ✅ GET - PÚBLICO: Obter configurações para o frontend
+// GET - PÚBLICO: Obter configurações para o frontend
 async function GetPublicSettings(request: Request, response: Response) {
     try {
         const raw = await SettingsManager.getAll();
         
-        // Só retorna dados públicos (sem informações sensíveis)
         const settings = {
-            ivaEnabled: raw.iva_enabled === 'true',
-            ivaRate: parseInt(raw.iva_rate) || 23,
-            requireNif: raw.require_nif === 'true',
             companyName: raw.company_name || 'LeiriaDetail',
             companyAddress: raw.company_address || 'Leiria, Portugal'
         };
@@ -30,9 +26,6 @@ async function GetAll(request: Request, response: Response) {
         const raw = await SettingsManager.getAll();
         
         const settings = {
-            ivaEnabled: raw.iva_enabled === 'true',
-            ivaRate: parseInt(raw.iva_rate) || 23,
-            requireNif: raw.require_nif === 'true',
             companyName: raw.company_name || 'LeiriaDetail',
             companyAddress: raw.company_address || 'Leiria, Portugal'
         };
@@ -59,15 +52,6 @@ async function Update(request: Request, response: Response) {
     try {
         const settings = request.body;
         
-        if (settings.ivaEnabled !== undefined) {
-            await SettingsManager.set('iva_enabled', settings.ivaEnabled ? 'true' : 'false');
-        }
-        if (settings.ivaRate !== undefined) {
-            await SettingsManager.set('iva_rate', settings.ivaRate.toString());
-        }
-        if (settings.requireNif !== undefined) {
-            await SettingsManager.set('require_nif', settings.requireNif ? 'true' : 'false');
-        }
         if (settings.companyName !== undefined) {
             await SettingsManager.set('company_name', settings.companyName);
         }
@@ -77,9 +61,6 @@ async function Update(request: Request, response: Response) {
 
         const raw = await SettingsManager.getAll();
         const updatedSettings = {
-            ivaEnabled: raw.iva_enabled === 'true',
-            ivaRate: parseInt(raw.iva_rate) || 23,
-            requireNif: raw.require_nif === 'true',
             companyName: raw.company_name || '',
             companyAddress: raw.company_address || ''
         };
@@ -90,10 +71,10 @@ async function Update(request: Request, response: Response) {
     }
 }
 
-// ✅ Rota pública para o frontend
+// Rota pública para o frontend
 router.get("/public", GetPublicSettings);
 
-// Rotas admin (protegidas por autenticação)
+// Rotas admin
 router.get("/", GetAll);
 router.get("/:key", GetOne);
 router.put("/", Update);

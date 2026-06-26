@@ -6,6 +6,13 @@ export const crmQueries = {
     try {
       const data: any = await API.GET<any>(context, "/CRM");
       
+      if (data.Clients?.length > 0) {
+        const firstClient = data.Clients[0];
+        console.log('📊 Cliente:', firstClient.name);
+        console.log('📊 History:', JSON.stringify(firstClient.history?.slice(0, 1)));
+        console.log('📊 History length:', firstClient.history?.length);
+      }
+      
       if (data.HasError) {
         return {
           clients: null,

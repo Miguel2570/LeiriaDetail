@@ -199,7 +199,7 @@ const isLoggedIn = computed(() => !!Cache.Session.value);
 const navLinks = computed(() => [
   { name: t('nav.home'), path: '/' },
   { name: t('nav.services'), path: '/servicos' },
-  { name: t('nav.portfolio'), path: '/portfolio' },
+  //{ name: t('nav.portfolio'), path: '/portfolio' },
 ]);
 
 const changeLanguage = (lang: string) => {

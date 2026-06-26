@@ -10,6 +10,8 @@ class AppointmentManager {
         const pendingQuery = `
             SELECT 
                 b.id,
+                b.user_id as "clientId",
+                b.vehicle_id as "vehicleId",
                 u.first_name || ' ' || u.last_name as "clientName",
                 COALESCE(u.phone, 'N/A') as "clientPhone",
                 s.name as service,
@@ -22,9 +24,9 @@ class AppointmentManager {
             FROM bookings b
             JOIN users u ON b.user_id = u.id
             JOIN services s ON b.service_id = s.id
-            JOIN vehicles v ON b.vehicle_id = v.id
+            JOIN user_vehicles v ON b.vehicle_id = v.id
             WHERE b.status = 'PENDENTE'
-            AND b.booking_date >= $1
+            AND b.booking_date = $1
             ORDER BY b.booking_date, b.booking_time
         `;
         
@@ -41,6 +43,8 @@ class AppointmentManager {
         const baysQuery = `
             SELECT 
                 b.id,
+                b.user_id as "clientId",
+                b.vehicle_id as "vehicleId",
                 u.first_name || ' ' || u.last_name as "clientName",
                 COALESCE(u.phone, 'N/A') as "clientPhone",
                 s.name as service,
@@ -54,7 +58,7 @@ class AppointmentManager {
             FROM bookings b
             JOIN users u ON b.user_id = u.id
             JOIN services s ON b.service_id = s.id
-            JOIN vehicles v ON b.vehicle_id = v.id
+            JOIN user_vehicles v ON b.vehicle_id = v.id
             WHERE b.status IN ('EM_PROGRESSO', 'AGENDADO', 'CONFIRMADO')
             AND b.booking_date = $1
             ORDER BY b.booking_time

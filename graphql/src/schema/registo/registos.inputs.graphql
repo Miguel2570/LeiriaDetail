@@ -1,10 +1,14 @@
 input CreateServiceInput {
-    clientId: Int!
-    vehicleId: Int!
-    serviceType: String!
-    observations: String
-    entryChecks: [String!]
-    estimatedValue: Float
+  name: String!
+  clientId: Int!
+  vehicleId: Int!
+  serviceType: String!
+  priceAB: Float!
+  priceC: Float!
+  priceDE: Float!
+  observations: String
+  entryChecks: [String]
+  estimatedValue: Float
 }
 
 input UpdateChecklistInput {

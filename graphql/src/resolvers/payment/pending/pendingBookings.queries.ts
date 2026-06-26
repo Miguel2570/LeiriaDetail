@@ -10,8 +10,22 @@ export const pendingBookingsQueries = {
                 return { pendingBookings: null, hasError: true, error: { field: "pendingBooking", message: data.Error?.Message } };
             }
             
+            // ✅ Mapear os campos do PostgreSQL para camelCase
+            const pb = data.PendingBooking;
+            const mapped = pb ? {
+                id: pb.id,
+                serviceName: pb.service_name || pb.serviceName || '',
+                vehicleName: pb.vehicle_name || pb.vehicleName || '',
+                vehiclePlate: pb.vehicle_plate || pb.vehiclePlate || '',
+                bookingDate: pb.booking_date || pb.bookingDate || '',
+                bookingTime: pb.booking_time || pb.bookingTime || '',
+                price: pb.price || 0,
+                status: pb.status || 'pending',
+                expiresAt: pb.expires_at || pb.expiresAt || ''
+            } : null;
+            
             return {
-                pendingBookings: data.PendingBooking ? [data.PendingBooking] : [],
+                pendingBookings: mapped ? [mapped] : [],
                 hasError: false,
                 error: null
             };

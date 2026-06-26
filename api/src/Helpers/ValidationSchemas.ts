@@ -18,7 +18,7 @@ const emailSchema = z.string()
 const nameSchema = z.string()
     .min(1, 'Nome obrigatório')
     .max(100, 'Máximo 100 caracteres')
-    .regex(/^[a-zA-ZÀ-ÿ\s'-]+$/, 'Nome contém caracteres inválidos');
+    .regex(/^[a-zA-ZÀ-ÿ0-9\s'-]+$/, 'Nome contém caracteres inválidos');
 
 // Telefone português
 const phoneSchema = z.string()
@@ -39,6 +39,7 @@ export const RegisterSchema = z.object({
     password: passwordSchema,
     firstName: nameSchema,
     lastName: nameSchema,
+    phone: phoneSchema
 });
 
 export const LoginSchema = z.object({

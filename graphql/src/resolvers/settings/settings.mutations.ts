@@ -18,11 +18,8 @@ export const settingsMutations = {
             const s = data.Settings || {};
             return {
                 settings: {
-                    ivaEnabled: s.iva_enabled === 'true' || s.iva_enabled === true,
-                    ivaRate: parseInt(s.iva_rate) || 23,
-                    requireNif: s.require_nif === 'true' || s.require_nif === true,
-                    companyName: s.company_name || '',
-                    companyAddress: s.company_address || ''
+                    companyName: s.company_name || s.companyName || '',
+                    companyAddress: s.company_address || s.companyAddress || ''
                 },
                 message: data.Message || "Configurações atualizadas.",
                 hasError: false,

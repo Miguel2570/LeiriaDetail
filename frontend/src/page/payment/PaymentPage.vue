@@ -33,8 +33,7 @@
             <div class="flex justify-between"><span class="text-gray-400">Veículo</span><span class="text-white">{{ booking.vehicleName }} ({{ booking.vehiclePlate }})</span></div>
             <div class="flex justify-between"><span class="text-gray-400">Data</span><span class="text-white">{{ formatDate(booking.bookingDate) }} às {{ booking.bookingTime }}</span></div>
             <div class="border-t border-white/5 pt-3">
-              <div class="flex justify-between text-xs text-gray-400 mb-1"><span>Subtotal</span><span>{{ subtotal }}€</span></div>
-              <div class="flex justify-between mt-2 pt-2 border-t border-white/5"><span class="text-gray-400 font-bold">Total</span><span class="text-2xl font-black text-[#00D8FF]">{{ total }}€</span></div>
+              <div class="flex justify-between mt-2"><span class="text-gray-400 font-bold">Total</span><span class="text-2xl font-black text-[#00D8FF]">{{ total }}€</span></div>
               <p class="text-[9px] text-gray-500 mt-1">Preços em EUR.</p>
             </div>
           </div>
@@ -49,11 +48,11 @@
               <div><p class="font-bold text-white text-sm">MB Way</p><p class="text-xs text-gray-400">Pagamento imediato via app</p></div>
             </button>
             
-            <button @click="method = 'multibanco'" :class="['w-full p-4 rounded-xl border text-left transition-all flex items-center gap-4', method === 'multibanco' ? 'border-[#00D8FF] bg-[#00D8FF]/5' : 'border-white/5 hover:border-white/20']">
+            <!--<button @click="method = 'multibanco'" :class="['w-full p-4 rounded-xl border text-left transition-all flex items-center gap-4', method === 'multibanco' ? 'border-[#00D8FF] bg-[#00D8FF]/5' : 'border-white/5 hover:border-white/20']">
               <div class="w-10 h-10 rounded-lg bg-[#FF6600]/20 flex items-center justify-center shrink-0"><CreditCard class="w-5 h-5 text-[#FF6600]" /></div>
               <div><p class="font-bold text-white text-sm">Multibanco</p><p class="text-xs text-gray-400">Entidade + Referência • Válido 72h</p></div>
             </button>
-
+            -->
             <button @click="method = 'cash'" :class="['w-full p-4 rounded-xl border text-left transition-all flex items-center gap-4', method === 'cash' ? 'border-[#00D8FF] bg-[#00D8FF]/5' : 'border-white/5 hover:border-white/20']">
               <div class="w-10 h-10 rounded-lg bg-[#10B981]/20 flex items-center justify-center shrink-0"><Banknote class="w-5 h-5 text-[#10B981]" /></div>
               <div><p class="font-bold text-white text-sm">Dinheiro</p><p class="text-xs text-gray-400">Pague em mão no dia do serviço</p></div>
@@ -147,33 +146,12 @@ const acceptedTerms = ref(false)
 const acceptedCancellation = ref(false)
 const sessionTimeout = ref(false)
 
-// ✅ Valores padrão (sem chamada à API)
-const ivaEnabled = ref(false)
-const ivaRate = ref(23)
-
 let timeoutTimer: ReturnType<typeof setTimeout> | null = null
 
 watch(method, () => { triedSubmit.value = false })
 
-// ✅ CORRIGIDO: já não chama a API
-const fetchSettings = () => {
-  // Valores padrão
-  ivaEnabled.value = false
-  ivaRate.value = 23
-}
-
-const subtotal = computed(() => (booking.value?.servicePrice || 0).toFixed(2))
-
-const ivaAmount = computed(() => {
-  if (!ivaEnabled.value) return '0.00'
-  return ((booking.value?.servicePrice || 0) * (ivaRate.value / 100)).toFixed(2)
-})
-
-const total = computed(() => {
-  const base = booking.value?.servicePrice || 0
-  const iva = ivaEnabled.value ? base * (ivaRate.value / 100) : 0
-  return (base + iva).toFixed(2)
-})
+// 🔥 SIMPLIFICADO: Sem IVA
+const total = computed(() => (booking.value?.servicePrice || 0).toFixed(2))
 
 const canPay = computed(() => {
   if (!acceptedPrivacy.value || !acceptedTerms.value || !acceptedCancellation.value) return false
@@ -202,7 +180,8 @@ const fetchBooking = async () => {
       query GetPendingBooking($id: ID!) {
         pendingBooking(id: $id) {
           pendingBookings {
-            id serviceName vehicleName vehiclePlate bookingDate bookingTime price status expiresAt
+            id serviceName vehicleName vehiclePlate
+            bookingDate bookingTime price status expiresAt
           }
           hasError
         }
@@ -213,35 +192,29 @@ const fetchBooking = async () => {
     
     if (data.pendingBooking?.pendingBookings?.length > 0 && !data.pendingBooking.hasError) {
       const pb = data.pendingBooking.pendingBookings[0];
-      
-      const expiresAt = new Date(pb.expiresAt).getTime();
-      if (Date.now() > expiresAt) {
-        clearPendingData();
-        alert('⏰ Esta marcação expirou. Por favor, faça uma nova.');
-        router.push('/agenda');
+      if (pb) {
+        booking.value = {
+          id: pb.id || bookingId,
+          serviceName: pb.serviceName || 'Serviço',
+          vehicleName: pb.vehicleName || 'Veículo',
+          vehiclePlate: pb.vehiclePlate || 'AA-00-BB',
+          bookingDate: pb.bookingDate || new Date().toISOString().split('T')[0],
+          bookingTime: pb.bookingTime || '10:00',
+          servicePrice: pb.price || 0
+        };
+        isLoading.value = false;
         return;
       }
-      
-      booking.value = {
-        id: pb.id, serviceName: pb.serviceName || 'Serviço',
-        vehicleName: pb.vehicleName || 'Veículo', vehiclePlate: pb.vehiclePlate || 'AA-00-BB',
-        bookingDate: pb.bookingDate, bookingTime: pb.bookingTime, servicePrice: pb.price || 0
-      };
-      isLoading.value = false;
-      return;
     }
-  } catch (error) { console.warn('Erro ao buscar pending booking:', error); }
+  } catch (error) {
+    console.warn('Erro ao buscar pending booking:', error);
+  }
 
+  // Fallback para localStorage
   const storedBooking = localStorage.getItem('pending_booking');
   if (storedBooking) {
     try {
       const pb = JSON.parse(storedBooking);
-      if (pb.expiresAt && Date.now() > new Date(pb.expiresAt).getTime()) {
-        clearPendingData();
-        alert('⏰ Esta marcação expirou.');
-        router.push('/agenda');
-        return;
-      }
       booking.value = {
         id: pb.bookingId || bookingId,
         serviceName: localStorage.getItem('last_service') || pb.serviceName || 'Serviço',
@@ -249,10 +222,9 @@ const fetchBooking = async () => {
         vehiclePlate: localStorage.getItem('last_plate') || pb.vehiclePlate || 'AA-00-BB',
         bookingDate: localStorage.getItem('last_date') || pb.date || new Date().toISOString().split('T')[0],
         bookingTime: localStorage.getItem('last_time') || pb.time || '10:00',
-        servicePrice: parseFloat(localStorage.getItem('last_price') || String(pb.price || '75'))
+        servicePrice: parseFloat(localStorage.getItem('last_price') || String(pb.price || '0'))
       };
     } catch {
-      clearPendingData();
       router.push('/agenda');
       return;
     }
@@ -335,7 +307,6 @@ onMounted(async () => {
     setTimeout(() => { router.push('/client-area') }, 3000)
   }, 30 * 60 * 1000)
 
-  fetchSettings()
   fetchBooking()
 })
 

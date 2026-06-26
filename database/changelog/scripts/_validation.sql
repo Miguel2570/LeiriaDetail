@@ -6,4 +6,4 @@ SELECT COUNT(*) as total_users FROM users;
 SELECT COUNT(*) as total_services FROM services;
 
 -- Verificar veículos
-SELECT COUNT(*) as total_vehicles FROM vehicles;
+SELECT COUNT(*) as total_vehicles FROM user_vehicles;

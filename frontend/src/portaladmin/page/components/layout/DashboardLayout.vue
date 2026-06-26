@@ -1,4 +1,3 @@
-<!-- src/components/layout/DashboardLayout.vue -->
 <script setup lang="ts">
 import Sidebar from './Sidebar.vue'
 </script>

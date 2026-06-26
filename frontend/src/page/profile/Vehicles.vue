@@ -1,6 +1,10 @@
 <template>
   <form @submit.prevent="handleAddVehicle" class="space-y-4">
     
+    <div v-if="errorMessage" class="p-3 bg-red-500/10 border border-red-500/50 rounded-xl text-red-400 text-xs">
+      {{ errorMessage }}
+    </div>
+
     <!-- Matrícula -->
     <div>
       <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Matrícula *</label>
@@ -19,7 +23,7 @@
       </p>
     </div>
 
-    <!-- Campos manuais -->
+    <!-- Marca e Modelo -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Marca *</label>
@@ -31,6 +35,7 @@
       </div>
     </div>
 
+    <!-- Ano, Combustível, Categoria -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div>
         <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Ano</label>
@@ -38,7 +43,6 @@
       </div>
       <div>
         <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Combustível</label>
-        <!-- Combustível -->
         <select 
           v-model="newVehicle.fuel_type" 
           class="w-full px-4 py-3 rounded-xl outline-none cursor-pointer"
@@ -50,22 +54,27 @@
           <option value="Elétrico" style="background: #1a1a1a; color: white;">Elétrico</option>
           <option value="Híbrido" style="background: #1a1a1a; color: white;">Híbrido</option>
         </select>
-
-        <!-- Categoria -->
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Tamanho</label>
         <select 
           v-model="newVehicle.size_category" 
           class="w-full px-4 py-3 rounded-xl outline-none cursor-pointer"
           style="background-color: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; color-scheme: dark;"
         >
-          <option value="A" style="background: #1a1a1a; color: white;">A - Pequeno</option>
-          <option value="B" style="background: #1a1a1a; color: white;">B - Médio</option>
-          <option value="C" style="background: #1a1a1a; color: white;">C - Grande</option>
-          <option value="D" style="background: #1a1a1a; color: white;">D - SUV</option>
-          <option value="E" style="background: #1a1a1a; color: white;">E - Comercial</option>
+          <option value="" disabled style="color: #6b7280; background: #1a1a1a;">Selecionar</option>
+          <option value="Small" style="background: #1a1a1a; color: white;">Small / Normal</option>
+          <option value="Medium" style="background: #1a1a1a; color: white;">Large</option>
+          <option value="Large" style="background: #1a1a1a; color: white;">Extra Large (Van)</option>
         </select>
-        </div>
       </div>
-    <button type="submit" :disabled="isSubmitting || !plateStatus.isValid" class="w-full py-3 bg-gradient-to-r from-[#2563EB] to-[#00D8FF] text-white font-bold rounded-xl disabled:opacity-50">
+    </div>
+
+    <button 
+      type="submit" 
+      :disabled="isSubmitting || !plateStatus.isValid" 
+      class="w-full py-3 bg-gradient-to-r from-[#2563EB] to-[#00D8FF] text-white font-bold rounded-xl disabled:opacity-50 text-sm uppercase tracking-wider"
+    >
       {{ isSubmitting ? 'A guardar...' : 'Guardar Veículo' }}
     </button>
     
@@ -83,7 +92,7 @@ const newVehicle = ref({
   model: '',
   year: null as number | null,
   fuel_type: '',
-  size_category: 'C'
+  size_category: ''
 });
 
 const isSubmitting = ref(false);
@@ -158,7 +167,7 @@ const handleAddVehicle = async () => {
     }
 
     // Reset form
-    newVehicle.value = { license_plate: '', brand: '', model: '', year: null, fuel_type: '', size_category: 'C' };
+    newVehicle.value = { license_plate: '', brand: '', model: '', year: null, fuel_type: '', size_category: 'Medium' };
     plateStatus.isValid = false;
     plateStatus.class = 'bg-white/5 border-white/10 focus:border-[#3B82F6]';
     plateStatus.message = '';

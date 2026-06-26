@@ -10,69 +10,6 @@
 -- ============================================================
 
 -- ============================================
--- SERVIÇOS AVULSO (BÁSICO)
--- ============================================
-
-INSERT INTO services (
-  name, description, long_description,
-  price_ab, price_c, price_de,
-  duration_minutes, duration_details,
-  pack_type, includes, process_steps, icon, loyalty_points
-)
-SELECT
-  'Lavagem Exterior',
-  'Lavagem à mão + secar com pano de microfibra',
-  'Lavagem exterior profissional que remove toda a sujidade acumulada. Inclui pré-lavagem com espuma, lavagem manual técnica 2 baldes e secagem com panos de microfibra.',
-  35, 45, 55,
-  90, '1h30 a 2h',
-  'Basico',
-  ARRAY[
-    'Pré-lavagem com espuma',
-    'Lavagem manual (técnica 2 baldes)',
-    'Secagem com panos microfibra',
-    'Limpeza de vidros',
-    'Brilho nos pneus'
-  ],
-  '[
-    {"step":1,"title":"Pré-lavagem","description":"Aplicação de espuma para remover partículas soltas."},
-    {"step":2,"title":"Lavagem à mão","description":"Técnica dos 2 baldes com luvas de microfibra."},
-    {"step":3,"title":"Secagem","description":"Secagem completa com panos que não largam pelos."}
-  ]',
-  '🧼', 5
-WHERE NOT EXISTS (
-  SELECT 1 FROM services WHERE name = 'Lavagem Exterior' AND pack_type = 'Basico'
-);
-
-INSERT INTO services (
-  name, description, long_description,
-  price_ab, price_c, price_de,
-  duration_minutes, duration_details,
-  pack_type, includes, process_steps, icon, loyalty_points
-)
-SELECT
-  'Lavagem Interior',
-  'Aspiração + limpeza de plásticos + vidros',
-  'Limpeza interior completa com aspiração, limpeza de todas as superfícies plásticas, vidros e aplicação de ambientador.',
-  35, 45, 55,
-  90, '1h30 a 2h',
-  'Basico',
-  ARRAY[
-    'Aspiração completa',
-    'Limpeza de plásticos e superfícies',
-    'Limpeza de vidros interiores',
-    'Ambientador'
-  ],
-  '[
-    {"step":1,"title":"Aspiração","description":"Aspiração profunda de tapetes, carpetes e bancos."},
-    {"step":2,"title":"Superfícies","description":"Limpeza de plásticos com produtos específicos."},
-    {"step":3,"title":"Vidros","description":"Limpeza de vidros sem deixar marcas."}
-  ]',
-  '🪣', 5
-WHERE NOT EXISTS (
-  SELECT 1 FROM services WHERE name = 'Lavagem Interior' AND pack_type = 'Basico'
-);
-
--- ============================================
 -- PACKS COMPLETOS
 -- ============================================
 
@@ -86,7 +23,7 @@ SELECT
   'Pack Essencial',
   'Lavagem exterior + interior completa',
   'O pacote essencial para o dia a dia. Combina lavagem exterior e interior para um resultado completo. SUV +10€, Van +15€.',
-  35, 45, 55,
+  45, 55, 65,
   -- Tempo real baseado nas imagens: 1h22 real / estimado 1h30-2h
   82, '1h30 a 2h',
   'Pack',
@@ -126,7 +63,7 @@ SELECT
   'Pack Premium',
   'Detalhe completo interior e exterior com cera e purio',
   'Tratamento premium completo. Inclui lavagem exterior com cera, interior detalhado com purio, jantes e pneus. SUV +10€, Van +15€.',
-  55, 65, 70,
+  65,80, 90,
   -- Tempo real: 2h15 / estimado 3h-4h
   135, '3h a 4h',
   'Pack',
@@ -172,7 +109,7 @@ SELECT
   'Pack Showroom',
   'Acabamento próximo de showroom — o tratamento mais completo',
   'O tratamento mais completo disponível. Inclui tudo do Pack Premium + hidratação de plásticos exteriores, proteção UV interior, limpeza do motor e acabamento de showroom. SUV +10€, Van +15€.',
-  100, 110, 115,
+  120, 135, 140,
   -- Tempo real estimado 4h32 / estimado 5h-6h
   272, '5h a 6h',
   'Pack',

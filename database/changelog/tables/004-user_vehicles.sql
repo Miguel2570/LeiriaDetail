@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS user_vehicles (
     model VARCHAR(100) NOT NULL,
     year INTEGER,
     fuel_type VARCHAR(50),
-    size_category VARCHAR(5) DEFAULT 'C',
+    size_category VARCHAR(20) DEFAULT 'Medium',
     vin VARCHAR(50),
     is_primary BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

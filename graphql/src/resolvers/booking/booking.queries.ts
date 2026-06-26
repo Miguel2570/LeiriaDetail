@@ -5,19 +5,26 @@ export const bookingsQueries = {
         try {
             const data: any = await API.GET<any>(context, `/Bookings?user_id=${userId}`);
             
-            console.log('📦 Bookings API response:', JSON.stringify(data)); // Debug
+            console.log('📦 Bookings API response:', JSON.stringify(data));
             
-            // A API retorna { Booking: [...] } - um array
+            let bookings: any[] = [];
+            
             if (data.Booking && Array.isArray(data.Booking)) {
-                return data.Booking;
+                bookings = data.Booking;
+            } else if (data.Booking) {
+                bookings = [data.Booking];
             }
             
-            // Se for um objeto único, mete em array
-            if (data.Booking) {
-                return [data.Booking];
-            }
-            
-            return [];
+            return bookings.map((b: any) => ({
+                id: b.id?.toString() || '',
+                bookingDate: b.booking_date || b.bookingDate || '',
+                bookingTime: b.booking_time || b.bookingTime || '',
+                status: b.status || '',
+                vehicleName: b.vehicle_name || b.vehicleName || '',
+                vehiclePlate: b.vehicle_plate || b.vehiclePlate || '',
+                serviceName: b.service_name || b.serviceName || '',
+                servicePrice: b.service_price || b.servicePrice || 0
+            }));
         } catch (error) {
             console.error('❌ userBookings error:', error);
             return [];

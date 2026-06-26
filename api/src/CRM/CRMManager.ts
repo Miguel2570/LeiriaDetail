@@ -6,41 +6,81 @@ class CRMManager {
     
     static async getClients(): Promise<Client[]> {
         const query = `
-            SELECT 
+            SELECT DISTINCT
                 u.id,
                 u.first_name || ' ' || u.last_name as name,
                 COALESCE(u.phone, 'N/A') as phone,
                 u.email,
                 u.created_at
             FROM users u
-            WHERE u.role = 'customer' OR u.role IS NULL
+            LEFT JOIN user_vehicles uv ON u.id = uv.user_id
+            LEFT JOIN bookings b ON u.id = b.user_id
+            WHERE uv.id IS NOT NULL 
+            OR b.id IS NOT NULL
+            OR u.role = 'customer'
             ORDER BY u.created_at DESC
         `;
         
         const result = await server.query(query);
         
+        console.log(`📊 Found ${result.rows.length} total clients`);
+        
         const clients: Client[] = [];
         
         for (const row of result.rows) {
-            const vehicles = await this.getClientVehicles(row.id);
-            const history = await this.getClientHistory(row.id);
-            const ltv = await this.getClientLTV(row.id);
-            
-            const nameParts = row.name?.split(' ') || [];
-            const avatar = nameParts.length >= 2 
-                ? (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase()
-                : (nameParts[0]?.[0] || '?').toUpperCase();
-            
-            clients.push({
-                id: row.id,
-                name: row.name || 'Sem nome',
-                phone: row.phone,
-                email: row.email,
-                ltv: `€${ltv.toFixed(0)}`,
-                avatar,
-                vehicles,
-                history
-            });
+            try {
+                console.log(`\n🔍 Processing client ${row.id} (${row.name})...`);
+                
+                const vehicles = await this.getClientVehicles(row.id);
+                console.log(`   Vehicles: ${vehicles.length}`);
+                
+                const history = await this.getClientHistory(row.id);
+                console.log(`   History: ${history.length} records`);
+                
+                const ltv = await this.getClientLTV(row.id);
+                console.log(`   LTV: €${ltv}`);
+                
+                const nameParts = row.name?.split(' ') || [];
+                const avatar = nameParts.length >= 2 
+                    ? (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase()
+                    : (nameParts[0]?.[0] || '?').toUpperCase();
+                
+                clients.push({
+                    id: row.id,
+                    name: row.name || 'Sem nome',
+                    phone: row.phone,
+                    email: row.email,
+                    ltv: `€${ltv.toFixed(0)}`,
+                    avatar,
+                    vehicles,
+                    history  // 👈 This should now have data
+                });
+                
+                console.log(`   ✅ Client added with ${history.length} history records`);
+            } catch (error) {
+                console.error(`❌ Error processing client ${row.id}:`, error);
+                // Still add the client but with empty history
+                const nameParts = row.name?.split(' ') || [];
+                const avatar = nameParts.length >= 2 
+                    ? (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase()
+                    : (nameParts[0]?.[0] || '?').toUpperCase();
+                
+                clients.push({
+                    id: row.id,
+                    name: row.name || 'Sem nome',
+                    phone: row.phone || 'N/A',
+                    email: row.email || '',
+                    ltv: '€0',
+                    avatar,
+                    vehicles: [],
+                    history: []
+                });
+            }
+        }
+        
+        console.log(`\n✅ Final: ${clients.length} clients loaded`);
+        if (clients.length > 0) {
+            console.log(`📊 First client "${clients[0].name}": ${clients[0].history.length} history records`);
         }
         
         return clients;
@@ -95,17 +135,6 @@ class CRMManager {
                 'N/A' as color
             FROM user_vehicles
             WHERE user_id = $1
-            UNION ALL
-            SELECT 
-                id,
-                license_plate as plate,
-                model,
-                brand,
-                EXTRACT(YEAR FROM NOW())::int as year,
-                size_category,
-                'N/A' as color
-            FROM vehicles
-            WHERE user_id = $1
             ORDER BY id
         `;
         
@@ -114,28 +143,64 @@ class CRMManager {
     }
     
     private static async getClientHistory(userId: number): Promise<HistoryRecord[]> {
-        const query = `
-            SELECT 
-                b.id,
-                b.vehicle_id as "vehicleId",
-                b.booking_date::text as date,
-                s.name as service,
-                b.status,
-                CASE 
-                    WHEN v.size_category = 'P' THEN s.price_ab
-                    WHEN v.size_category = 'G' THEN s.price_de
-                    ELSE s.price_c
-                END as price
-            FROM bookings b
-            JOIN services s ON b.service_id = s.id
-            JOIN vehicles v ON b.vehicle_id = v.id
-            WHERE b.user_id = $1
-            ORDER BY b.booking_date DESC
-            LIMIT 10
-        `;
-        
-        const result = await server.query(query, [userId]);
-        return result.rows;
+        try {
+            const query = `
+                -- Marcações do cliente (bookings)
+                SELECT 
+                    b.id,
+                    b.vehicle_id::int as "vehicleId",
+                    b.booking_date::text as date,
+                    s.name as service,
+                    b.status,
+                    CASE 
+                        WHEN v.size_category = 'Small' THEN s.price_ab
+                        WHEN v.size_category = 'Large' THEN s.price_de
+                        ELSE s.price_c
+                    END as price
+                FROM bookings b
+                JOIN services s ON b.service_id = s.id
+                JOIN user_vehicles v ON b.vehicle_id = v.id
+                WHERE b.user_id = $1
+
+                UNION ALL
+
+                -- Serviços da oficina (workshop_services)
+                SELECT 
+                    ws.id,
+                    ws.vehicle_id::int as "vehicleId",
+                    ws.entry_date::text as date,
+                    ws.service_type as service,
+                    ws.status,
+                    COALESCE(ws.total_value, ws.estimated_value, 0) as price
+                FROM workshop_services ws
+                WHERE ws.client_id = $1
+
+                ORDER BY date DESC
+                LIMIT 20
+            `;
+            
+            const result = await server.query(query, [userId]);
+            
+            console.log(`📊 getClientHistory for user ${userId}: ${result.rows.length} records`);
+            if (result.rows.length > 0) {
+                console.log('📊 First record:', JSON.stringify(result.rows[0]));
+            } else {
+                console.log('⚠️ No history records found!');
+            }
+            
+            // 🔍 Ensure the data is properly typed
+            return result.rows.map(row => ({
+                id: row.id,
+                vehicleId: row.vehicleId,
+                date: row.date,
+                service: row.service,
+                status: row.status,
+                price: typeof row.price === 'string' ? parseFloat(row.price) : row.price
+            }));
+        } catch (error) {
+            console.error(`❌ Error in getClientHistory for user ${userId}:`, error);
+            return []; // Return empty array on error instead of crashing
+        }
     }
     
     private static async getClientLTV(userId: number): Promise<number> {
@@ -149,7 +214,7 @@ class CRMManager {
             ), 0) as total
             FROM bookings b
             JOIN services s ON b.service_id = s.id
-            JOIN vehicles v ON b.vehicle_id = v.id
+            JOIN user_vehicles v ON b.vehicle_id = v.id
             WHERE b.user_id = $1 AND b.status = 'CONCLUIDO'
         `;
         

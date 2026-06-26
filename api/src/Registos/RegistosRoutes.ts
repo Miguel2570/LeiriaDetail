@@ -12,7 +12,7 @@ async function GetServices(request: Request, response: Response) {
         const services = await RegistosManager.getAllServices(
             status as string | undefined,
             clientId ? parseInt(clientId as string) : undefined,
-            date as string | undefined  // ✅ NOVO
+            date as string | undefined
         );
         
         response.status(200).json(
@@ -28,7 +28,6 @@ async function GetServices(request: Request, response: Response) {
         );
     }
 }
-
 
 // GET - Serviços ativos
 async function GetActiveServices(request: Request, response: Response) {
@@ -229,6 +228,7 @@ async function CompleteService(request: Request, response: Response) {
         const serviceId = parseInt(request.params.id);
         const { totalValue } = request.body;
         
+        // O Manager agora trata de tudo, incluindo sincronizar o booking
         const service = await RegistosManager.completeService(serviceId, totalValue);
         
         if (!service) {
@@ -244,6 +244,7 @@ async function CompleteService(request: Request, response: Response) {
         response.status(200).json(
             new RegistosOutputModel(undefined, service, undefined)
         );
+        
     } catch (error: any) {
         console.error('CompleteService error:', error);
         response.status(500).json(

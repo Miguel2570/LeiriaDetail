@@ -15,65 +15,6 @@
     </div>
 
     <div v-else class="space-y-6">
-      
-      <!-- ===== IVA ===== -->
-      <div class="bg-white/60 backdrop-blur-sm rounded-2xl border border-[#06B6D4]/20 p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="font-bold text-[#000000] text-lg flex items-center gap-2">
-            <DollarSign class="w-5 h-5 text-[#06B6D4]" /> Configuração de IVA
-          </h3>
-          <!-- Toggle -->
-          <button 
-            @click="toggleIVA"
-            :class="['relative w-14 h-7 rounded-full transition-colors duration-300', ivaEnabled ? 'bg-[#10B981]' : 'bg-gray-300']"
-          >
-            <div :class="['absolute top-0.5 w-6 h-6 rounded-full bg-white shadow transition-transform duration-300', ivaEnabled ? 'translate-x-7' : 'translate-x-0.5']" />
-          </button>
-        </div>
-        
-        <p class="text-sm text-[#64748B] mb-4">
-          {{ ivaEnabled ? '✅ IVA ativo - Os preços incluem IVA.' : '⏸️ IVA desativado - Os preços são apresentados sem IVA.' }}
-        </p>
-
-        <div v-if="ivaEnabled">
-          <label class="block text-sm font-bold text-[#334155] mb-2">Taxa de IVA (%)</label>
-          <div class="flex items-center gap-3">
-            <input 
-              v-model.number="ivaRate" 
-              type="number" 
-              min="1" 
-              max="100" 
-              class="w-24 px-4 py-2 rounded-xl bg-white/80 border border-[#06B6D4]/30 text-[#000000] font-medium"
-            />
-            <span class="text-[#64748B] text-sm">%</span>
-            <button 
-              @click="saveSettings"
-              :disabled="isSaving"
-              class="px-4 py-2 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] text-white rounded-xl font-bold text-sm disabled:opacity-50"
-            >
-              {{ isSaving ? 'A guardar...' : 'Guardar' }}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ===== NIF ===== -->
-      <div class="bg-white/60 backdrop-blur-sm rounded-2xl border border-[#06B6D4]/20 p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="font-bold text-[#000000] text-lg flex items-center gap-2">
-            <FileText class="w-5 h-5 text-[#06B6D4]" /> Exigir NIF
-          </h3>
-          <button 
-            @click="toggleNIF"
-            :class="['relative w-14 h-7 rounded-full transition-colors duration-300', requireNIF ? 'bg-[#10B981]' : 'bg-gray-300']"
-          >
-            <div :class="['absolute top-0.5 w-6 h-6 rounded-full bg-white shadow transition-transform duration-300', requireNIF ? 'translate-x-7' : 'translate-x-0.5']" />
-          </button>
-        </div>
-        <p class="text-sm text-[#64748B]">
-          {{ requireNIF ? '✅ Clientes precisam de fornecer NIF para fatura.' : '⏸️ NIF opcional para faturação.' }}
-        </p>
-      </div>
 
       <!-- ===== Empresa ===== -->
       <div class="bg-white/60 backdrop-blur-sm rounded-2xl border border-[#06B6D4]/20 p-6">
@@ -110,7 +51,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { DollarSign, FileText, Building } from 'lucide-vue-next';
+import { Building } from 'lucide-vue-next';
 import { graphql } from '@/graphql';
 
 const isLoading = ref(true);
@@ -118,9 +59,6 @@ const isSaving = ref(false);
 const message = ref('');
 const messageType = ref<'success' | 'error'>('success');
 
-const ivaEnabled = ref(false);
-const ivaRate = ref(23);
-const requireNIF = ref(false);
 const companyName = ref('LeiriaDetail');
 const companyAddress = ref('Leiria, Portugal');
 
@@ -128,20 +66,11 @@ const fetchSettings = async () => {
   try {
     const query = `query { 
       settings { 
-        settings { 
-          ivaEnabled 
-          ivaRate 
-          requireNif 
-          companyName 
-          companyAddress 
-        } 
+        settings { companyName companyAddress } 
       } 
     }`;
     const data = await graphql<{ settings: { settings: any } }>(query);
     if (data.settings?.settings) {
-      ivaEnabled.value = data.settings.settings.ivaEnabled === true || data.settings.settings.ivaEnabled === 'true';
-      ivaRate.value = parseInt(data.settings.settings.ivaRate) || 23;
-      requireNIF.value = data.settings.settings.requireNif === true || data.settings.settings.requireNif === 'true';
       companyName.value = data.settings.settings.companyName || 'LeiriaDetail';
       companyAddress.value = data.settings.settings.companyAddress || 'Leiria, Portugal';
     }
@@ -152,16 +81,6 @@ const fetchSettings = async () => {
   }
 };
 
-const toggleIVA = async () => {
-  ivaEnabled.value = !ivaEnabled.value;
-  await saveSettings();
-};
-
-const toggleNIF = async () => {
-  requireNIF.value = !requireNIF.value;
-  await saveSettings();
-};
-
 const saveSettings = async () => {
   isSaving.value = true;
   message.value = '';
@@ -170,7 +89,7 @@ const saveSettings = async () => {
     const mutation = `
       mutation UpdateSettings($input: SettingsInput!) {
         updateSettings(input: $input) { 
-          settings { ivaEnabled ivaRate requireNif companyName companyAddress }
+          settings { companyName companyAddress }
           message 
           hasError 
         }
@@ -178,9 +97,6 @@ const saveSettings = async () => {
     `;
     const data = await graphql<{ updateSettings: any }>(mutation, {
       input: {
-        ivaEnabled: ivaEnabled.value,
-        ivaRate: ivaRate.value,
-        requireNif: requireNIF.value,
         companyName: companyName.value,
         companyAddress: companyAddress.value
       }

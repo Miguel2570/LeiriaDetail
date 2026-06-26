@@ -38,9 +38,9 @@ class RegistosManager {
         const query = `
             SELECT 
                 ws.*,
-                v.license_plate as vehicle_plate
+                uv.license_plate as vehicle_plate
             FROM workshop_services ws
-            LEFT JOIN user_vehicles v ON ws.vehicle_id = v.id
+            LEFT JOIN user_vehicles uv ON ws.vehicle_id = uv.id
             WHERE ws.id = $1
         `;
         
@@ -55,10 +55,9 @@ class RegistosManager {
         let query = `
             SELECT 
                 ws.*,
-                COALESCE(uv.license_plate, v.license_plate) as vehicle_plate
+                uv.license_plate as vehicle_plate
             FROM workshop_services ws
             LEFT JOIN user_vehicles uv ON ws.vehicle_id = uv.id
-            LEFT JOIN vehicles v ON ws.vehicle_id = v.id
             WHERE 1=1
         `;
         
@@ -77,7 +76,6 @@ class RegistosManager {
             params.push(clientId);
         }
         
-        // ✅ NOVO
         if (date) {
             paramCount++;
             query += ` AND ws.entry_date::date = $${paramCount}::date`;
@@ -94,10 +92,9 @@ class RegistosManager {
         const query = `
             SELECT 
                 ws.*,
-                COALESCE(uv.license_plate, v.license_plate) as vehicle_plate
+                uv.license_plate as vehicle_plate
             FROM workshop_services ws
             LEFT JOIN user_vehicles uv ON ws.vehicle_id = uv.id
-            LEFT JOIN vehicles v ON ws.vehicle_id = v.id
             WHERE ws.status IN ('EM_ABERTO', 'EM_PROGRESSO')
             ORDER BY 
                 CASE ws.status 
@@ -126,7 +123,40 @@ class RegistosManager {
         
         if (result.rows.length === 0) return null;
         
+        await this.syncBookingStatusStart(result.rows[0]);
+        
         return this.getServiceById(serviceId);
+    }
+
+    private static async syncBookingStatusStart(workshopService: any): Promise<void> {
+        try {
+            const clientId = workshopService.client_id;
+            const vehicleId = workshopService.vehicle_id;
+            const entryDate = workshopService.entry_date;
+            
+            const updateBookingQuery = `
+                UPDATE bookings 
+                SET status = 'EM_PROGRESSO'
+                WHERE user_id = $1 
+                AND vehicle_id = $2 
+                AND booking_date::date = $3::date
+                AND status = 'PENDENTE'
+                RETURNING id, status
+            `;
+            
+            const result = await server.query(updateBookingQuery, [
+                clientId,
+                vehicleId,
+                entryDate
+            ]);
+            
+            if (result.rows.length > 0) {
+                console.log(`✅ Booking ID ${result.rows[0].id} atualizado para 'EM_PROGRESSO'`);
+            }
+            
+        } catch (error: any) {
+            console.error('⚠️ Erro ao sincronizar booking (start):', error.message);
+        }
     }
     
     static async updateChecklist(
@@ -180,9 +210,101 @@ class RegistosManager {
         
         const result = await server.query(query, params);
         
-        if (result.rows.length === 0) return null;
+        if (result.rows.length === 0) {
+            // Tentar concluir mesmo se não estiver EM_PROGRESSO (pode estar EM_ABERTO)
+            let forceQuery = `
+                UPDATE workshop_services 
+                SET status = 'CONCLUIDO', 
+                    completed_at = NOW(), 
+                    progress = 100,
+                    updated_at = NOW()
+            `;
+            
+            const forceParams: any[] = [];
+            let forceParamCount = 1;
+            
+            if (totalValue !== undefined) {
+                forceParamCount++;
+                forceQuery += ` , total_value = $${forceParamCount}`;
+                forceParams.push(totalValue);
+            }
+            
+            forceQuery += ` WHERE id = $1 AND status IN ('EM_ABERTO', 'EM_PROGRESSO') RETURNING *`;
+            forceParams.unshift(serviceId);
+            
+            const forceResult = await server.query(forceQuery, forceParams);
+            
+            if (forceResult.rows.length === 0) return null;
+            
+            // 🔥 ATUALIZAR A MARCAÇÃO (BOOKING) ASSOCIADA
+            await this.syncBookingStatus(forceResult.rows[0]);
+            
+            return this.getServiceById(serviceId);
+        }
+        
+        // 🔥 ATUALIZAR A MARCAÇÃO (BOOKING) ASSOCIADA
+        await this.syncBookingStatus(result.rows[0]);
         
         return this.getServiceById(serviceId);
+    }
+    
+    private static async syncBookingStatus(workshopService: any): Promise<void> {
+        try {
+            const clientId = workshopService.client_id;
+            const vehicleId = workshopService.vehicle_id;
+            const entryDate = workshopService.entry_date;
+            
+            console.log(`🔄 A sincronizar booking para cliente ${clientId}, veículo ${vehicleId}, data ${entryDate}`);
+            
+            const findBookingQuery = `
+                SELECT id, status, booking_date::date as booking_date
+                FROM bookings 
+                WHERE user_id = $1 
+                  AND vehicle_id = $2 
+                  AND booking_date::date = $3::date
+                ORDER BY 
+                    CASE status 
+                        WHEN 'EM_PROGRESSO' THEN 1
+                        WHEN 'PENDENTE' THEN 2
+                        ELSE 3
+                    END,
+                    booking_date DESC
+                LIMIT 1
+            `;
+            
+            const bookingResult = await server.query(findBookingQuery, [
+                clientId,
+                vehicleId,
+                entryDate
+            ]);
+            
+            if (bookingResult.rows.length === 0) {
+                console.log(`ℹ️ Nenhum booking encontrado para sincronizar`);
+                return;
+            }
+            
+            const booking = bookingResult.rows[0];
+            
+            // Só atualizar se não estiver já concluído
+            if (booking.status !== 'CONCLUIDO') {
+                const updateBookingQuery = `
+                    UPDATE bookings 
+                    SET status = 'CONCLUIDO'
+                    WHERE id = $1
+                    RETURNING id, status
+                `;
+                
+                const updateResult = await server.query(updateBookingQuery, [booking.id]);
+                
+                console.log(`✅ Booking ID ${booking.id} atualizado de '${booking.status}' para 'CONCLUIDO'`);
+            } else {
+                console.log(`ℹ️ Booking ID ${booking.id} já estava CONCLUIDO`);
+            }
+            
+        } catch (error: any) {
+            console.error('⚠️ Erro ao sincronizar booking:', error.message);
+            // Não lançar erro - a sincronização é secundária
+        }
     }
     
     static async getStats(): Promise<WorkshopStats> {
@@ -210,10 +332,9 @@ class RegistosManager {
         const query = `
             SELECT 
                 ws.*,
-                COALESCE(uv.license_plate, v.license_plate) as vehicle_plate
+                uv.license_plate as vehicle_plate
             FROM workshop_services ws
             LEFT JOIN user_vehicles uv ON ws.vehicle_id = uv.id
-            LEFT JOIN vehicles v ON ws.vehicle_id = v.id
             WHERE ws.client_id = $1
             ORDER BY ws.entry_date DESC
         `;
