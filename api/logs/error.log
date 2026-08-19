@@ -30,3 +30,6 @@
 {"level":"error","message":"Erro ao limpar pending bookings:","service":"leiriadetail-api","timestamp":"2026-06-24T11:33:12.206Z"}
 {"level":"error","message":"Erro ao limpar pending bookings:","service":"leiriadetail-api","timestamp":"2026-06-24T11:38:12.207Z"}
 {"level":"error","message":"Erro ao limpar pending bookings:","service":"leiriadetail-api","timestamp":"2026-06-25T18:34:40.037Z"}
+{"level":"error","message":"Erro ao limpar pending bookings:","service":"leiriadetail-api","timestamp":"2026-07-01T19:47:15.591Z"}
+{"level":"error","message":"Erro ao limpar pending bookings:","service":"leiriadetail-api","timestamp":"2026-07-01T19:47:43.571Z"}
+{"level":"error","message":"Erro ao limpar pending bookings:","service":"leiriadetail-api","timestamp":"2026-07-27T01:00:42.271Z"}

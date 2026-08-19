@@ -1,14 +1,6 @@
 -- liquibase formatted sql
 -- changeset leiria:003-seed-services-v3
 
--- ============================================================
--- TIPOS DE pack_type USADOS:
---   'Basico'   → serviços avulso (Lavagem Ext / Int standalone)
---   'Pack'     → packs completos (Essencial, Premium, Showroom)
---   'Extra'    → extras adicionáveis a qualquer pack
---   'Bancos'   → limpeza de bancos por material
--- ============================================================
-
 -- ============================================
 -- PACKS COMPLETOS
 -- ============================================
@@ -28,7 +20,7 @@ SELECT
   82, '1h30 a 2h',
   'Pack',
   ARRAY[
-    'Pré-lavagem com espuma',
+    'Pré-lavagem com snow foam',
     'Lavagem manual exterior',
     'Secagem com panos microfibra',
     'Limpeza de jantes e pneus',
@@ -39,12 +31,12 @@ SELECT
     'Brilho nos pneus'
   ],
   '[
-    {"step":1,"title":"Pré-lavagem","duration_min":10,"description":"Aplicação de espuma para soltar partículas."},
+    {"step":1,"title":"Pré-lavagem","duration_min":10,"description":"Aplicação de snow foam para soltar partículas."},
     {"step":2,"title":"Lavagem de jantes","duration_min":5,"description":"Limpeza detalhada de jantes e pneus."},
     {"step":3,"title":"Lavagem manual","duration_min":20,"description":"Lavagem manual com técnica de 2 baldes."},
     {"step":4,"title":"Secagem manual","duration_min":10,"description":"Secagem com panos de microfibra."},
     {"step":5,"title":"Limpeza de vidros","duration_min":5,"description":"Vidros sem marcas, interior e exterior."},
-    {"step":6,"title":"Ambientador","duration_min":2,"description":"Aplicação de ambientador premium."},
+    {"step":6,"title":"Ambientador","duration_min":2,"description":"Aplicação de ambientador."},
     {"step":7,"title":"Aspiração simples","duration_min":15,"description":"Aspiração de tapetes e bancos."},
     {"step":8,"title":"Limpeza interior simples","duration_min":25,"description":"Limpeza de plásticos e superfícies interiores."}
   ]',
@@ -72,27 +64,26 @@ SELECT
     'Lavagem manual exterior',
     'Limpeza detalhada de jantes',
     'Secagem com panos microfibra',
-    'Aplicação de cera/selante',
     'Aspiração detalhada',
     'Lavagem de tapetes',
     'Lavagem do volante e travão de mão',
     'Limpeza de plásticos interiores',
-    'Utilização do purio',
+    'Utilização do apc',
     'Limpeza de vidros',
     'Brilho nos pneus',
     'Ambientador'
   ],
   '[
-    {"step":1,"title":"Pré-lavagem","duration_min":10,"description":"Snow foam premium para soltar toda a sujidade."},
+    {"step":1,"title":"Pré-lavagem","duration_min":10,"description":"Snow foam para soltar toda a sujidade."},
     {"step":2,"title":"Lavagem de jantes","duration_min":5,"description":"Limpeza detalhada de jantes e pneus."},
     {"step":3,"title":"Lavagem manual","duration_min":20,"description":"Lavagem manual com técnica de 2 baldes."},
-    {"step":4,"title":"Secagem manual","duration_min":10,"description":"Secagem com panos de microfibra premium."},
+    {"step":4,"title":"Secagem manual","duration_min":10,"description":"Secagem com panos de microfibra."},
     {"step":5,"title":"Limpeza de vidros","duration_min":5,"description":"Vidros sem marcas, interior e exterior."},
-    {"step":6,"title":"Ambientador","duration_min":2,"description":"Aplicação de ambientador premium."},
+    {"step":6,"title":"Ambientador","duration_min":2,"description":"Aplicação de ambientador."},
     {"step":7,"title":"Aspiração detalhada","duration_min":25,"description":"Aspiração profunda de todos os cantos."},
     {"step":8,"title":"Lavagem de tapetes","duration_min":15,"description":"Lavagem e secagem de tapetes."},
     {"step":9,"title":"Volante e travão de mão","duration_min":10,"description":"Limpeza e higienização do volante e travão."},
-    {"step":10,"title":"Utilização do purio","duration_min":30,"description":"Desinfeção profunda com máquina purio."}
+    {"step":10,"title":"Utilização do apc","duration_min":30,"description":"Desinfeção profunda com máquina apc."}
   ]',
   '💎', 15
 WHERE NOT EXISTS (
@@ -118,26 +109,25 @@ SELECT
     'Lavagem manual exterior',
     'Limpeza detalhada de jantes',
     'Secagem com panos microfibra',
-    'Aplicação de cera/selante',
     'Hidratação de plásticos (exterior)',
-    'Limpeza e hidratação do motor',
+    'Lavagem dos estofos',
+    'Lavagem de tapetes',
     'Aspiração detalhada',
     'Limpeza interior detalhada',
-    'Lavagem de tapetes',
     'Lavagem do volante e travão de mão',
     'Proteção UV de plásticos (interior)',
     'Utilização do purio',
     'Limpeza de vidros',
     'Brilho nos pneus',
-    'Ambientador premium'
+    'Ambientador'
   ],
   '[
-    {"step":1,"title":"Pré-lavagem","duration_min":10,"description":"Snow foam premium para soltar toda a sujidade."},
+    {"step":1,"title":"Pré-lavagem","duration_min":10,"description":"Snow foam para soltar toda a sujidade."},
     {"step":2,"title":"Lavagem de jantes","duration_min":5,"description":"Limpeza detalhada de jantes e pneus."},
     {"step":3,"title":"Lavagem manual","duration_min":20,"description":"Lavagem manual com técnica de 2 baldes."},
-    {"step":4,"title":"Secagem manual","duration_min":10,"description":"Secagem com panos de microfibra premium."},
+    {"step":4,"title":"Secagem manual","duration_min":10,"description":"Secagem com panos de microfibra."},
     {"step":5,"title":"Limpeza de vidros","duration_min":5,"description":"Vidros sem marcas, interior e exterior."},
-    {"step":6,"title":"Ambientador","duration_min":2,"description":"Aplicação de ambientador premium."},
+    {"step":6,"title":"Ambientador","duration_min":2,"description":"Aplicação de ambientador."},
     {"step":7,"title":"Limpeza interior detalhada","duration_min":30,"description":"Limpeza profunda de todos os plásticos e superfícies."},
     {"step":8,"title":"Lavagem de tapetes","duration_min":15,"description":"Lavagem e secagem de tapetes."},
     {"step":9,"title":"Volante e travão de mão","duration_min":10,"description":"Limpeza e higienização do volante e travão."},
